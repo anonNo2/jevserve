@@ -2,9 +2,12 @@
 
 import argparse
 import hashlib
+import importlib.metadata
 import json
 import math
 from pathlib import Path
+
+import httpx
 
 from jevserve.client import Client
 from jevserve.contracts.requests import DecisionRequest
@@ -76,6 +79,31 @@ def main() -> int:
         "transport": "real HTTP, sequential requests",
         "cases": cases,
     }
+    # Exercise the public SDK against the selected model after native parity.
+    from typesafe_sdk import Choice, Noul, RetryPolicy, Score, TypeSafeClient
+
+    metadata = httpx.get(args.url + "/v1/models", timeout=10)
+    metadata.raise_for_status()
+    model_id = metadata.json()["models"][0]["id"]
+    with TypeSafeClient(
+        api_key="local-validation", model=model_id, base_url=args.url,
+        retry=RetryPolicy(max_retries=0),
+    ) as sdk:
+        result = sdk.system_one(
+            state="I was charged twice and want a refund.",
+            questions={
+                "team": Choice(instructions="Choose a team", criteria={
+                    "billing": "Payments", "technical": "Software",
+                }),
+                "urgent": Noul(instructions="Is this urgent?"),
+                "priority": Score(instructions="Rate urgency", criteria=["Low", "High"]),
+            },
+        )
+        assert result.model == model_id
+        assert result.choices["team"].choice in ("billing", "technical")
+        assert 0 <= result.nouls["urgent"].noul <= 1
+        assert 0 <= result.scores["priority"].score <= 1
+    report["official_sdk_smoke"] = "typesafe-sdk==" + importlib.metadata.version("typesafe-sdk")
     args.output.write_text(json.dumps(report, indent=2) + "\n")
     print(
         json.dumps(

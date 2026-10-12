@@ -581,3 +581,40 @@ after its actual test matrix is complete.
   **18,790 MiB**. Image identity and exact results are in `kev-4b-runtime.json`
   and `kev-4b-container.json`. This supersedes the invalid initial BF16 profile.
   CPU 168 tests, Ruff and mypy remain green. Next GPU task: Open-Jev-9B.
+
+- Open-Jev-9B reference: **113 real GPU cases executed, zero runtime failures**
+  using the original locked reference environment. The harness now reads its
+  pinned inventory directly, keeping production Pydantic dependencies out of
+  that independent environment. Container parity is still running.
+- JPT-4B source download and complete hash verification passed. JPT-9B has
+  verified its first two weight shards; remaining shards are still staging.
+- GitHub main now includes `01ee8c5` (Kev precision correction and reports).
+  Dev1 Docker publication remains pending final common-image regression.
+
+- Open-Jev-9B common-container gate completed: **110 native HTTP cases** and
+  official SDK executed successfully. Frozen probability tolerance failed
+  **27/110**, maximum absolute error **0.019531584454720696**, zero label flips.
+  Observed allocation after tests: **23,914 MiB** at the explicit default 0.5
+  GPU budget. The reference had 113 cases; three empty-state cases are rejected
+  by the native contract. Reports: `open-jev-9b-{reference,container,runtime}.json`.
+  Numerical certification remains failed, separately from successful execution.
+
+- Final candidate image `sha256:4b758ad1000f4d38501fd83f0a9c2b32f0cb91968d427b170a2c2b0d9a613aff`
+  passed sequential mounted offline Compose inference for both JPT-0.8B and
+  NeoHorse-Jev-4B. Network disabled, UID 10001, read-only root/weight mount and
+  all three question types verified; `multimodel-compose.json` now records this
+  final artifact. Open-Jev-2B regression and real pointer deadline gate are next.
+
+- Final Open-Jev-2B common-image regression passed real Choice/Noul/Score with
+  network disabled and read-only root, reusing the previously verified cache.
+  Evidence: `validation/reports/open-jev-2b-common-image.json`.
+- Real Kev FP32 active deadline test passed: a 255-option request with 100 ms
+  deadline returned **504 in 0.3274 s** including cancellation cleanup; the
+  container exited and GPU allocation returned to **11 MiB**, with restart
+  policy `no`. Evidence: `validation/reports/pointer-deadline.json`; reproduce
+  with `python -m validation.pointer_deadline --url DEDICATED_SERVICE
+  --output REPORT` only against a disposable pointer-model validation instance.
+  CPU cancellation tests and real GPU lifecycle evidence are separate.
+- Exact next action: JPT-4B author/container matrix is running; finish JPT-9B
+  verified download and its matrix, then publish the already verified common
+  artifact and synchronize bilingual README, model results and registry digest.

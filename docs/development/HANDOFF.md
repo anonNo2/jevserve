@@ -2,6 +2,8 @@
 
 实施已于 2026-10-12 开始，真实 Open-Jev-2B 的 CLI/HTTP/vLLM 开发闭环已运行；Docker/Compose 真实推理与首次下载已验证；数值对齐仍失败，尚非 alpha。开发预览镜像 `anonwx/jevserve:0.1.0-dev0` 已公开发布并验证匿名拉取；源码已推送至 https://github.com/anonNo2/jevserve，首次远程 CPU CI 通过。支持模型及测试结果见 [models.md](../models.md)。下方初始化记录属于历史基线；当前完成项、阻塞项和下一步以 [STATUS.md](STATUS.md) 为准。CPU 开发命令见 [IMPLEMENTATION.md](IMPLEMENTATION.md)。
 
+当前扩展方向：一个通用镜像、只读挂载独立权重，已接入 Open-Jev-2B/9B、JPT-0.8B/4B/9B、NeoHorse-Jev-4B、Kev-4B。NeoHorse 与修正加载配置后的 Kev FP32 已通过小型合成数值对照；JPT-0.8B 和 Open-Jev-2B 尚有数值偏差。更多 GPU 验证与 dev1 发布正在进行，逐项证据以 STATUS 和 models.md 为准。
+
 ## 用户目标
 
 交付一个完善的开源推理 repo 雏形，能像 vLLM 一样以一个容器极简拉起 Jev 类模型。主打真实可运行、模型结果可验证、离线/运维完整，而不是只有目录和 API 外壳。

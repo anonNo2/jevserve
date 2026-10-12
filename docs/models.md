@@ -18,7 +18,7 @@ JevServe 使用一个通用镜像，模型权重独立挂载。每个容器运�
 | [JPT-0.8B](https://huggingface.co/kirp/jpt-0.8b) | vLLM token readout, BF16 | 10 HTTP cases including 255 options; mounted offline Compose passed | **Failed:** see [container report](../validation/reports/jpt-0.8b-container.json); no Choice label flips | CC-BY-NC-4.0 |
 | [JPT-4B](https://huggingface.co/kirp/jpt-4b) | vLLM token readout, BF16 | Integration complete; GPU checks pending | Pending | CC-BY-NC-4.0 |
 | [JPT-9B](https://huggingface.co/kirp/jpt-9b) | vLLM token readout, BF16 | Integration complete; GPU checks pending | Pending | CC-BY-NC-4.0 |
-| [Open-Jev-9B](https://huggingface.co/ZefanCai/Open-Jev-9B) | vLLM pooling, BF16 backbone + FP32 scalar head | Integration complete; GPU checks pending | Pending | Apache-2.0 |
+| [Open-Jev-9B](https://huggingface.co/ZefanCai/Open-Jev-9B) | vLLM pooling, BF16 backbone + FP32 scalar head | 110 native HTTP cases and official SDK passed execution | **Failed:** 27/110 comparisons; no label flips | Apache-2.0 |
 | [NeoHorse-Jev-4B](https://huggingface.co/TokenRhythm/NeoHorse-Jev-4B) | Explicit Torch pointer backend, BF16 backbone + FP32 head | 10 HTTP cases, native/official SDK and mounted offline Compose passed | **Passed:** 10/10 synthetic comparisons; max error 6.33e-8 | Apache-2.0 |
 | [Kev-4B](https://huggingface.co/jaredpalmer/kev-4b) | Explicit Torch pointer backend, FP32 | 10 HTTP cases and native/official SDK passed | **Passed:** 10/10 with documented FP32 loader correction | Apache-2.0 |
 
@@ -117,8 +117,11 @@ synthetic compatibility suite, not a representative quality benchmark.
 - [JPT-0.8B GPU reference](../validation/reports/jpt-0.8b-reference.json)
 - [JPT-0.8B container probabilities](../validation/reports/jpt-0.8b-container.json)
 - [NeoHorse-Jev-4B container probabilities](../validation/reports/neohorse-jev-4b-container.json)
+- [Open-Jev-9B container comparison](../validation/reports/open-jev-9b-container.json)
 - [Kev-4B FP32 reference and dtype audit](../validation/reports/kev-4b-reference.json)
 - [Kev-4B FP32 container probabilities](../validation/reports/kev-4b-container.json)
+- [Final-image Open-Jev-2B offline regression](../validation/reports/open-jev-2b-common-image.json)
+- [Real GPU active timeout and memory release](../validation/reports/pointer-deadline.json)
 - [Same-image mounted offline Compose](../validation/reports/multimodel-compose.json)
 
 Record runtime, precision and revision with every result. A passing CPU suite,

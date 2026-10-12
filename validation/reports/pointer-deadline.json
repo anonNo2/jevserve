@@ -1,0 +1,13 @@
+{
+  "model_id": "jaredpalmer/kev-4b",
+  "scope": "real GPU pointer active deadline; dedicated disposable container",
+  "deadline_ms": 100,
+  "http_status": 504,
+  "elapsed_seconds": 0.3274,
+  "service_unavailable_after_deadline": true,
+  "automatic_restart": false,
+  "image_id": "sha256:4b758ad1000f4d38501fd83f0a9c2b32f0cb91968d427b170a2c2b0d9a613aff",
+  "container_exited": true,
+  "gpu_memory_mib_after_exit": 11,
+  "restart_policy": "no"
+}
