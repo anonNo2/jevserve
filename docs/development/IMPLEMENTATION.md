@@ -72,8 +72,10 @@ docker compose run --rm --service-ports jevserve serve --allow-uncertified --off
 Image build, cold online startup, real offline container inference and Compose
 inference have passed on the development host; see STATUS for exact scope and
 image ID. Keep prepared caches when changing images and pin an image ID/digest
-for rollback. Docker Hub publication awaits a destination/login. There is no
-certified release image or completed rollback drill.
+for rollback. The verified development preview is public as
+`anonwx/jevserve:0.1.0-dev0`; [deployment instructions](../quickstart.md) include
+the immutable registry digest. There is no certified release image or completed
+rollback drill.
 
 ## Artifact preparation
 

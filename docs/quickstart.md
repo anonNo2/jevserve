@@ -13,7 +13,7 @@ See [current verification results](development/STATUS.md).
 - Internet access on first startup to download the pinned model. Reserve disk
   space for the large vLLM image, approximately 4.6 GB of source model files,
   and approximately 3.5 GB of compiled model files.
-- A checkout of this repository for the build and helper commands below.
+- A repository checkout for Compose, local builds and the optional helper; plain Docker needs no checkout.
 
 Host Python and CUDA Toolkit are unnecessary. Check your host's GPU occupancy
 before starting; the default runtime reserves 50% of GPU memory. Follow
@@ -24,10 +24,12 @@ its Docker service without its administrator's agreement.
 ## One-command startup
 
 ```bash
-./scripts/quickstart.sh --build
+git clone https://github.com/anonNo2/jevserve.git
+cd jevserve
+./scripts/quickstart.sh --image anonwx/jevserve:0.1.0-dev0
 ```
 
-The script builds `jevserve:dev`, creates container `jevserve`, attaches named
+The script pulls `anonwx/jevserve:0.1.0-dev0`, creates container `jevserve`, attaches named
 volume `jevserve-cache`, waits up to 30 minutes for readiness, and makes one
 real request with Choice, Noul, and Score questions. The API remains running at
 `http://127.0.0.1:8000`. It does not replace existing containers or delete caches.
@@ -36,24 +38,36 @@ Health checks may be repeated; decision requests are never automatically retried
 To customize the local instance:
 
 ```bash
-./scripts/quickstart.sh --build --name jevserve-demo \
+./scripts/quickstart.sh --image anonwx/jevserve:0.1.0-dev0 --name jevserve-demo \
   --volume jevserve-demo-cache --port 18000 --gpu 0
 ```
 
-A published Docker Hub tag is not available yet. Once an image is published,
-`--image REPOSITORY:TAG` selects it without a local build. Do not use an invented
-registry path or assume that an unrelated image is this project.
+The development preview is published on [Docker Hub](https://hub.docker.com/r/anonwx/jevserve)
+for Linux amd64. To build from your checkout instead, run
+`./scripts/quickstart.sh --build`. See [supported models and test results](models.md)
+for the tested checkpoint and the outstanding numerical certification gate.
+
+## Pin the published image
+
+For reproducible deployments, replace the tag in any example with the immutable
+registry digest:
+
+```text
+anonwx/jevserve@sha256:f27c15c1da40d0c02139672a426d41d5370e6ea061d209b1d3fc5aef53b73396
+```
+
+This is the same development image exercised by the recorded container tests.
+See [publication and verification evidence](development/STATUS.md).
 
 ## Plain Docker
 
 These are the commands wrapped by the helper, with the readiness check separated:
 
 ```bash
-docker build -t jevserve:dev .
 docker run -d --name jevserve --gpus device=0 --shm-size=1g \
   -p 127.0.0.1:8000:8000 \
   --mount type=volume,source=jevserve-cache,target=/cache \
-  jevserve:dev
+  anonwx/jevserve:0.1.0-dev0
 docker exec jevserve jevserve check --wait-seconds 1800
 ```
 
@@ -67,7 +81,7 @@ ownership problems.
 Use this instead of the plain Docker instance on port 8000:
 
 ```bash
-docker compose up --build -d
+JEVSERVE_IMAGE=anonwx/jevserve:0.1.0-dev0 docker compose up --pull always --no-build -d
 docker compose exec jevserve jevserve check --wait-seconds 1800
 docker compose logs --tail 100 jevserve
 ```
@@ -102,7 +116,7 @@ docker stop --timeout 65 jevserve
 docker run -d --name jevserve-offline --gpus device=0 --shm-size=1g \
   -p 127.0.0.1:8000:8000 \
   --mount type=volume,source=jevserve-cache,target=/cache \
-  jevserve:dev serve --allow-uncertified --offline
+  anonwx/jevserve:0.1.0-dev0 serve --allow-uncertified --offline
 docker exec jevserve-offline jevserve check --wait-seconds 1800
 ```
 
@@ -126,14 +140,14 @@ check accepts `--api-key-file /run/secrets/jevserve-key` inside the container.
   and compiles the pinned model before opening the API. The helper preserves
   a failed container and its cache for inspection.
 - **GPU unavailable:** check `nvidia-smi` and your NVIDIA Container Toolkit
-  setup. Hosts configured for native CDI can use `./scripts/quickstart.sh --cdi`
+  setup. Hosts configured for native CDI can use `./scripts/quickstart.sh --image anonwx/jevserve:0.1.0-dev0 --cdi`
   or replace `--gpus device=0` with `--device nvidia.com/gpu=0`.
   See [NVIDIA CDI documentation](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/cdi-support.html).
 - **Name already exists:** inspect `docker ps -a --filter name=jevserve`, restart
   your existing container, or choose another `--name`. The helper never deletes it.
 - **Out of memory:** stop this instance and check other GPU workloads. There is
   no automatic precision reduction, truncation or alternate model. Runtime
-  options are listed by `docker run --rm jevserve:dev serve --help`.
+  options are listed by `docker run --rm anonwx/jevserve:0.1.0-dev0 serve --help`.
 - **Stop:** `docker stop --timeout 65 jevserve`. Remove only your stopped container
   with `docker rm jevserve`. Its named model cache remains for the next start.
 

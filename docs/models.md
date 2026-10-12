@@ -1,8 +1,48 @@
-# Model baseline and certification
+# Supported models and test results
 
-No serving model is certified yet. `models/registry.yaml` is intentionally empty.
-The discovery inventory in `models/locks/open-jev-2b.json` is not a production
-serving manifest or proof of inference. Its status remains `pending`.
+**Currently supported: Open-Jev-2B only, as a development preview.** It has
+passed real GPU serving, Docker, Compose, cold-start download and offline
+execution checks. It has **not** passed numerical certification against the
+author's reference implementation. “Tested” does not mean production-certified.
+
+**目前仅支持 Open-Jev-2B（开发预览版）**：已通过真实 GPU 推理、Docker、Compose、
+首次下载及离线运行测试；与作者实现的数值一致性尚未通过认证。
+
+## Support matrix
+
+| Model | JevServe support | Tested behavior | Certification |
+|---|---|---|---|
+| [`ZefanCai/Open-Jev-2B`](https://huggingface.co/ZefanCai/Open-Jev-2B) | Default model; text Choice, Noul and Score | Real NVIDIA GPU, native HTTP/client, official SDK text subset, Docker, Compose, cold download, offline, graceful stop | **Uncertified**: probability parity fails |
+| `Qwen/Qwen3.5-2B` | Pinned backbone dependency of Open-Jev-2B | Loaded as part of the decision model above | Not a separately supported Jev endpoint |
+| `convaiinnovations/laya` | Not implemented | Not tested by JevServe | Not supported |
+| TypeSafe's official Jev weights / other checkpoints | Not included or accepted by the current model catalog | Not tested by JevServe | Not supported |
+
+The model selector accepts only `ZefanCai/Open-Jev-2B`; there is no automatic
+substitution or generic “any Hugging Face model” support. The certified registry
+in `models/registry.yaml` remains empty. The locked development model remains
+`pending` certification, even though container smoke gates have passed.
+
+## What was actually tested
+
+Observed on **Linux x86_64, RTX A6000 (48 GiB), NVIDIA driver 580.95.05**.
+The serving image uses Python 3.12.3, vLLM 0.29.0, Torch 2.13.0+cu130,
+Transformers 5.10.4 and PEFT 0.20.0. These observations do not establish a minimum
+VRAM/driver requirement or support for every NVIDIA GPU.
+
+| Check | Observed result | Evidence |
+|---|---|---|
+| Author's real GPU reference | 113 cases executed, 0 failures | [Reference report](../validation/reports/open-jev-reference.json) |
+| Token encoding and answer order | 110 cases matched | [Encoding report](../validation/reports/open-jev-encoding.json) |
+| vLLM probability parity | **38/113 failed** the frozen tolerance; no label flips observed | [Pooling report](../validation/reports/vllm-pooling-parity.json) |
+| Native HTTP probability parity | **36/110 failed** the frozen tolerance; no label flips observed | [HTTP report](../validation/reports/native-http-parity.json) |
+| Docker and Compose | Real Choice/Noul/Score responses; non-root service and graceful stop | [Container report](../validation/reports/container-smoke.json) |
+| First startup and offline reuse | Empty-volume download/verification succeeded; real inference with network disabled and read-only root succeeded | [Container report](../validation/reports/container-smoke.json) |
+| SDK compatibility | Native client and `typesafe-sdk==0.7.4` text-question subset exercised | [Supported API subset](../compat/README.md) |
+
+Probabilities are **not calibrated accuracy**. Label agreement alone is not
+numerical certification. A separate clean-host installation, image rollback
+exercise and 24/72-hour soak are not complete. See [development status](development/STATUS.md)
+for commands, scope, failures and remaining release gates.
 
 ## Verified sources
 
@@ -32,23 +72,22 @@ JevServe's `calibration_id` remains null.
 Author bounds are Choice 1–255, Score 2–10, 4096 tokens per candidate. Native
 contracts deliberately separate structural validation from these model limits.
 The native protocol restricts instructions/descriptions to text, rejects empty
-state and unknown fields, and accepts at most 16 questions. Compatibility with an
-official SDK remains untested; native schemas do not claim full System One parity.
+state and unknown fields, and accepts at most 16 questions. The tested official SDK subset is documented in [API compatibility](../compat/README.md);
+native schemas do not claim full System One parity.
 
-## Candidate engine, not a tested runtime
+## Pinned runtime and reference environment
 
-`compat/engine-lock.json` records the actual registry linux/amd64 manifest digest,
-upstream commit and declared versions. The container has not been started, so
-observed runtime versions and a certified minimum driver remain unknown.
-CUDA's [minor compatibility documentation](https://docs.nvidia.com/deploy/cuda-compatibility/minor-version-compatibility.html)
-lists driver branch 580 for CUDA 13.x, with feature/PTX limitations. That table
-alone does not certify this engine on any driver.
+`compat/engine-lock.json` records the pinned upstream linux/amd64 image digest,
+source commit and observed serving-package versions. The tested JevServe image
+adds the hash-pinned runtime dependencies and a non-root service account. Image
+and container evidence live in [the container report](../validation/reports/container-smoke.json).
+A certified minimum driver has not been established.
 
-The author's Transformers 5.10.2/PEFT 0.19.1 environment is isolated from the
-candidate vLLM environment (vLLM declares Transformers >=5.10.4 and Torch 2.13.0).
-Do not upgrade the author environment to resolve engine dependencies. The
-hash-pinned reference requirements are in `compat/reference-requirements.txt`.
-See STATUS for whether installation and execution have actually passed.
+The author's Transformers 5.10.2/PEFT 0.19.1 environment remains isolated from
+the vLLM serving environment. Do not upgrade the author environment to resolve
+engine dependencies. Hash-pinned reference requirements are in
+`compat/reference-requirements.txt`; serving requirements are in
+`compat/runtime-requirements.txt`.
 
 ## Reproduce the baseline
 
@@ -99,5 +138,5 @@ before offline loading. Observed Torch is 2.12.0+cu130; the ordinary author Torc
 path ran without optional FLA/causal-conv1d kernels or prefix cache. Backbone/LoRA
 parameters include BF16/FP32 and the scalar head is FP32. The saved temperature
 was preserved. Replaying these logits through the native adapter matches the
-author's probabilities and answer mapping. This does not certify vLLM or either
-container deployment path; those gates remain pending.
+author's probabilities and answer mapping. The separately recorded Docker/Compose smoke checks now pass, but the failed
+vLLM probability comparison still blocks numerical certification.

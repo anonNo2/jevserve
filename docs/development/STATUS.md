@@ -8,7 +8,10 @@ preparation, Dockerfile and Compose framework are implemented. This is **not an
 alpha release or certified model**: frozen numerical parity still fails. A real
 development image now builds and serves all three question types with no network
 and a read-only root filesystem. Cold startup and Compose real inference also
-pass. The shared daemon is unchanged. No image/package is published.
+pass. The shared daemon is unchanged. Source is now public on
+[GitHub](https://github.com/anonNo2/jevserve), and its first remote CPU CI run passed.
+The tested development image is public as `anonwx/jevserve:0.1.0-dev0`; anonymous
+manifest access, digest pull and offline CLI checks passed. No Python package is published.
 
 ## Task tracking
 
@@ -21,11 +24,11 @@ pass. The shared daemon is unchanged. No image/package is published.
 | T04 Runtime | Real GPU/HTTP inference works | Resolve 38/113 latest pretokenized and 36/110 HTTP parity failures |
 | T05 API/lifecycle | Native and SDK subset implemented | Broader release/fault/soak coverage remains |
 | T06 CLI/SDK | CLI/SDK and one-command cold container quickstart passed | Separate clean-host installation not run |
-| T07 Docker | Image build, cold online and offline GPU inference passed | Docker Hub namespace/login pending; numerical certification failed |
+| T07 Docker | Image build, cold online and offline GPU inference passed | Docker Hub development preview published and verified; numerical certification failed |
 | T08 Compose/offline/rollback | Compose real GPU and container offline inference passed | Image-version rollback drill not run |
 | T09 Second model | Optional, not started | No substitute model used |
 | T10 Observability/benchmark | Metrics and short sequential benchmark measured | Capacity study and 24/72-hour soak not run |
-| T11 CI/release | CPU workflow written; local checks pass | Remote CI unrun; image promotion/release absent |
+| T11 CI/release | CPU workflow written; local checks pass | Remote CPU CI passed; certified image promotion/release absent |
 | T12 Open-source acceptance | Incomplete | Parity, rollback, clean-host and soak acceptance |
 
 ## Session evidence — 2026-10-12
@@ -401,7 +404,7 @@ logs remain private; the failed probe container and intermediate candidate tag
 were removed by exact project names. Review was local/manual; independent agent
 review was not allowed by the active session instructions.
 
-**Exact next publication action:** obtain the user's Docker Hub namespace and
+**Publication handoff at the end of that session (superseded below):** obtain the user's Docker Hub namespace and
 local registry login, tag this already-tested image as that repository's
 `0.1.0-dev0`, push, verify its remote digest, then update both README files with
 the real pull command. Publication is already authorized by the user's request;
@@ -417,3 +420,59 @@ identity and all model/runtime bytes remain unchanged. The cold-start report
 records the preceding runtime-identical image ID; the final metadata-refreshed
 image was rechecked with the downloaded cache. Release validation still exits 1
 with `baseline is not certified`, as required by failed numerical parity.
+
+
+## Public development preview — 2026-10-12
+
+The user authorized publication to their existing GitHub repository and logged
+in to Docker Hub. The verified Docker identity is `anonwx`; GitHub SSH identity
+is `anonNo2`. No credentials are in Git or command arguments.
+
+- Source: https://github.com/anonNo2/jevserve, branch `main`. The initial push of
+  `837204a686e74b88c37e2e98598679a2d965b957` was verified through the public GitHub
+  API. Its [remote CPU CI run](https://github.com/anonNo2/jevserve/actions/runs/38246635531)
+  completed successfully (environment installation, CPU checks and packaging).
+- Docker Hub: https://hub.docker.com/r/anonwx/jevserve, tag `0.1.0-dev0`, Linux amd64.
+  Registry index digest: `sha256:f27c15c1da40d0c02139672a426d41d5370e6ea061d209b1d3fc5aef53b73396`.
+  This is the already-tested image from source commit `837204a`; publishing only
+  added a registry tag. Runtime/model bytes were not rebuilt or changed.
+- `docker push` exited 0. Docker Hub's anonymous tag API reported `active` and the
+  same digest. An empty project-local Docker client configuration successfully
+  inspected the manifest and pulled by digest. Existing local layers were reused;
+  this does not constitute clean-host installation. A network-disabled, read-only
+  container using the published digest listed the pinned Open-Jev-2B model and
+  `uncertified_development` status, exit 0. The additional `unknown/unknown` index
+  entry is build attestation, not a second supported CPU architecture.
+- Both README files now link [supported models and tests](../models.md), with
+  real Docker Hub, helper and Compose startup commands. The model matrix records
+  only Open-Jev-2B as implemented/tested and links successful and failed evidence.
+- Local review: `git diff --check`, documentation local-link checks, helper
+  `bash -n`, published-image `docker compose config`, 134 CPU tests, Ruff, mypy
+  (28 source files), and wheel/sdist build all passed. Existing Git history was
+  checked for tracked credentials, weights and private host paths before push.
+  Independent agent review was not permitted in this session.
+
+Publication/reproduction commands (this host uses the project-local daemon
+prefix documented above; an ordinary configured Docker host needs no prefix):
+
+```bash
+docker tag jevserve:0.1.0-dev0 anonwx/jevserve:0.1.0-dev0
+docker push anonwx/jevserve:0.1.0-dev0
+docker manifest inspect anonwx/jevserve:0.1.0-dev0
+docker pull anonwx/jevserve@sha256:f27c15c1da40d0c02139672a426d41d5370e6ea061d209b1d3fc5aef53b73396
+docker run --rm --network none --read-only \
+  anonwx/jevserve@sha256:f27c15c1da40d0c02139672a426d41d5370e6ea061d209b1d3fc5aef53b73396 models list
+git push -u origin main
+```
+
+The initial source push and remote CI are complete; these documentation/report
+updates are the publication follow-up commit. No `latest`/stable tag or alpha
+certification is claimed. Numerical parity, clean-host installation, image-version
+rollback and 24/72-hour soak gates remain incomplete. GPU tests were not rerun
+for this documentation-only publication: the registry digest exactly matches
+the previously tested image in `validation/reports/container-smoke.json`.
+
+**Exact next engineering action:** reproduce and investigate the frozen
+Open-Jev-2B probability failures using the reference, pooling and HTTP reports;
+keep the existing tolerances and pinned weights. Do not promote this image to
+alpha/certified status until those failures and remaining release gates are resolved.

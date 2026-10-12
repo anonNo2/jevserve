@@ -4,7 +4,7 @@
 
 <p align="center"><strong>Turn text into decisions.</strong></p>
 <p align="center">Self-hosted decision models. One GPU. One HTTP API.</p>
-<p align="center"><a href="README.zh-CN.md">简体中文</a> · <a href="#quick-start">Quick Start</a> · <a href="docs/quickstart.md">Deployment guide</a> · <a href="compat/README.md">API compatibility</a></p>
+<p align="center"><a href="README.zh-CN.md">简体中文</a> · <a href="#quick-start">Quick Start</a> · <a href="docs/quickstart.md">Deployment guide</a> · <a href="docs/models.md">Supported models & tests</a> · <a href="compat/README.md">API compatibility</a></p>
 
 JevServe runs open Jev-style decision models on your NVIDIA GPU. Send text and a question; get a typed answer with probabilities. Use it to route support tickets, flag urgent messages, or score content against a rubric.
 
@@ -22,15 +22,27 @@ Built on **vLLM**, with a Python client, bounded request queues, cancellation, h
 
 You need **Linux x86_64, an NVIDIA GPU, Docker, and NVIDIA Container Toolkit**. The host does not need Python or CUDA Toolkit. Tested host: RTX A6000. See [deployment requirements](docs/quickstart.md#requirements).
 
-From a checkout of this repository:
+Run the [Docker Hub image](https://hub.docker.com/r/anonwx/jevserve) without a local build:
 
 ```bash
-./scripts/quickstart.sh --build
+docker run -d --name jevserve --gpus device=0 --shm-size=1g \
+  -p 127.0.0.1:8000:8000 \
+  --mount type=volume,source=jevserve-cache,target=/cache \
+  anonwx/jevserve:0.1.0-dev0
+docker exec jevserve jevserve check --wait-seconds 1800
 ```
 
-This builds the development image, starts JevServe on `127.0.0.1:8000`, waits for the model to load, and runs a real request covering all three question types. The service stays running. The first start downloads the pinned model; subsequent starts reuse the `jevserve-cache` volume.
+First startup downloads and verifies approximately 4.6 GB of pinned model files, then compiles the runtime cache; allow several minutes. Later starts reuse the `jevserve-cache` volume. Once ready, the API listens at `127.0.0.1:8000`.
 
-**Docker Hub publication is being prepared.** Until a tested image is published, the command above builds locally; there is no claimed public pull tag.
+Or use the bundled startup helper:
+
+```bash
+git clone https://github.com/anonNo2/jevserve.git
+cd jevserve
+./scripts/quickstart.sh --image anonwx/jevserve:0.1.0-dev0
+```
+
+The helper starts the service, waits for readiness, and sends a real request covering all three question types. Developers can use `--build` to build from source. [Supported models, test environment and evidence →](docs/models.md)
 
 ### Make a decision
 
@@ -56,8 +68,10 @@ Read `answers.team.choice` for the selected team and `answers.team.probabilities
 
 ### Docker Compose
 
+From the repository checkout:
+
 ```bash
-docker compose up --build -d
+JEVSERVE_IMAGE=anonwx/jevserve:0.1.0-dev0 docker compose up --pull always --no-build -d
 docker compose exec jevserve jevserve check --wait-seconds 1800
 ```
 

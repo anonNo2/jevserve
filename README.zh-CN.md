@@ -4,7 +4,7 @@
 
 <p align="center"><strong>文本进来，决策出来。</strong></p>
 <p align="center">在自己的 GPU 上运行决策模型，通过一个 HTTP API 调用。</p>
-<p align="center"><a href="README.md">English</a> · <a href="#快速开始">快速开始</a> · <a href="docs/quickstart.md">部署指南</a> · <a href="compat/README.md">API 兼容范围</a></p>
+<p align="center"><a href="README.md">English</a> · <a href="#快速开始">快速开始</a> · <a href="docs/quickstart.md">部署指南</a> · <a href="docs/models.md">支持模型与测试结果</a> · <a href="compat/README.md">API 兼容范围</a></p>
 
 JevServe 将开源 Jev 类决策模型封装成 HTTP 服务。发送文本和问题，获得带概率的类型化答案。你可以用它分派客服工单、识别紧急消息，或按规则给内容评等级。
 
@@ -22,15 +22,27 @@ JevServe 将开源 Jev 类决策模型封装成 HTTP 服务。发送文本和问
 
 需要 **Linux x86_64、NVIDIA GPU、Docker 和 NVIDIA Container Toolkit**。宿主机不需要安装 Python 或 CUDA Toolkit。已测试的主机使用 RTX A6000，详见[运行要求](docs/quickstart.md#requirements)。
 
-下载本仓库源码后，在仓库目录执行：
+直接运行 [Docker Hub 镜像](https://hub.docker.com/r/anonwx/jevserve)，无需本地构建：
 
 ```bash
-./scripts/quickstart.sh --build
+docker run -d --name jevserve --gpus device=0 --shm-size=1g \
+  -p 127.0.0.1:8000:8000 \
+  --mount type=volume,source=jevserve-cache,target=/cache \
+  anonwx/jevserve:0.1.0-dev0
+docker exec jevserve jevserve check --wait-seconds 1800
 ```
 
-脚本会构建开发镜像，在 `127.0.0.1:8000` 启动服务，等待模型就绪，然后执行包含三种问题类型的真实请求。成功后服务继续运行。首次启动下载固定版本的模型，后续复用 `jevserve-cache` 卷。
+首次启动会下载并校验约 4.6 GB 的固定版本模型文件，再编译运行缓存，可能需要数分钟。后续启动复用 `jevserve-cache` 卷。服务就绪后，在 `127.0.0.1:8000` 接收请求。
 
-**Docker Hub 发布正在准备中。** 在实测镜像发布之前，上述命令使用本地构建；目前不提供未经发布验证的拉取地址。
+也可以使用封装好的启动脚本：
+
+```bash
+git clone https://github.com/anonNo2/jevserve.git
+cd jevserve
+./scripts/quickstart.sh --image anonwx/jevserve:0.1.0-dev0
+```
+
+脚本自动启动服务、等待就绪，并发送三种问题类型的真实请求。开发者可用 `--build` 从源码构建。[支持模型、测试环境与验证报告 →](docs/models.md)
 
 ### 发起一个决策请求
 
@@ -56,8 +68,10 @@ curl -fsS http://127.0.0.1:8000/v1/decisions \
 
 ### 使用 Docker Compose
 
+在仓库目录中执行：
+
 ```bash
-docker compose up --build -d
+JEVSERVE_IMAGE=anonwx/jevserve:0.1.0-dev0 docker compose up --pull always --no-build -d
 docker compose exec jevserve jevserve check --wait-seconds 1800
 ```
 

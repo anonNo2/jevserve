@@ -1,6 +1,6 @@
 # Codex 开发交接
 
-实施已于 2026-10-12 开始，真实 Open-Jev-2B 的 CLI/HTTP/vLLM 开发闭环已运行；Docker/Compose 真实推理与首次下载已验证；数值对齐仍失败，尚非 alpha。Docker Hub 发布已获用户授权，等待目标账号/组织及本机登录。下方初始化记录属于历史基线；当前完成项、阻塞项和下一步以 [STATUS.md](STATUS.md) 为准。CPU 开发命令见 [IMPLEMENTATION.md](IMPLEMENTATION.md)。
+实施已于 2026-10-12 开始，真实 Open-Jev-2B 的 CLI/HTTP/vLLM 开发闭环已运行；Docker/Compose 真实推理与首次下载已验证；数值对齐仍失败，尚非 alpha。开发预览镜像 `anonwx/jevserve:0.1.0-dev0` 已公开发布并验证匿名拉取；源码已推送至 https://github.com/anonNo2/jevserve，首次远程 CPU CI 通过。支持模型及测试结果见 [models.md](../models.md)。下方初始化记录属于历史基线；当前完成项、阻塞项和下一步以 [STATUS.md](STATUS.md) 为准。CPU 开发命令见 [IMPLEMENTATION.md](IMPLEMENTATION.md)。
 
 ## 用户目标
 

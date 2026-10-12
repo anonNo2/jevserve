@@ -7,9 +7,12 @@
     "architecture": "amd64",
     "python": "3.12.3",
     "user": "10001:10001",
-    "published": false,
+    "published": true,
     "version_tag": "jevserve:0.1.0-dev0",
-    "evidence_refresh": "Metadata-only rebuild records completed container gates; source identity, runtime code and dependencies are unchanged."
+    "evidence_refresh": "Metadata-only rebuild records completed container gates; source identity, runtime code and dependencies are unchanged.",
+    "published_tag": "anonwx/jevserve:0.1.0-dev0",
+    "registry_digest": "sha256:f27c15c1da40d0c02139672a426d41d5370e6ea061d209b1d3fc5aef53b73396",
+    "source_commit": "837204a686e74b88c37e2e98598679a2d965b957"
   },
   "environment": {
     "gpu": "NVIDIA RTX A6000",
@@ -105,14 +108,20 @@
     },
     "quickstart_existing_container": "expected exit 1; existing container preserved",
     "readme_curl": "passed: real Choice response",
-    "readme_python": "passed: real Noul response"
+    "readme_python": "passed: real Noul response",
+    "registry_publication": {
+      "result": "passed",
+      "anonymous_manifest": "passed",
+      "anonymous_digest_pull": "passed; existing local layers reused, not a clean-host download",
+      "published_digest_cli": "passed: models list, network disabled, read-only root",
+      "registry_platform": "linux/amd64; additional unknown/unknown manifest is build attestation"
+    }
   },
   "not_claimed": [
     "numerical certification",
     "alpha release",
     "24/72-hour soak",
     "clean-host installation",
-    "Docker Hub publication",
     "image version rollback drill"
   ]
 }
