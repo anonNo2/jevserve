@@ -80,7 +80,8 @@ rollback drill.
 ## Artifact preparation
 
 `prepare_model(manifest, cache_dir, offline=False)` uses an explicit immutable
-`ModelManifest`. Only the pinned Open-Jev-2B development target is accepted; unknown IDs fail. Each
+`ModelManifest`. Only pinned catalog entries are accepted; `jevserve models list` shows their
+IDs, revisions, adapters and licenses. Unknown IDs fail. Each
 file binds its local path, immutable source revision, byte length and SHA-256.
 The preparation identity hashes the full manifest, including base-model sources.
 

@@ -90,3 +90,43 @@ Add material changes with evidence, compatibility consequences and affected task
   create `/.cache`. Add the UID 10001 account with `/cache` as its home and route
   FlashInfer/XDG/CUDA caches explicitly into that volume. Retain non-root
   execution and Compose's read-only root filesystem; do not broaden permissions.
+
+- **D024 — Expand to one model-independent runtime image with mounted weights.**
+  User explicitly requested more Jev checkpoints (including JEV-27B-VL, Xor 1.2
+  and JPT-9B) tested on the current 48 GiB host. The same image must select a
+  pinned adapter/model at startup and accept an external read-only weight mount.
+  One model/engine per container remains; model-specific images are not the design.
+  Existing automatic preparation remains optional. Each model needs its own
+  prompt/readout/calibration semantics, license and evidence. Larger BF16 models
+  need an explicitly configured and separately tested offload/quantized profile;
+  no automatic precision reduction or fallback. Text and vision evidence must
+  be reported separately; the historical single-model alpha scope is superseded.
+
+- **D025 — Use a named reference backend for NeoHorse's pointer head.** Its
+  published merged backbone and pointer readout are not ordinary causal-LM
+  generation. Integrate the native BF16-backbone/FP32-head Torch path as an
+  explicit model profile in the same image, not as fallback from a failed vLLM
+  call. One spawned GPU worker serializes inference; cancellation of active
+  Torch work terminates that worker and makes the service unhealthy, requiring
+  explicit restart. It never leaves an abandoned GPU thread or retries a request.
+  vLLM remains the engine for Open-Jev and JPT. Benchmark/certification claims
+  must identify the selected backend and the native-reference evidence.
+
+- **D026 — Read all JPT candidates through an explicit vocabulary mask.** The
+  first real 255-option request exposed vLLM 0.29's hard 128-entry
+  `logprob_token_ids` limit, despite the model/tokenizer supporting 255 labels.
+  Mask only non-candidate tokens, set `logprobs=N`, `top_k=-1`, `top_p=1` and
+  sampling temperature 1, and read all N finite processed logprobs. Conditioning
+  subtracts a shared log-normalizer, so the adapter's checkpoint-temperature
+  softmax preserves the candidate distribution. Missing candidates fail closed.
+  This is one forward pass, with no truncation, extra inference pass or retry.
+  The initial 255-option failure and subsequent parity check are separate gates.
+
+- **D027 — Keep Kev's evaluated FP32 profile explicit.** The pinned `head.pt`
+  records FP32 training weights, full LoRA placement, no option isolation and no
+  trained special-token embeddings. Load the pinned base in FP32, merge the
+  adapter in FP32 and use its exact stored temperature
+  `2.406050072164233`. Do not replace it with the rounded model-card value or
+  silently select BF16 to save VRAM. The shared image pins the same Torch,
+  Transformers, PEFT and safetensors versions for the pointer worker. NeoHorse
+  separately retains its author's merged BF16-backbone/FP32-head loading path.

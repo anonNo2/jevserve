@@ -9,11 +9,14 @@ port=8000
 gpu=0
 build=false
 cdi=false
+model="${JEVSERVE_MODEL:-ZefanCai/Open-Jev-2B}"
+model_dir=""
+gpu_memory=0.5
 while (($#)); do
   case "$1" in
     --build) build=true; shift ;;
     --cdi) cdi=true; shift ;;
-    --image|--name|--volume|--port|--gpu)
+    --image|--name|--volume|--port|--gpu|--model|--model-dir|--gpu-memory-utilization)
       if (($# < 2)); then echo "Missing value for $1" >&2; exit 2; fi
       option="$1"; value="$2"; shift 2
       case "$option" in
@@ -22,15 +25,21 @@ while (($#)); do
         --volume) volume="$value" ;;
         --port) port="$value" ;;
         --gpu) gpu="$value" ;;
+        --model) model="$value" ;;
+        --model-dir) model_dir="$value" ;;
+        --gpu-memory-utilization) gpu_memory="$value" ;;
       esac ;;
     -h|--help)
       cat <<'HELP'
 Usage: scripts/quickstart.sh [--build] [--image REPOSITORY:TAG]
        [--name NAME] [--volume NAME] [--port PORT] [--gpu INDEX] [--cdi]
+       [--model MODEL_ID] [--model-dir PINNED_WEIGHT_DIRECTORY]
+       [--gpu-memory-utilization FRACTION]
 
 Build or use an image, start one GPU container, wait for readiness, then run
 one real Choice/Noul/Score request. The service stays running on success.
 Use --cdi on a Docker host configured for native NVIDIA CDI (e.g. rootless).
+--model-dir mounts verified weights read-only and disables model downloads.
 Existing containers/volumes are never deleted or replaced by this script.
 HELP
       exit 0 ;;
@@ -42,6 +51,16 @@ done
 [[ "$port" =~ ^[0-9]{1,5}$ ]] && ((10#$port >= 1 && 10#$port <= 65535)) || { echo 'Invalid port' >&2; exit 2; }
 [[ "$gpu" =~ ^[0-9]+$ ]] || { echo 'GPU must be a numeric device index' >&2; exit 2; }
 [[ -n "$image" && "$image" != -* && "$image" != *[[:space:]]* ]] || { echo 'Invalid image reference' >&2; exit 2; }
+[[ "$model" =~ ^[a-zA-Z0-9_-]+/[a-zA-Z0-9_.-]+$ ]] || { echo 'Invalid model ID' >&2; exit 2; }
+[[ "$gpu_memory" =~ ^0\.[0-9]+$ ]] || { echo 'GPU memory utilization must be a fraction such as 0.5' >&2; exit 2; }
+mount_args=()
+serve_args=(serve --allow-uncertified --model "$model" --gpu-memory-utilization "$gpu_memory")
+if [[ -n "$model_dir" ]]; then
+  [[ -d "$model_dir" && "$model_dir" != *,* ]] || { echo 'Model directory must exist and contain no comma' >&2; exit 2; }
+  model_dir="$(cd -- "$model_dir" && pwd -P)"
+  mount_args=(--mount "type=bind,source=$model_dir,target=/model,readonly")
+  serve_args+=(--model-dir /model --offline)
+fi
 if docker container inspect "$name" >/dev/null 2>&1; then
   echo "Container $name already exists; inspect it or choose --name. Nothing was changed." >&2
   exit 1
@@ -62,7 +81,7 @@ if $cdi; then gpu_args=(--device "nvidia.com/gpu=$gpu"); fi
 echo 'Starting JevServe development preview. Model numerical certification is incomplete.'
 docker run --detach --name "$name" "${gpu_args[@]}" --shm-size=1g \
   --publish "127.0.0.1:$port:8000" --mount "type=volume,source=$volume,target=/cache" \
-  "$image"
+  "${mount_args[@]}" "$image" "${serve_args[@]}"
 echo "Preparing the model and warming the GPU. Progress: docker logs -f $name"
 if ! docker exec "$name" jevserve check --wait-seconds 1800; then
   echo "Startup check failed. Inspect: docker logs $name" >&2

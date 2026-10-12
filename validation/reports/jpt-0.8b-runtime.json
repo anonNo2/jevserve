@@ -1,0 +1,8 @@
+{
+  "model_id": "kirp/jpt-0.8b",
+  "container_image": "sha256:c936fac767a0070fb6b70a13ecff2a53c97568c934ac4751913eeac918c536fe",
+  "gpu_memory_mib_after_tests": 24688,
+  "weight_mount": "read-only",
+  "root_filesystem": "read-only",
+  "offline_model_load": true
+}

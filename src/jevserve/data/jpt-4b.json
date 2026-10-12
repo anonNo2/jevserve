@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "model_id": "kirp/jpt-4b",
+  "revision": "78312f855b8bebf83ae7e9e8f05b5a0f73f519a9",
+  "adapter": "jpt",
+  "license": "cc-by-nc-4.0",
+  "temperature": 1.036,
+  "dtype": "bfloat16",
+  "max_choice_candidates": 255,
+  "max_score_levels": 255,
+  "upstream_code": {
+    "url": "https://github.com/tic-top/llm2jev",
+    "revision": "2b252d504972764211ef172c1155ac0fedc9c3de",
+    "license": "MIT"
+  },
+  "files": [
+    {
+      "path": ".gitattributes",
+      "size": 1840,
+      "sha256": "29b893f1199e669fbb2ce5a41cfdd09ba383b9cecc9f03d238b39fee9b6fbad8"
+    },
+    {
+      "path": "README.md",
+      "size": 14851,
+      "sha256": "e972957acb77d0fc97388ea6f87f5789052377499dd963cde00344ad60ef7744"
+    },
+    {
+      "path": "assets/2048.gif",
+      "size": 132483,
+      "sha256": "195f8aafb9dd13689104972ae215f742b5587572087211309eee66b02cfea6d9"
+    },
+    {
+      "path": "assets/decision_index.png",
+      "size": 57603,
+      "sha256": "2f4b666099f53739e42f7dfc23f68869c42f8d23b429d55d74c04e5ec7ac1394"
+    },
+    {
+      "path": "assets/di_areas.png",
+      "size": 48080,
+      "sha256": "ed800a16d813bc8a746abd679579afc43e834847f77352caa0d61d57b0376779"
+    },
+    {
+      "path": "assets/jevbench.png",
+      "size": 100289,
+      "sha256": "ef00e19dfc1e2cfdaf4e7eb5c2e74ebbd69c54c5e39e5f86dc0d0e721a019112"
+    },
+    {
+      "path": "assets/snake.gif",
+      "size": 130467,
+      "sha256": "757ae7733ba359cc2c7a9531ea7c7b768494a27102a005d63e08054ddc63b7bc"
+    },
+    {
+      "path": "assets/tetris.gif",
+      "size": 157729,
+      "sha256": "101f15f1a56abbc157227327b21e72b9320d67b739d3641f421d792468044168"
+    },
+    {
+      "path": "assets/vs_base.png",
+      "size": 105257,
+      "sha256": "bd1086357127ab21128bbfccd9f274e01108589e73dc31bb45aa327d1610516e"
+    },
+    {
+      "path": "chat_template.jinja",
+      "size": 7756,
+      "sha256": "a4aee8afcf2e0711942cf848899be66016f8d14a889ff9ede07bca099c28f715"
+    },
+    {
+      "path": "config.json",
+      "size": 2854,
+      "sha256": "18d14bc3e1105d9b4b164a4df4126cbc2e944d7170d030965e250f5fa44495cc"
+    },
+    {
+      "path": "generation_config.json",
+      "size": 138,
+      "sha256": "cb62c424e4c9d9d5ad55b7dde9d4a9507f60f5fc6e041a26f7d191c01f8f6b72"
+    },
+    {
+      "path": "merges.txt",
+      "size": 3353259,
+      "sha256": "a9d356d7bdf1ef4949e3e748e95b8e10ad9d4e2e838eddc38a0a7b6b94d1db8d"
+    },
+    {
+      "path": "model-00001-of-00002.safetensors",
+      "size": 4972951784,
+      "sha256": "b42e49c0bf9fd7b6e0475bef1064768956fe38175b2d8c7c5cb4e7eac334e51c"
+    },
+    {
+      "path": "model-00002-of-00002.safetensors",
+      "size": 4105675712,
+      "sha256": "1385147494a6aa7d955efbe604a4b2d537bb5f746a80716d92064e821005e269"
+    },
+    {
+      "path": "model.safetensors.index.json",
+      "size": 66236,
+      "sha256": "9e1d1739a973a264202eba2bb47c1ddfcd4b07fbaf0549baa0700a5e3c0e6109"
+    },
+    {
+      "path": "preprocessor_config.json",
+      "size": 390,
+      "sha256": "27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516"
+    },
+    {
+      "path": "processor_config.json",
+      "size": 1220,
+      "sha256": "bfbc24af59a3e73a9cd0653b8d4ae758dfaec4e3e6c15dfb1c6c8ee8d5683c85"
+    },
+    {
+      "path": "tokenizer.json",
+      "size": 19989325,
+      "sha256": "06b9509352d2af50381ab2247e083b80d32d5c0aba91c272ca9ff729b6a0e523"
+    },
+    {
+      "path": "tokenizer_config.json",
+      "size": 1165,
+      "sha256": "792fa3f0cb88b111e54ef3134c873531008c4df471d108da17903426e308aa7b"
+    },
+    {
+      "path": "video_preprocessor_config.json",
+      "size": 385,
+      "sha256": "7768af27c1fafa9cc9011c1dc20067e03f8915e03b63504550e11d5066986d13"
+    },
+    {
+      "path": "vocab.json",
+      "size": 6722759,
+      "sha256": "ce99b4cb2983d118806ce0a8b777a35b093e2000a503ebde25853284c9dfa003"
+    }
+  ]
+}

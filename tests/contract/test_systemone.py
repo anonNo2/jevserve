@@ -35,3 +35,20 @@ async def test_frozen_official_sdk_against_asgi_service():
         assert result.choices["team"].choice == "billing"
         assert result.nouls["urgent"].noul == 0.5
         assert result.scores["priority"].score == 0.5
+
+
+def test_pointer_score_confidence_preserves_author_distance_definition():
+    from jevserve.contracts.responses import ScoreAnswer
+    from jevserve.contracts.systemone import systemone_response
+
+    answer = ScoreAnswer(
+        type="score",
+        score=1.0,
+        legend={"0": "Low", "1": "Medium", "2": "High"},
+        probabilities={"0": 0.25, "1": 0.5, "2": 0.25},
+    )
+    response = systemone_response(
+        {"q": answer}, 10, model_id="jaredpalmer/kev-4b", pointer_confidence=True
+    )
+    assert response["model"] == "jaredpalmer/kev-4b"
+    assert response["answers"]["q"]["confidence"] == 0.75

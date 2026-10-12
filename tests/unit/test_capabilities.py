@@ -45,3 +45,33 @@ def test_token_budgets(lengths):
 
 def test_exact_budget_boundary():
     caps().validate_token_lengths([100, 50])
+
+
+def test_pointer_and_token_noul_counts_both_candidates():
+    from jevserve.contracts.capabilities import Capabilities
+    from jevserve.contracts.requests import DecisionRequest
+
+    caps = Capabilities(
+        question_types=["choice", "noul", "score"],
+        max_choice_candidates=255,
+        max_score_levels=255,
+        max_tokens_per_candidate=4096,
+        max_candidate_sequences=256,
+        max_total_input_tokens=8192,
+        noul_candidate_cost=2,
+    )
+    request = DecisionRequest.model_validate(
+        {
+            "state": "A question",
+            "questions": {
+                "choice": {
+                    "type": "choice",
+                    "instructions": "Choose",
+                    "criteria": {str(i): None for i in range(255)},
+                },
+                "noul": {"type": "noul", "instructions": "Is this true?"},
+            },
+        }
+    )
+    with pytest.raises(ValueError, match="candidate work budget"):
+        caps.validate_request(request)

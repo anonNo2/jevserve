@@ -12,8 +12,9 @@ from typing import Any
 
 import httpx
 
-from jevserve.artifacts.catalog import DEFAULT_MODEL, baseline, source_manifest
+from jevserve.artifacts.catalog import DEFAULT_MODEL, model_ids, profile, source_manifest
 from jevserve.artifacts.prepare import prepare_model
+from jevserve.artifacts.verify import load_model_directory
 from jevserve.client import Client
 
 
@@ -41,7 +42,12 @@ def parser() -> argparse.ArgumentParser:
     sub = root.add_subparsers(dest="command", required=True)
     for name in ("serve", "prepare"):
         command = sub.add_parser(name)
-        command.add_argument("--model", default=DEFAULT_MODEL)
+        command.add_argument("--model", default=os.environ.get("JEVSERVE_MODEL", DEFAULT_MODEL))
+        command.add_argument(
+            "--model-dir",
+            type=Path,
+            help="Read-only pinned weight directory; verify locally without downloads",
+        )
         command.add_argument(
             "--cache-dir",
             type=Path,
@@ -59,6 +65,12 @@ def parser() -> argparse.ArgumentParser:
             command.add_argument("--port", type=int, default=8000)
             command.add_argument("--api-key-file", type=Path)
             command.add_argument("--gpu-memory-utilization", type=float, default=0.5)
+            command.add_argument(
+                "--cpu-offload-gb",
+                type=float,
+                default=0,
+                help="Explicit CPU weight offload budget; never enabled automatically",
+            )
             command.add_argument("--max-active", type=int, default=16)
             command.add_argument("--max-waiting", type=int, default=64)
     models = sub.add_parser("models")
@@ -105,16 +117,18 @@ def wait_for_ready(http: httpx.Client, url: str, wait_seconds: int) -> None:
 
 def run(args: argparse.Namespace) -> None:
     if args.command == "models":
-        lock = baseline()
         print(
             json.dumps(
                 {
                     "models": [
                         {
-                            "id": lock["model_id"],
-                            "revision": lock["revision"],
+                            "id": model_id,
+                            "revision": profile(model_id)["revision"],
+                            "adapter": profile(model_id)["adapter"],
+                            "license": profile(model_id)["license"],
                             "status": "uncertified_development",
                         }
+                        for model_id in model_ids()
                     ]
                 },
                 indent=2,
@@ -156,11 +170,17 @@ def run(args: argparse.Namespace) -> None:
             raise ValueError(
                 "No certified profile yet; development serving requires --allow-uncertified"
             )
-        model = prepare_model(
-            source_manifest(args.model),
-            args.cache_dir / "sources",
-            offline=args.offline,
-            token_file=args.token_file,
+        selected = profile(args.model)
+        manifest = source_manifest(args.model)
+        model = (
+            load_model_directory(args.model_dir, manifest)
+            if args.model_dir
+            else prepare_model(
+                manifest,
+                args.cache_dir / "sources",
+                offline=args.offline,
+                token_file=args.token_file,
+            )
         )
         if args.command == "prepare":
             print(
@@ -179,6 +199,7 @@ def run(args: argparse.Namespace) -> None:
         from jevserve.adapters.open_jev import OpenJevAdapter
         from jevserve.config import ServerConfig
         from jevserve.contracts.capabilities import Capabilities
+        from jevserve.runtime.base import Runtime
         from jevserve.runtime.vllm_backend import VllmRuntime
         from jevserve.server.app import create_app
 
@@ -189,22 +210,91 @@ def run(args: argparse.Namespace) -> None:
             max_active=args.max_active,
             max_waiting=args.max_waiting,
         )
-        tokenizer = AutoTokenizer.from_pretrained(
-            model.path / "base", local_files_only=True, trust_remote_code=False
-        )
-        adapter = OpenJevAdapter(
-            tokenizer,
-            temperature=baseline()["temperature"],
-            capabilities=Capabilities(
-                question_types=["choice", "noul", "score"],
-                max_choice_candidates=255,
-                max_score_levels=10,
-                max_tokens_per_candidate=4096,
-                max_candidate_sequences=256,
-                max_total_input_tokens=65536,
-            ),
-        )
-        runtime = VllmRuntime(args.cache_dir, gpu_memory_utilization=args.gpu_memory_utilization)
+        adapter: Any
+        runtime: Runtime
+        if selected["adapter"] == "open_jev":
+            if args.cpu_offload_gb:
+                raise ValueError("CPU offload is not supported by the Open-Jev pooling profile")
+            tokenizer = AutoTokenizer.from_pretrained(
+                model.path / "base", local_files_only=True, trust_remote_code=False
+            )
+            adapter = OpenJevAdapter(
+                tokenizer,
+                temperature=selected["temperature"],
+                capabilities=Capabilities(
+                    question_types=["choice", "noul", "score"],
+                    max_choice_candidates=255,
+                    max_score_levels=10,
+                    max_tokens_per_candidate=4096,
+                    max_candidate_sequences=256,
+                    max_total_input_tokens=65536,
+                ),
+            )
+            runtime = VllmRuntime(
+                args.cache_dir, gpu_memory_utilization=args.gpu_memory_utilization
+            )
+            adapter_revision, execution_profile = "open-jev-v1", "qwen35-unmerged-v1"
+        elif selected["adapter"] == "jpt":
+            from jevserve.adapters.jpt import JptAdapter
+            from jevserve.runtime.token_backend import VllmTokenRuntime
+
+            tokenizer = AutoTokenizer.from_pretrained(
+                model.path, local_files_only=True, trust_remote_code=False
+            )
+            adapter = JptAdapter(
+                tokenizer,
+                temperature=selected["temperature"],
+                capabilities=Capabilities(
+                    question_types=["choice", "noul", "score"],
+                    min_choice_candidates=2,
+                    noul_candidate_cost=2,
+                    max_choice_candidates=255,
+                    max_score_levels=255,
+                    max_tokens_per_candidate=4095,
+                    max_candidate_sequences=256,
+                    max_total_input_tokens=65536,
+                ),
+            )
+            runtime = VllmTokenRuntime(
+                args.cache_dir,
+                gpu_memory_utilization=args.gpu_memory_utilization,
+                cpu_offload_gb=args.cpu_offload_gb,
+            )
+            adapter_revision, execution_profile = "jpt-llm2jev-2b252d5", "qwen35-token-bf16-v1"
+            if args.cpu_offload_gb:
+                execution_profile += f"-offload-{args.cpu_offload_gb:g}g"
+        elif selected["adapter"] in ("neohorse", "kev"):
+            from jevserve.adapters.neohorse import NeoHorseAdapter
+            from jevserve.runtime.torch_pointer import TorchPointerRuntime
+
+            if args.cpu_offload_gb:
+                raise ValueError("CPU offload is not supported by the pointer reference profile")
+            tokenizer = AutoTokenizer.from_pretrained(
+                model.path / ("tokenizer" if selected["adapter"] == "neohorse" else "base"),
+                local_files_only=True,
+                trust_remote_code=False,
+            )
+            adapter = NeoHorseAdapter(
+                tokenizer,
+                Capabilities(
+                    question_types=["choice", "noul", "score"],
+                    max_choice_candidates=255,
+                    max_score_levels=255,
+                    max_tokens_per_candidate=4096,
+                    max_candidate_sequences=256,
+                    max_total_input_tokens=8192,
+                    max_padded_input_tokens=8192,
+                    noul_candidate_cost=2,
+                ),
+                temperature=selected["temperature"],
+            )
+            runtime = TorchPointerRuntime(gpu_memory_utilization=args.gpu_memory_utilization)
+            adapter_revision = selected["adapter"] + "-pointer-v1"
+            execution_profile = "torch-pointer-" + (
+                "fp32-v1" if selected["adapter"] == "kev" else "bf16-v1"
+            )
+        else:
+            raise ValueError("model adapter is not implemented")
         engine_failed = False
 
         def fatal() -> None:
@@ -212,7 +302,17 @@ def run(args: argparse.Namespace) -> None:
             engine_failed = True
             server.should_exit = True
 
-        app = create_app(runtime, adapter, config, prepared_model=model, on_fatal=fatal)
+        app = create_app(
+            runtime,
+            adapter,
+            config,
+            prepared_model=model,
+            on_fatal=fatal,
+            adapter_revision=adapter_revision,
+            execution_profile=execution_profile,
+            token_readout=selected["adapter"] == "jpt",
+            pointer_readout=selected["adapter"] in ("neohorse", "kev"),
+        )
         server = uvicorn.Server(
             uvicorn.Config(
                 app,

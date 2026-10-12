@@ -10,6 +10,14 @@ class ArtifactCorrupt(ValueError):
     pass
 
 
+def load_model_directory(path: Path, manifest: ModelManifest) -> PreparedModel:
+    """Verify a mounted snapshot without writing to it or accessing the network."""
+    if (path / "READY").exists() or (path / "manifest.json").exists():
+        return verify_package(path, manifest)
+    verify_files(path, manifest)
+    return PreparedModel(path=path, manifest=manifest)
+
+
 def verify_files(path: Path, manifest: ModelManifest) -> None:
     if path.is_symlink() or not path.is_dir():
         raise ArtifactCorrupt("invalid package directory")

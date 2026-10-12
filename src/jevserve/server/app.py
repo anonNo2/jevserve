@@ -78,7 +78,13 @@ def create_app(
     *,
     prepared_model: PreparedModel | None = None,
     on_fatal: Callable[[], None] | None = None,
+    adapter_revision: str = "open-jev-v1",
+    execution_profile: str = "qwen35-unmerged-v1",
+    token_readout: bool = False,
+    pointer_readout: bool = False,
 ) -> FastAPI:
+    model_id = prepared_model.manifest.model_id if prepared_model else DEFAULT_MODEL
+    model_revision = prepared_model.manifest.revision if prepared_model else baseline()["revision"]
     admission = Admission(config.max_active, config.max_waiting)
     body_admission = Admission(config.max_active + config.max_waiting, 0)
     registry = CollectorRegistry()
@@ -179,13 +185,12 @@ def create_app(
     async def models(request: Request) -> Response:
         if not authorized(request):
             return error(ErrorCode.UNAUTHORIZED, request.state.request_id)
-        lock = baseline()
         return JSONResponse(
             {
                 "models": [
                     {
-                        "id": lock["model_id"],
-                        "revision": lock["revision"],
+                        "id": model_id,
+                        "revision": model_revision,
                         "capabilities": adapter.capabilities().model_dump(),
                     }
                 ]
@@ -245,7 +250,7 @@ def create_app(
                 )
             except (ValueError, RecursionError):
                 return error(ErrorCode.INVALID_REQUEST, request_id)
-        if isinstance(parsed, SystemOneRequest) and parsed.model != DEFAULT_MODEL:
+        if isinstance(parsed, SystemOneRequest) and parsed.model != model_id:
             return error(ErrorCode.UNSUPPORTED_CAPABILITY, request_id)
         if parsed.deadline_ms is not None:
             if parsed.deadline_ms > config.max_deadline_ms:
@@ -287,14 +292,21 @@ def create_app(
             response = DecisionResponse(
                 answers=answers,
                 request_id=request_id,
-                model_revision=baseline()["revision"],
-                adapter_revision="open-jev-v1",
-                execution_profile="qwen35-unmerged-v1",
+                model_revision=model_revision,
+                adapter_revision=adapter_revision,
+                execution_profile=execution_profile,
                 probability_kind="candidate_softmax",
             )
             if isinstance(parsed, SystemOneRequest):
                 return JSONResponse(
-                    systemone_response(answers, encoded.input_tokens),
+                    systemone_response(
+                        answers,
+                        encoded.input_tokens,
+                        model_id=model_id,
+                        output_tokens=len(encoded.engine_inputs) if token_readout else 0,
+                        entropy_confidence=token_readout,
+                        pointer_confidence=pointer_readout,
+                    ),
                     headers={
                         "x-model-revision": response.model_revision,
                         "x-execution-profile": response.execution_profile,

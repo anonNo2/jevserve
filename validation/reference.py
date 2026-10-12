@@ -123,13 +123,19 @@ def main():
     parser = argparse.ArgumentParser(__doc__)
     for name in ("upstream", "checkpoint", "base", "cache", "output"):
         parser.add_argument("--" + name, type=Path, required=True)
+    parser.add_argument("--model", default="ZefanCai/Open-Jev-2B")
     args = parser.parse_args()
-    lock = json.loads((ROOT / "models/locks/open-jev-2b.json").read_text())
+    from jevserve.artifacts.catalog import profile
+
+    lock = profile(args.model)
+    reference_revision = json.loads((ROOT / "models/locks/open-jev-2b.json").read_text())[
+        "reference_revision"
+    ]
     revision = subprocess.check_output(
         ["git", "-C", str(args.upstream), "rev-parse", "HEAD"], text=True
     ).strip()
     if (
-        revision != lock["reference_revision"]
+        revision != reference_revision
         or subprocess.check_output(
             ["git", "-C", str(args.upstream), "status", "--porcelain", "--untracked-files=no"],
             text=True,

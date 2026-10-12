@@ -2,7 +2,7 @@
 
 ## Current milestone
 
-A usable **development prototype** now loads real Open-Jev-2B through vLLM and
+A usable **development prototype** now loads pinned Jev-style models and
 serves Choice/Noul/Score over HTTP. CLI, native SDK, bounded lifecycle, artifact
 preparation, Dockerfile and Compose framework are implemented. This is **not an
 alpha release or certified model**: frozen numerical parity still fails. A real
@@ -18,7 +18,7 @@ manifest access, digest pull and offline CLI checks passed. No Python package is
 | Task | Status | Remaining evidence |
 |---|---|---|
 | T00 Baseline | Author reference complete; engine measured | GPU parity failed; isolated Docker CPU/GPU baseline passed |
-| T01 Contracts | CPU complete | 134 CPU tests across current implementation |
+| T01 Contracts | CPU complete | 168 CPU tests across current implementation |
 | T02 Artifacts | Cold online preparation and real container offline inference passed | Broader release/fault matrix remains |
 | T03 Adapter | Encoding/readout and fixed FP32 LoRA implemented | Numerical alignment still fails; not certified |
 | T04 Runtime | Real GPU/HTTP inference works | Resolve 38/113 latest pretokenized and 36/110 HTTP parity failures |
@@ -26,7 +26,7 @@ manifest access, digest pull and offline CLI checks passed. No Python package is
 | T06 CLI/SDK | CLI/SDK and one-command cold container quickstart passed | Separate clean-host installation not run |
 | T07 Docker | Image build, cold online and offline GPU inference passed | Docker Hub development preview published and verified; numerical certification failed |
 | T08 Compose/offline/rollback | Compose real GPU and container offline inference passed | Image-version rollback drill not run |
-| T09 Second model | Optional, not started | No substitute model used |
+| T09 Multi-model extension | Seven pinned adapters/profiles integrated; JPT-0.8B GPU/container paths work | Larger model checks in progress; JPT probability parity fails |
 | T10 Observability/benchmark | Metrics and short sequential benchmark measured | Capacity study and 24/72-hour soak not run |
 | T11 CI/release | CPU workflow written; local checks pass | Remote CPU CI passed; certified image promotion/release absent |
 | T12 Open-source acceptance | Incomplete | Parity, rollback, clean-host and soak acceptance |
@@ -476,3 +476,77 @@ the previously tested image in `validation/reports/container-smoke.json`.
 Open-Jev-2B probability failures using the reference, pooling and HTTP reports;
 keep the existing tolerances and pinned weights. Do not promote this image to
 alpha/certified status until those failures and remaining release gates are resolved.
+
+
+## Multi-model integration in progress — 2026-10-12
+
+The user requested one reusable image with mounted weights and as many deployable
+Jev checkpoints as possible on the current 48 GiB GPU, specifically mentioning
+JEV-27B-VL, Xor 1.2 and JPT-9B. D024/D025 record this scope extension.
+
+- Implemented, pending GPU validation: model catalog selection, read-only
+  `--model-dir` verification, per-model HTTP metadata, model-aware helper and
+  Compose mount override; JPT token readout, Open-Jev-9B inventory and NeoHorse
+  explicit Torch pointer profile. No new model has passed a GPU gate yet.
+- Pinned JPT-0.8B/4B/9B, Open-Jev-9B plus its base, and NeoHorse-Jev-4B inventories.
+  JPT weights are CC BY-NC 4.0; they are not bundled into the Apache-2.0 image.
+- JPT author/real-tokenizer comparison: 9 synthetic requests, 10 questions, all
+  255 label IDs matched (`validation/reports/jpt-encoding.json`). 150 CPU tests
+  passed before adding the pointer worker. Current image candidate builds as
+  `jevserve:multimodel-dev`; it has not been published or certified.
+- Sequential Hub transfers encountered interrupted connections. Validation-only
+  acquisition now uses explicitly requested bounded range retries, validates
+  the entire pinned SHA-256, and atomically publishes through the same preparer.
+  Partial bytes remain staging/private; serving never retries inference.
+- JEV-27B-VL's original weights occupy approximately 56.05 GB; Xor 1.2 approximately
+  70.24 GB. Neither fits entirely in this GPU at the released BF16 precision.
+  No quantized substitute or success is claimed. Their native protocols are being
+  inspected; availability is not equivalent to integration.
+
+Immediate next action: finish hash verification, run each model's real reference
+then the common container's HTTP/native SDK/Compose/offline checks sequentially
+on the GPU, record parity separately, and publish a new development image only
+after its actual test matrix is complete.
+
+### Multi-model verification checkpoint (in progress)
+
+- CPU: `pytest -q`: **167 passed**; `ruff check .` and `mypy` passed.
+  Protocol tests still import no GPU packages. Added selected-model routing,
+  pointer cancellation and candidate-mask boundary regression coverage.
+- Built the common `0.1.0.dev1` candidate image without model weights. New
+  adapters/inventories: Open-Jev-9B, JPT-0.8B/4B/9B, NeoHorse-Jev-4B and Kev-4B.
+  No new image has been published at this checkpoint.
+- JPT-0.8B: pinned author implementation ran all 10 synthetic reference requests.
+  Common-image HTTP ran all 10, including 255-option Choice/Score, and rejected
+  an unconfigured SystemOne model. **5/10 requests failed** the frozen probability
+  tolerance (`atol + rtol * abs(reference)`); max error 0.0273194739, no Choice
+  label flips. This is not numerical certification.
+- An initial targeted-token vLLM run failed at 255 options: pinned vLLM permits
+  at most 128 `logprob_token_ids`. Replaced this with an explicit allowed-candidate
+  mask and N processed logprobs, retaining one forward pass and applying the
+  checkpoint temperature exactly once (D026). The corrected 255-option request
+  executed successfully; the probability mismatch above remains recorded.
+- Mounted JPT-0.8B Compose: actual inference passed with `network_mode: none`,
+  a read-only weight mount/root filesystem, writable runtime cache and non-root
+  service. Graceful stop returned GPU use to idle. Open-Jev-2B also passed a
+  common-image offline regression earlier in this session.
+- Larger inventories are downloading to ignored project-local staging. HTTP/2
+  resets interrupted initial transfers; explicit resumable validation transfers
+  retain chunks, validate byte ranges, then verify the complete pinned SHA-256
+  before atomic publication. Download completion is not a GPU gate.
+- Exact next action: finish verified downloads, run each author's GPU reference
+  and then the common image's HTTP/native-client/official-SDK checks sequentially.
+  Update the model matrix with observed outcomes, then publish the common dev1
+  image and source to the already authorized Docker Hub/GitHub destinations.
+  JEV-27B-VL/Xor 1.2 remain investigated candidates, not supported or tested
+  profiles; their raw BF16 weights exceed this GPU's memory.
+
+- Subsequent common-image JPT-0.8B rerun: all 10 HTTP cases, native client and
+  `typesafe-sdk==0.7.4` passed execution. The latest reference/container pairing
+  failed **6/10** probability comparisons with no Choice label flips; the report
+  records the latest run, while the earlier 5/10 observation above remains
+  historical. GPU reservation after this run was 24,688 MiB at the default 0.5
+  budget, not a minimum memory requirement. Latest CPU suite: **168 passed**.
+- Source-license audit corrected NeoHorse/Kev attribution to the actual pinned
+  Apache-2.0 LICENSE and retained the vendored NOTICE. JPT protocol code remains
+  MIT; model weight licenses are separate.

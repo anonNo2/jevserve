@@ -202,3 +202,22 @@ def test_keyboard_interrupt_cleans_owned_stage(tmp_path):
         prepare_model(manifest(), tmp_path, downloader=interrupted)
     assert not list(tmp_path.glob("*.staging-*"))
     assert not (tmp_path / manifest().identity).exists()
+
+
+def test_mounted_snapshot_is_verified_without_writes(tmp_path):
+    from jevserve.artifacts.verify import load_model_directory
+
+    target = tmp_path / "nested"
+    target.mkdir()
+    weights = target / "weights.bin"
+    weights.write_bytes(b"weights")
+    model = load_model_directory(tmp_path, manifest())
+    assert model.path == tmp_path
+    assert not (tmp_path / "READY").exists()
+    weights.write_bytes(b"corrupt")
+    with pytest.raises(ArtifactCorrupt):
+        load_model_directory(tmp_path, manifest())
+    weights.unlink()
+    weights.symlink_to("missing")
+    with pytest.raises(ArtifactCorrupt):
+        load_model_directory(tmp_path, manifest())

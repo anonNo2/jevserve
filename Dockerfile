@@ -14,7 +14,7 @@ WORKDIR /app
 LABEL org.opencontainers.image.title="JevServe" \
       org.opencontainers.image.description="Serve text decision models through an HTTP API. Development preview." \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.version="0.1.0.dev0"
+      org.opencontainers.image.version="0.1.0.dev1"
 COPY compat/runtime-requirements.txt /app/runtime-requirements.txt
 # Optional upstream extras are outside our runtime lock and conflict with it.
 RUN python3 -c "import sys; assert sys.version_info[:2] == (3, 12)" && \

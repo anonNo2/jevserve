@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "jevserve"
-version = "0.1.0.dev0"
+version = "0.1.0.dev1"
 description = "Self-hosted HTTP serving for Jev-style text decision models"
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
@@ -42,7 +42,7 @@ files = ["src/jevserve"]
 # GPU dependencies stay out of CPU protocol tests. Their APIs are verified by
 # the separately pinned engine environment and real GPU validation.
 [[tool.mypy.overrides]]
-module = ["vllm.*", "torch.*", "safetensors.*", "transformers.*"]
+module = ["vllm.*", "torch.*", "safetensors.*", "transformers.*", "peft.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]

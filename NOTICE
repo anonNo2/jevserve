@@ -4,7 +4,7 @@ This project is independent of TypeSafe AI and JevServe-Bench and is not endorse
 
 The repository license does not grant rights to third-party model weights or components. Each retains its own license. Before introducing third-party code, retain its copyright notices and record its source and license here or in a dedicated third-party notice file.
 
-This bootstrap contains planning and documentation, not copied model implementations or model weights.
+This distribution includes serving adapters and derived protocol code. It does not include model weights.
 
 Open-Jev adapter prompt/readout semantics derive from Zefan-Cai/Open-Jev
 https://github.com/Zefan-Cai/Open-Jev
@@ -17,3 +17,22 @@ The text-only Qwen3.5 vLLM pooling model adapter is derived from mode-io/vllm-je
 commit eae6b2d6dd06fb014118c99f660261cf4ecf04f9 (Apache-2.0).
 Upstream license: licenses/vllm-jev-Apache-2.0.txt.
 JevServe does not bundle the upstream HTTP endpoint or other model adapters.
+
+JPT prompt/readout adapter semantics are adapted from tic-top/llm2jev
+(revision 2b252d504972764211ef172c1155ac0fedc9c3de), MIT license.
+Copyright (c) 2026 AnyJev contributors. See licenses/llm2jev-MIT.txt.
+JPT model weights are separately licensed CC BY-NC 4.0 and are not bundled.
+
+NeoHorse pointer encoding and readout follow TokenRhythm/NeoHorse
+(c494069accfc2d08839675961c1fdfcc54ba0b92), derived from jaredpalmer/kev.
+Copyright 2026 Jared Palmer. Apache-2.0 license and upstream attribution are
+preserved in licenses/kev-Apache-2.0.txt and licenses/NeoHorse-NOTICE.txt.
+JevServe modifications implement bounded causal rows, typed readout and a
+separate cancellable worker; upstream encoding and checkpoint semantics remain
+the reference.
+NeoHorse weights are separately downloaded and are not bundled in this image.
+
+Kev-4B pointer loading follows jaredpalmer/kev at
+6d02f5d066cd34958dfd15ffa5d2f6f0f4c21a63 (Apache-2.0; licenses/kev-Apache-2.0.txt).
+The explicit Kev profile retains FP32 evaluation precision and its exact stored
+temperature. Its separately licensed weights are not bundled.

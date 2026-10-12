@@ -27,12 +27,15 @@ class EncodedDecision:
     input_tokens: int
     candidate_count: int
     readout_positions: tuple[int, ...]
+    candidate_token_ids: tuple[tuple[int, ...], ...] = ()
+    candidate_positions: tuple[tuple[int, ...], ...] = ()
 
 
 @dataclass(frozen=True)
 class RawDecision:
     encoded: EncodedDecision
     scores: tuple[float, ...]
+    candidate_logits: tuple[tuple[float, ...], ...] = ()
 
 
 class ModelAdapter(Protocol):

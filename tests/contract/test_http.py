@@ -24,7 +24,7 @@ def request(**extra):
     }
 
 
-def app_for(fake, **config):
+def app_for(fake, *, prepared_model=None, **config):
     adapter = OpenJevAdapter(
         TestTokenizer(),
         temperature=1.5,
@@ -37,7 +37,7 @@ def app_for(fake, **config):
             max_total_input_tokens=65536,
         ),
     )
-    return create_app(fake, adapter, ServerConfig(**config))
+    return create_app(fake, adapter, ServerConfig(**config), prepared_model=prepared_model)
 
 
 @pytest.mark.asyncio
@@ -181,3 +181,25 @@ async def test_queue_deadline_and_engine_failure_do_not_leak_input():
         failed = await client.post("/v1/decisions", json=request())
         assert failed.status_code == 503 and "private" not in failed.text
         assert app.state.admission.active == 0
+
+
+@pytest.mark.asyncio
+async def test_selected_model_metadata_and_systemone_routing(tmp_path):
+    from jevserve.artifacts.catalog import source_manifest
+    from jevserve.artifacts.manifest import PreparedModel
+
+    manifest = source_manifest("kirp/jpt-9b")
+    app = app_for(FakeRuntime(), prepared_model=PreparedModel(manifest=manifest, path=tmp_path))
+    async with (
+        app.router.lifespan_context(app),
+        httpx.AsyncClient(transport=httpx.ASGITransport(app), base_url="http://test") as client,
+    ):
+        models = (await client.get("/v1/models")).json()
+        assert models["models"][0]["id"] == manifest.model_id
+        answer = await client.post("/v1/decisions", json=request())
+        assert answer.json()["model_revision"] == manifest.revision
+        accepted = await client.post("/v1/systemone", json=request(model=manifest.model_id))
+        assert accepted.status_code == 200
+        assert accepted.json()["model"] == manifest.model_id
+        rejected = await client.post("/v1/systemone", json=request(model="ZefanCai/Open-Jev-2B"))
+        assert rejected.status_code == 422

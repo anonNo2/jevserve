@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "model_id": "kirp/jpt-0.8b",
+  "revision": "1431c0509bbc10772cd59964cc7af5835c8720d6",
+  "adapter": "jpt",
+  "license": "cc-by-nc-4.0",
+  "temperature": 1.14,
+  "dtype": "bfloat16",
+  "max_choice_candidates": 255,
+  "max_score_levels": 255,
+  "upstream_code": {
+    "url": "https://github.com/tic-top/llm2jev",
+    "revision": "2b252d504972764211ef172c1155ac0fedc9c3de",
+    "license": "MIT"
+  },
+  "files": [
+    {
+      "path": ".gitattributes",
+      "size": 1570,
+      "sha256": "34448b82c17d60fec9b65b1f093c115ddbaadc04beb1b0140b6bfed2e012a930"
+    },
+    {
+      "path": "README.md",
+      "size": 12671,
+      "sha256": "3756c9203de5add44b80fd5a9b73033feaf71d5c8208fcc96281b20e2e630391"
+    },
+    {
+      "path": "assets/decision_index.png",
+      "size": 49189,
+      "sha256": "1ccd10ab74837c1286bb1479eb1056859cbcafcf4f94abd27927c0a6836a282c"
+    },
+    {
+      "path": "assets/di_areas.png",
+      "size": 48546,
+      "sha256": "f24b71fafc17778261e716006981c1a0f86eff6afbe418dae40599933a7ba91d"
+    },
+    {
+      "path": "assets/jevbench.png",
+      "size": 87568,
+      "sha256": "3a6699d68b3d0f5f896a9abd0df08dffcc4a77d2744fdcb49261345f1acaa77f"
+    },
+    {
+      "path": "chat_template.jinja",
+      "size": 7755,
+      "sha256": "273d8e0e683b885071fb17e08d71e5f2a5ddfb5309756181681de4f5a1822d80"
+    },
+    {
+      "path": "config.json",
+      "size": 2648,
+      "sha256": "8038a0101d3d285401cba0030e9510fef087c6e281efe2b49c7d1156bd958f07"
+    },
+    {
+      "path": "generation_config.json",
+      "size": 138,
+      "sha256": "cb62c424e4c9d9d5ad55b7dde9d4a9507f60f5fc6e041a26f7d191c01f8f6b72"
+    },
+    {
+      "path": "merges.txt",
+      "size": 3353259,
+      "sha256": "a9d356d7bdf1ef4949e3e748e95b8e10ad9d4e2e838eddc38a0a7b6b94d1db8d"
+    },
+    {
+      "path": "model.safetensors",
+      "size": 1706035272,
+      "sha256": "7ce7054169e669c9945d5cce57eff8c3d128f59a50ca22da47f1a30aa22ed3f1"
+    },
+    {
+      "path": "preprocessor_config.json",
+      "size": 390,
+      "sha256": "27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516"
+    },
+    {
+      "path": "processor_config.json",
+      "size": 1220,
+      "sha256": "bfbc24af59a3e73a9cd0653b8d4ae758dfaec4e3e6c15dfb1c6c8ee8d5683c85"
+    },
+    {
+      "path": "tokenizer.json",
+      "size": 19989325,
+      "sha256": "06b9509352d2af50381ab2247e083b80d32d5c0aba91c272ca9ff729b6a0e523"
+    },
+    {
+      "path": "tokenizer_config.json",
+      "size": 1165,
+      "sha256": "792fa3f0cb88b111e54ef3134c873531008c4df471d108da17903426e308aa7b"
+    },
+    {
+      "path": "video_preprocessor_config.json",
+      "size": 385,
+      "sha256": "7768af27c1fafa9cc9011c1dc20067e03f8915e03b63504550e11d5066986d13"
+    },
+    {
+      "path": "vocab.json",
+      "size": 6722759,
+      "sha256": "ce99b4cb2983d118806ce0a8b777a35b093e2000a503ebde25853284c9dfa003"
+    }
+  ]
+}

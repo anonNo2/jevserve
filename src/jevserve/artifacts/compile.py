@@ -9,7 +9,7 @@ from pathlib import Path
 
 from jevserve.artifacts.manifest import PreparedModel
 from jevserve.artifacts.prepare import _lock
-from jevserve.artifacts.verify import ArtifactCorrupt, verify_package
+from jevserve.artifacts.verify import ArtifactCorrupt, load_model_directory
 from jevserve.runtime.registration import ARCHITECTURE
 
 RECIPE = "qwen35-unmerged-v1"
@@ -45,7 +45,7 @@ def verify_compiled(path: Path, source_identity: str) -> None:
 
 
 def compile_open_jev(model: PreparedModel, cache: Path) -> Path:
-    verify_package(model.path, model.manifest)
+    load_model_directory(model.path, model.manifest)
     identity = model.manifest.identity
     cache.mkdir(parents=True, exist_ok=True)
     final = cache / (identity + "-" + RECIPE)

@@ -1,0 +1,11 @@
+# Use with: docker compose -f compose.yaml -f compose.mount.yaml up --no-build -d
+services:
+  jevserve:
+    command: ["serve", "--allow-uncertified", "--model", "${JEVSERVE_MODEL:-ZefanCai/Open-Jev-2B}", "--model-dir", "/model", "--offline", "--gpu-memory-utilization", "${JEVSERVE_GPU_MEMORY_UTILIZATION:-0.5}"]
+    volumes:
+      - type: bind
+        source: ${JEVSERVE_MODEL_DIR:?Set JEVSERVE_MODEL_DIR to a verified weight directory}
+        target: /model
+        read_only: true
+        bind:
+          create_host_path: false

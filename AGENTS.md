@@ -7,8 +7,8 @@ Read `docs/development/HANDOFF.md`, `docs/development/STATUS.md`, `docs/plans/Je
 ## Scope and decisions already made
 
 - Brand: JevServe. Repo/package/CLI/image base name: `jevserve`. Naming discussion is complete; the user accepted proximity to JevServe-Bench. State independence from that project and TypeSafe AI.
-- Target: single Linux NVIDIA host; one image, one model per container, one GPU; `docker run` and Docker Compose are both first-class paths.
-- vLLM first, bounded adapters. No Kubernetes, training platform, web UI, multimodal, multi-node, automatic fallback, or empty Triton implementation in the alpha scope.
+- Target: single Linux NVIDIA host; one reusable runtime image for all supported models, externally mounted weights, one model per container, one GPU; `docker run` and Docker Compose are both first-class paths.
+- vLLM first, bounded adapters. No Kubernetes, training platform, web UI, multi-node, automatic fallback, or empty Triton implementation in scope. The user expanded model integration to current Jev checkpoints including VL families; report text and vision support separately.
 - At least one real Jev-style checkpoint must pass GPU and container checks. Default candidate: `ZefanCai/Open-Jev-2B`; availability, license and revision must be verified. Do not invent a substitute model or silently substitute ordinary JSON generation.
 - CPU contracts, artifact preparation, real GPU inference, CLI and container definitions are implemented; consult STATUS for current verification and release blockers. Do not claim commands work until implemented and verified.
 

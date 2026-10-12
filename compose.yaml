@@ -3,7 +3,7 @@ services:
   jevserve:
     build: .
     image: ${JEVSERVE_IMAGE:-jevserve:dev}
-    command: ["serve", "--allow-uncertified"]
+    command: ["serve", "--allow-uncertified", "--model", "${JEVSERVE_MODEL:-ZefanCai/Open-Jev-2B}", "--gpu-memory-utilization", "${JEVSERVE_GPU_MEMORY_UTILIZATION:-0.5}"]
     ports:
       - "127.0.0.1:8000:8000"
     volumes:
