@@ -1,8 +1,8 @@
 # Codex 开发交接
 
-实施已于 2026-10-12 开始，真实 Open-Jev-2B 的 CLI/HTTP/vLLM 开发闭环已运行；Docker/Compose 真实推理与首次下载已验证；数值对齐仍失败，尚非 alpha。开发预览镜像 `anonwx/jevserve:0.1.0-dev0` 已公开发布并验证匿名拉取；源码已推送至 https://github.com/anonNo2/jevserve，首次远程 CPU CI 通过。支持模型及测试结果见 [models.md](../models.md)。下方初始化记录属于历史基线；当前完成项、阻塞项和下一步以 [STATUS.md](STATUS.md) 为准。CPU 开发命令见 [IMPLEMENTATION.md](IMPLEMENTATION.md)。
+实施已于 2026-10-12 开始。已交付一个通用镜像、独立挂载权重的开发预览：Open-Jev-2B/9B、JPT-0.8B/4B/9B、NeoHorse-Jev-4B、Kev-4B 共 7 个固定模型配置，均已完成真实 GPU 与容器推理。NeoHorse 与修正加载配置后的 Kev FP32 通过小型合成数值对照；Open-Jev 和 JPT 仍有概率偏差，尚非 alpha 或生产认证。
 
-当前扩展方向：一个通用镜像、只读挂载独立权重，已接入 Open-Jev-2B/9B、JPT-0.8B/4B/9B、NeoHorse-Jev-4B、Kev-4B。NeoHorse 与修正加载配置后的 Kev FP32 已通过小型合成数值对照；JPT-0.8B 和 Open-Jev-2B 尚有数值偏差。更多 GPU 验证与 dev1 发布正在进行，逐项证据以 STATUS 和 models.md 为准。
+通用镜像 `anonwx/jevserve:0.1.0-dev1` 已公开发布，匿名 digest 拉取通过；固定 digest 见 [Quick Start](../quickstart.md)。源码持续推送至 https://github.com/anonNo2/jevserve，远程 CPU CI 已通过。模型、许可证、显存观察和测试证据见 [models.md](../models.md)。当前状态及下一步以 [STATUS.md](STATUS.md) 为准，CPU 开发命令见 [IMPLEMENTATION.md](IMPLEMENTATION.md)。下方初始化说明属于历史基线。
 
 ## 用户目标
 

@@ -1,0 +1,11 @@
+{
+  "gpu_memory_mib_before_test": 640,
+  "shared_gpu": true,
+  "reference_memory_fraction": 0.5,
+  "model_id": "kirp/jpt-9b",
+  "container_image": "sha256:4b758ad1000f4d38501fd83f0a9c2b32f0cb91968d427b170a2c2b0d9a613aff",
+  "gpu_memory_mib_after_tests": 25333,
+  "weight_mount": "read-only",
+  "root_filesystem": "read-only",
+  "offline_model_load": true
+}

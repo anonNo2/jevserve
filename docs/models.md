@@ -15,9 +15,9 @@ JevServe 使用一个通用镜像，模型权重独立挂载。每个容器运�
 | Model | Backend / precision | Real GPU / container test | Probability comparison | Weight license |
 |---|---|---|---|---|
 | [Open-Jev-2B](https://huggingface.co/ZefanCai/Open-Jev-2B) | vLLM pooling, BF16 backbone + FP32 scalar head | Passed Docker, Compose, cold download and offline; common-image regression passed | **Failed:** 36/110 HTTP cases in the original suite | Apache-2.0 |
-| [JPT-0.8B](https://huggingface.co/kirp/jpt-0.8b) | vLLM token readout, BF16 | 10 HTTP cases including 255 options; mounted offline Compose passed | **Failed:** see [container report](../validation/reports/jpt-0.8b-container.json); no Choice label flips | CC-BY-NC-4.0 |
-| [JPT-4B](https://huggingface.co/kirp/jpt-4b) | vLLM token readout, BF16 | Integration complete; GPU checks pending | Pending | CC-BY-NC-4.0 |
-| [JPT-9B](https://huggingface.co/kirp/jpt-9b) | vLLM token readout, BF16 | Integration complete; GPU checks pending | Pending | CC-BY-NC-4.0 |
+| [JPT-0.8B](https://huggingface.co/kirp/jpt-0.8b) | vLLM token readout, BF16 | 10 HTTP cases including 255 options; mounted offline Compose passed | **Failed:** 6/10; see [container report](../validation/reports/jpt-0.8b-container.json); no Choice label flips | CC-BY-NC-4.0 |
+| [JPT-4B](https://huggingface.co/kirp/jpt-4b) | vLLM token readout, BF16 | 10 HTTP cases including 255 options and native/official SDK passed execution | **Failed:** 6/10 comparisons; no Choice label flips | CC-BY-NC-4.0 |
+| [JPT-9B](https://huggingface.co/kirp/jpt-9b) | vLLM token readout, BF16 | 10 HTTP cases including 255 options and native/official SDK passed execution | **Failed:** 5/10 comparisons; no Choice label flips | CC-BY-NC-4.0 |
 | [Open-Jev-9B](https://huggingface.co/ZefanCai/Open-Jev-9B) | vLLM pooling, BF16 backbone + FP32 scalar head | 110 native HTTP cases and official SDK passed execution | **Failed:** 27/110 comparisons; no label flips | Apache-2.0 |
 | [NeoHorse-Jev-4B](https://huggingface.co/TokenRhythm/NeoHorse-Jev-4B) | Explicit Torch pointer backend, BF16 backbone + FP32 head | 10 HTTP cases, native/official SDK and mounted offline Compose passed | **Passed:** 10/10 synthetic comparisons; max error 6.33e-8 | Apache-2.0 |
 | [Kev-4B](https://huggingface.co/jaredpalmer/kev-4b) | Explicit Torch pointer backend, FP32 | 10 HTTP cases and native/official SDK passed | **Passed:** 10/10 with documented FP32 loader correction | Apache-2.0 |
@@ -55,6 +55,27 @@ readout per question; its checkpoint temperature is applied once. Softmax and
 `confidence` are not calibrated accuracy. Score confidence follows each adapter
 family's published definition; API usage counters describe this service's work,
 not provider billing.
+
+## Observed GPU allocation
+
+Measured after the synthetic container tests on the 48 GiB RTX A6000:
+
+| Profile | GPU memory used (MiB) |
+|---|---:|
+| JPT-0.8B | 24,688 |
+| JPT-4B | 24,776 |
+| JPT-9B | 25,333 (shared GPU) |
+| Open-Jev-9B | 23,914 |
+| NeoHorse-Jev-4B | 10,050 |
+| Kev-4B FP32 | 18,790 |
+
+These are observations, **not minimum VRAM**. vLLM reserves a cache pool under
+its 0.5 memory budget, so the smaller JPT model does not imply a smaller observed
+reservation. Torch profiles use an allocator cap instead. Peak usage depends on
+request shape; these are not concurrent-load or capacity measurements. JPT-9B
+ran with another process present (640 MiB total device usage before this test);
+its row is total device usage, not isolated per-process usage. The reference and
+container each used an explicit 0.5 GPU-memory budget.
 
 ## Pinned inventories
 
@@ -116,6 +137,8 @@ synthetic compatibility suite, not a representative quality benchmark.
 - [NeoHorse author's encoding and readout positions](../validation/reports/neohorse-encoding.json)
 - [JPT-0.8B GPU reference](../validation/reports/jpt-0.8b-reference.json)
 - [JPT-0.8B container probabilities](../validation/reports/jpt-0.8b-container.json)
+- [JPT-4B container probabilities](../validation/reports/jpt-4b-container.json)
+- [JPT-9B container probabilities](../validation/reports/jpt-9b-container.json)
 - [NeoHorse-Jev-4B container probabilities](../validation/reports/neohorse-jev-4b-container.json)
 - [Open-Jev-9B container comparison](../validation/reports/open-jev-9b-container.json)
 - [Kev-4B FP32 reference and dtype audit](../validation/reports/kev-4b-reference.json)

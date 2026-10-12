@@ -6,7 +6,7 @@
 <p align="center">在自己的 GPU 上运行决策模型，通过一个 HTTP API 调用。</p>
 <p align="center"><a href="README.md">English</a> · <a href="#快速开始">快速开始</a> · <a href="docs/quickstart.md">部署指南</a> · <a href="docs/models.md">支持模型与测试结果</a> · <a href="compat/README.md">API 兼容范围</a></p>
 
-JevServe 将开源 Jev 类决策模型封装成 HTTP 服务。发送文本和问题，获得带概率的类型化答案。你可以用它分派客服工单、识别紧急消息，或按规则给内容评等级。
+JevServe 将开放权重的 Jev 类决策模型封装成 HTTP 服务。发送文本和问题，获得带概率的类型化答案。你可以用它分派客服工单、识别紧急消息，或按规则给内容评等级。
 
 | 想做什么 | 问题类型 | 返回什么 |
 |---|---|---|
@@ -14,7 +14,7 @@ JevServe 将开源 Jev 类决策模型封装成 HTTP 服务。发送文本和问
 | 判断消息是否紧急 | **Noul** | 0–1 之间的概率 |
 | 按低、中、高评定优先级 | **Score** | 等级期望值，以及各等级的概率 |
 
-底层使用 **vLLM**，提供 Python 客户端、有界请求队列、取消、健康检查和离线模式。目前支持 **[Open-Jev-2B](https://huggingface.co/ZefanCai/Open-Jev-2B)**。
+**一个通用镜像，模型权重独立挂载。** 已接入 Open-Jev、JPT、NeoHorse、Kev 模型家族，使用 vLLM 或指定的 Torch 后端。提供 Python 客户端、有界请求队列、取消、健康检查和离线模式。各模型的实测状态和许可见[支持模型与测试结果](docs/models.md)。
 
 > **开发预览版。** 真实 GPU 推理已跑通，与作者实现的数值一致性尚未认证。依赖模型结果之前，请阅读[当前状态与限制](#当前状态与限制)。
 
@@ -28,7 +28,7 @@ JevServe 将开源 Jev 类决策模型封装成 HTTP 服务。发送文本和问
 docker run -d --name jevserve --gpus device=0 --shm-size=1g \
   -p 127.0.0.1:8000:8000 \
   --mount type=volume,source=jevserve-cache,target=/cache \
-  anonwx/jevserve:0.1.0-dev0
+  anonwx/jevserve:0.1.0-dev1
 docker exec jevserve jevserve check --wait-seconds 1800
 ```
 
@@ -39,10 +39,21 @@ docker exec jevserve jevserve check --wait-seconds 1800
 ```bash
 git clone https://github.com/anonNo2/jevserve.git
 cd jevserve
-./scripts/quickstart.sh --image anonwx/jevserve:0.1.0-dev0
+./scripts/quickstart.sh --image anonwx/jevserve:0.1.0-dev1
 ```
 
 脚本自动启动服务、等待就绪，并发送三种问题类型的真实请求。开发者可用 `--build` 从源码构建。[支持模型、测试环境与验证报告 →](docs/models.md)
+
+### 挂载模型，复用同一个镜像
+
+已经准备好固定版本权重时：
+
+```bash
+./scripts/quickstart.sh --image anonwx/jevserve:0.1.0-dev1 \
+  --model kirp/jpt-0.8b --model-dir /absolute/path/to/verified-model
+```
+
+模型目录以只读方式挂载，运行缓存单独放在卷中。更换 `--model` 和 `--model-dir` 即可更换模型，无需重新构建镜像；每个容器只加载一个模型。[下载与校验权重、挂载目录格式、Compose 用法](docs/quickstart.md#mounted-models)。JPT 权重采用 CC-BY-NC-4.0，使用前请确认许可。
 
 ### 发起一个决策请求
 
@@ -71,7 +82,7 @@ curl -fsS http://127.0.0.1:8000/v1/decisions \
 在仓库目录中执行：
 
 ```bash
-JEVSERVE_IMAGE=anonwx/jevserve:0.1.0-dev0 docker compose up --pull always --no-build -d
+JEVSERVE_IMAGE=anonwx/jevserve:0.1.0-dev1 docker compose up --pull always --no-build -d
 docker compose exec jevserve jevserve check --wait-seconds 1800
 ```
 
@@ -85,15 +96,17 @@ Quick Start 和 Compose 二选一使用端口 8000。[自定义端口、GPU、�
 from jevserve.client import Client
 
 with Client("http://127.0.0.1:8000") as client:
-    result = client.decide({
-        "state": "Production is down for all users.",
-        "questions": {
-            "urgent": {
-                "type": "noul",
-                "instructions": "Does this need an urgent response?",
-            }
-        },
-    })
+    result = client.decide(
+        {
+            "state": "Production is down for all users.",
+            "questions": {
+                "urgent": {
+                    "type": "noul",
+                    "instructions": "Does this need an urgent response?",
+                }
+            },
+        }
+    )
     print(result.answers["urgent"].noul)
 ```
 
@@ -101,9 +114,9 @@ with Client("http://127.0.0.1:8000") as client:
 
 ## 当前状态与限制
 
-- **模型：** Open-Jev-2B；仅文本，一个容器对应一个模型和一个 GPU。
-- **数值：** 最新 pooling 对照中，38/113 条超过预先固定的概率容差，未观察到标签翻转。概率不等于经过校准的正确率。[验证报告](docs/development/STATUS.md)。
-- **输入：** 最多 16 个问题；Choice 最多 255 个候选项；Score 为 2–10 个文本等级。另有 token 和计算量上限，不静默截断、改变精度、切换模型或重试。
+- **模型：** 7 个固定版本模型已在 RTX A6000 完成真实 GPU 与容器测试；当前 API 仅支持文本，一个容器对应一个模型和一张 GPU。[逐模型测试结果](docs/models.md)。
+- **数值：** Open-Jev 和 JPT 未通过严格概率对照；NeoHorse 与 Kev 通过了小型合成对照用例。推理成功不代表数值认证或准确率保证。[逐模型报告](docs/models.md)。
+- **输入：** 最多 16 个问题；Choice 上限 255。Score 等级数、最少候选数和 token/计算量限制因模型而异，见 `/v1/models`。不静默截断、改变精度、切换模型或重试。
 - **发布：** 当前是开发预览版，尚非通过 alpha 认证的版本或生产版。[容器与发布进度](docs/development/STATUS.md)。
 
 ## 文档与贡献

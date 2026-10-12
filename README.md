@@ -6,7 +6,7 @@
 <p align="center">Self-hosted decision models. One GPU. One HTTP API.</p>
 <p align="center"><a href="README.zh-CN.md">简体中文</a> · <a href="#quick-start">Quick Start</a> · <a href="docs/quickstart.md">Deployment guide</a> · <a href="docs/models.md">Supported models & tests</a> · <a href="compat/README.md">API compatibility</a></p>
 
-JevServe runs open Jev-style decision models on your NVIDIA GPU. Send text and a question; get a typed answer with probabilities. Use it to route support tickets, flag urgent messages, or score content against a rubric.
+JevServe runs open-weight Jev-style decision models on your NVIDIA GPU. Send text and a question; get a typed answer with probabilities. Use it to route support tickets, flag urgent messages, or score content against a rubric.
 
 | Ask the model to… | Question type | Answer |
 |---|---|---|
@@ -14,7 +14,7 @@ JevServe runs open Jev-style decision models on your NVIDIA GPU. Send text and a
 | Decide whether a message is urgent | **Noul** | A probability between 0 and 1 |
 | Rate priority from low to high | **Score** | An expected level and its distribution |
 
-Built on **vLLM**, with a Python client, bounded request queues, cancellation, health checks, and an offline mode. Currently serves **[Open-Jev-2B](https://huggingface.co/ZefanCai/Open-Jev-2B)**.
+**One reusable image, separately mounted weights.** Adapters cover Open-Jev, JPT, NeoHorse and Kev, using vLLM or a named Torch backend. Includes a Python client, bounded request queues, cancellation, health checks and offline mode. See [model-specific test status and licenses](docs/models.md).
 
 > **Developer preview.** Real GPU inference works; numerical alignment with the author's implementation is not yet certified. See [known limitations](#status-and-limitations) before relying on the results.
 
@@ -28,7 +28,7 @@ Run the [Docker Hub image](https://hub.docker.com/r/anonwx/jevserve) without a l
 docker run -d --name jevserve --gpus device=0 --shm-size=1g \
   -p 127.0.0.1:8000:8000 \
   --mount type=volume,source=jevserve-cache,target=/cache \
-  anonwx/jevserve:0.1.0-dev0
+  anonwx/jevserve:0.1.0-dev1
 docker exec jevserve jevserve check --wait-seconds 1800
 ```
 
@@ -39,10 +39,21 @@ Or use the bundled startup helper:
 ```bash
 git clone https://github.com/anonNo2/jevserve.git
 cd jevserve
-./scripts/quickstart.sh --image anonwx/jevserve:0.1.0-dev0
+./scripts/quickstart.sh --image anonwx/jevserve:0.1.0-dev1
 ```
 
 The helper starts the service, waits for readiness, and sends a real request covering all three question types. Developers can use `--build` to build from source. [Supported models, test environment and evidence →](docs/models.md)
+
+### Mount a model, reuse the image
+
+With an already prepared, pinned weight directory:
+
+```bash
+./scripts/quickstart.sh --image anonwx/jevserve:0.1.0-dev1 \
+  --model kirp/jpt-0.8b --model-dir /absolute/path/to/verified-model
+```
+
+Weights are mounted read-only; runtime caches use a separate volume. Change `--model` and `--model-dir` to select another model without rebuilding the image. Each container loads one model. [Prepare weights, directory layout and mounted Compose](docs/quickstart.md#mounted-models). JPT weights use CC-BY-NC-4.0; check the license before use.
 
 ### Make a decision
 
@@ -71,7 +82,7 @@ Read `answers.team.choice` for the selected team and `answers.team.probabilities
 From the repository checkout:
 
 ```bash
-JEVSERVE_IMAGE=anonwx/jevserve:0.1.0-dev0 docker compose up --pull always --no-build -d
+JEVSERVE_IMAGE=anonwx/jevserve:0.1.0-dev1 docker compose up --pull always --no-build -d
 docker compose exec jevserve jevserve check --wait-seconds 1800
 ```
 
@@ -85,15 +96,17 @@ The native client accepts the same request dictionary as the HTTP API:
 from jevserve.client import Client
 
 with Client("http://127.0.0.1:8000") as client:
-    result = client.decide({
-        "state": "Production is down for all users.",
-        "questions": {
-            "urgent": {
-                "type": "noul",
-                "instructions": "Does this need an urgent response?",
-            }
-        },
-    })
+    result = client.decide(
+        {
+            "state": "Production is down for all users.",
+            "questions": {
+                "urgent": {
+                    "type": "noul",
+                    "instructions": "Does this need an urgent response?",
+                }
+            },
+        }
+    )
     print(result.answers["urgent"].noul)
 ```
 
@@ -101,9 +114,9 @@ Install the client from this checkout with `pip install .` in a Python 3.12 virt
 
 ## Status and limitations
 
-- **Model:** Open-Jev-2B; text only, one model and one GPU per container.
-- **Numerics:** the latest pooling comparison failed 38/113 cases at the frozen probability tolerance; no label flips were observed. These probabilities are not calibrated accuracy. [Reports](docs/development/STATUS.md).
-- **Inputs:** up to 16 questions; Choice up to 255 candidates; Score 2–10 text levels. Additional token/work limits apply. No silent truncation, precision change, model fallback, or retry.
+- **Models:** 7 pinned profiles tested with real GPU inference and containers on RTX A6000; text only, one model and one GPU per container. [Individual test results](docs/models.md).
+- **Numerics:** Open-Jev and JPT have failed strict probability comparisons. NeoHorse and Kev pass the small synthetic comparison suite. Execution success does not imply numerical certification or measured accuracy. [Per-model reports](docs/models.md).
+- **Inputs:** up to 16 questions and 255 Choice candidates. Score limits, minimum candidates and token/work budgets vary by model; inspect `/v1/models`. No silent truncation, precision change, model fallback or retry.
 - **Release:** development preview, not an alpha-certified or production release. [Current container and release evidence](docs/development/STATUS.md).
 
 ## Documentation and contributing

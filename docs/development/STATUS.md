@@ -10,8 +10,10 @@ development image now builds and serves all three question types with no network
 and a read-only root filesystem. Cold startup and Compose real inference also
 pass. The shared daemon is unchanged. Source is now public on
 [GitHub](https://github.com/anonNo2/jevserve), and its first remote CPU CI run passed.
-The tested development image is public as `anonwx/jevserve:0.1.0-dev0`; anonymous
-manifest access, digest pull and offline CLI checks passed. No Python package is published.
+The tested generic development image is public as `anonwx/jevserve:0.1.0-dev1`; anonymous
+manifest access and digest pull passed. All seven catalog models completed real
+GPU/container checks; NeoHorse/Kev passed the small parity suite, while Open-Jev
+and JPT still have numerical differences. No Python package is published.
 
 ## Task tracking
 
@@ -26,7 +28,7 @@ manifest access, digest pull and offline CLI checks passed. No Python package is
 | T06 CLI/SDK | CLI/SDK and one-command cold container quickstart passed | Separate clean-host installation not run |
 | T07 Docker | Image build, cold online and offline GPU inference passed | Docker Hub development preview published and verified; numerical certification failed |
 | T08 Compose/offline/rollback | Compose real GPU and container offline inference passed | Image-version rollback drill not run |
-| T09 Multi-model extension | Seven pinned adapters/profiles integrated; JPT-0.8B GPU/container paths work | Larger model checks in progress; JPT probability parity fails |
+| T09 Multi-model extension | Seven pinned profiles completed real GPU/container checks | NeoHorse/Kev small-suite parity passed; Open-Jev/JPT probability parity fails |
 | T10 Observability/benchmark | Metrics and short sequential benchmark measured | Capacity study and 24/72-hour soak not run |
 | T11 CI/release | CPU workflow written; local checks pass | Remote CPU CI passed; certified image promotion/release absent |
 | T12 Open-source acceptance | Incomplete | Parity, rollback, clean-host and soak acceptance |
@@ -618,3 +620,64 @@ after its actual test matrix is complete.
 - Exact next action: JPT-4B author/container matrix is running; finish JPT-9B
   verified download and its matrix, then publish the already verified common
   artifact and synchronize bilingual README, model results and registry digest.
+
+- JPT-4B: all 10 author-reference and container requests executed, including
+  255-option boundaries. Native client, official SDK and wrong-model rejection
+  passed. Probability comparison failed **6/10**, maximum absolute error
+  **0.029479888502045526**, no Choice flips. Observed reservation **24,776 MiB**.
+  Reports: `validation/reports/jpt-4b-{reference,container,runtime}.json`.
+  Remaining model gate: JPT-9B download completion and GPU/container matrix.
+
+- JPT-9B complete source hash verification passed. The original idle-only
+  coordinator refused to start when an unrelated GPU process appeared (640 MiB
+  device usage, 0% utilization). No foreign process was stopped. A separate
+  validation invocation now explicitly caps the author Torch process at 0.5
+  GPU memory, matching the container budget; shared-GPU baseline is recorded
+  in its runtime report. This does not change model precision or probabilities.
+- Remote CPU CI for `acd0a69` passed:
+  https://github.com/anonNo2/jevserve/actions/runs/38264759213 .
+
+### Completed seven-model development matrix
+
+- JPT-9B: author reference and container executed all 10 cases, including
+  255-option boundaries; native client, official SDK and wrong-model rejection
+  passed. Probability tolerance failed **5/10**, maximum absolute error
+  **0.025075344554780332**, no Choice flips. Total GPU use after tests was
+  **25,333 MiB**, including the unrelated process (640 MiB total device baseline).
+  Reports identify the shared-GPU condition and explicit 0.5 reference budget.
+- All seven catalog profiles now have real GPU and container evidence. NeoHorse
+  and Kev passed the small synthetic probability suite; both Open-Jev sizes and
+  all three JPT sizes have recorded probability mismatches. No certified registry
+  entry, alpha/stable promotion, quality benchmark or soak success is claimed.
+- Local final checks: 168 CPU tests, Ruff, mypy (33 source files), sdist and wheel
+  build passed. Wheel inspection found seven model inventories, packaged notices
+  and no weight payloads. Final image offline catalog listed seven uncertified
+  profiles. The same image passed mounted offline Compose for two families,
+  default-model offline regression, and active GPU deadline cleanup.
+- Publishing the common image to `anonwx/jevserve:0.1.0-dev1`; registry digest
+  and anonymous pull verification will be recorded when complete.
+
+### Dev1 publication
+
+- Published Linux amd64 generic image: `anonwx/jevserve:0.1.0-dev1`.
+- Immutable registry digest:
+  `sha256:4b758ad1000f4d38501fd83f0a9c2b32f0cb91968d427b170a2c2b0d9a613aff`.
+  It matches the final artifact used by the recorded model/container regressions.
+- Anonymous Registry v2 manifest access verified the response content hash and
+  linux/amd64 platform. A Docker configuration with no credentials/helpers
+  successfully pulled the digest. Layers were already cached; this is not a
+  clean-host installation claim. `validation/reports/dev1-publication.json`
+  records the publication checks. Running that published digest with network
+  disabled listed all seven uncertified profiles. No `latest` or stable tag
+  was promoted.
+- Bilingual README now describes the generic image, mounted weights, model
+  documentation and per-model status. Quick Start includes the published tag,
+  immutable digest, preparation/mount paths and Compose instructions.
+- All project GPU validation containers were stopped; the unrelated GPU process
+  and shared Docker daemon were left untouched. Model caches stay project-local.
+
+Next development action: investigate the recorded Open-Jev/JPT probability
+misalignment without changing the frozen tolerance; then run rollback, clean-host
+installation and 24/72-hour soak gates before any certified release. Larger
+JEV-27B-VL/Xor profiles need explicit adapter and precision/offload engineering
+with their own evidence; they remain unsupported, not substituted or certified.

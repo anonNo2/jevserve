@@ -1,0 +1,24 @@
+{
+  "image": "anonwx/jevserve:0.1.0-dev1",
+  "digest": "sha256:4b758ad1000f4d38501fd83f0a9c2b32f0cb91968d427b170a2c2b0d9a613aff",
+  "anonymous_registry_manifest_verified": true,
+  "platforms": [
+    {
+      "architecture": "amd64",
+      "os": "linux"
+    }
+  ],
+  "scope": "development preview; mounted weights; numerical certification incomplete",
+  "anonymous_digest_pull": "passed; existing local layers reused",
+  "offline_digest_cli_catalog": "passed",
+  "catalog_model_ids": [
+    "ZefanCai/Open-Jev-2B",
+    "jaredpalmer/kev-4b",
+    "TokenRhythm/NeoHorse-Jev-4B",
+    "ZefanCai/Open-Jev-9B",
+    "kirp/jpt-0.8b",
+    "kirp/jpt-4b",
+    "kirp/jpt-9b"
+  ],
+  "weights_in_image": false
+}
