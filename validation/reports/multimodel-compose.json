@@ -1,0 +1,93 @@
+{
+  "scope": "real GPU, same generic image, two sequential readonly mounted models, network disabled",
+  "models": [
+    {
+      "model_id": "kirp/jpt-0.8b",
+      "revision": "1431c0509bbc10772cd59964cc7af5835c8720d6",
+      "image_id": "sha256:55742630ded5c4bd6fadf1fbd2f8b878cd61a308c8e4759a43e6b277ff7aa918",
+      "network": "none",
+      "read_only_weights": true,
+      "read_only_root": true,
+      "answers": {
+        "answers": {
+          "team": {
+            "probabilities": {
+              "technical": 0.04435439322756855,
+              "billing": 0.9556456067724316
+            },
+            "type": "choice",
+            "choice": "billing"
+          },
+          "urgent": {
+            "type": "noul",
+            "noul": 0.06713349929388424
+          },
+          "priority": {
+            "probabilities": {
+              "0": 0.9594031505878352,
+              "1": 0.01753358574599393,
+              "2": 0.023063263666170872
+            },
+            "type": "score",
+            "score": 0.06366011307833568,
+            "legend": {
+              "0": "Routine",
+              "1": "Soon",
+              "2": "Immediate"
+            }
+          }
+        },
+        "request_id": "14b876796c5947c7a75e57675913bc5b",
+        "model_revision": "1431c0509bbc10772cd59964cc7af5835c8720d6",
+        "adapter_revision": "jpt-llm2jev-2b252d5",
+        "execution_profile": "qwen35-token-bf16-v1",
+        "probability_kind": "candidate_softmax",
+        "calibration_id": null
+      }
+    },
+    {
+      "model_id": "TokenRhythm/NeoHorse-Jev-4B",
+      "revision": "434cb21d3a994a953d3ae5788405fcb2c4970554",
+      "image_id": "sha256:55742630ded5c4bd6fadf1fbd2f8b878cd61a308c8e4759a43e6b277ff7aa918",
+      "network": "none",
+      "read_only_weights": true,
+      "read_only_root": true,
+      "answers": {
+        "answers": {
+          "team": {
+            "probabilities": {
+              "technical": 0.003958588110211661,
+              "billing": 0.9960414118897885
+            },
+            "type": "choice",
+            "choice": "billing"
+          },
+          "urgent": {
+            "type": "noul",
+            "noul": 0.0016443522247105203
+          },
+          "priority": {
+            "probabilities": {
+              "0": 0.9672104916279446,
+              "1": 0.02752117601155549,
+              "2": 0.00526833236049986
+            },
+            "type": "score",
+            "score": 0.038057840732555206,
+            "legend": {
+              "0": "Routine",
+              "1": "Soon",
+              "2": "Immediate"
+            }
+          }
+        },
+        "request_id": "72d823b045734d08a4417067df350f90",
+        "model_revision": "434cb21d3a994a953d3ae5788405fcb2c4970554",
+        "adapter_revision": "neohorse-pointer-v1",
+        "execution_profile": "torch-pointer-bf16-v1",
+        "probability_kind": "candidate_softmax",
+        "calibration_id": null
+      }
+    }
+  ]
+}

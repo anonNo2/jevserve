@@ -12,6 +12,7 @@ RUN python3 -m hatchling build -t wheel
 FROM vllm/vllm-openai@sha256:082ca6f035279109041ffd3fe0695cb568b29bc580b35c4f297a66a08b216c1b
 WORKDIR /app
 LABEL org.opencontainers.image.title="JevServe" \
+      org.opencontainers.image.source="https://github.com/anonNo2/jevserve" \
       org.opencontainers.image.description="Serve text decision models through an HTTP API. Development preview." \
       org.opencontainers.image.licenses="Apache-2.0" \
       org.opencontainers.image.version="0.1.0.dev1"

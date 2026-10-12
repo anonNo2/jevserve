@@ -550,3 +550,34 @@ after its actual test matrix is complete.
 - Source-license audit corrected NeoHorse/Kev attribution to the actual pinned
   Apache-2.0 LICENSE and retained the vendored NOTICE. JPT protocol code remains
   MIT; model weight licenses are separate.
+
+### Additional GPU evidence and precision audit (in progress)
+
+- NeoHorse-Jev-4B: author GPU reference and common-container HTTP executed all
+  10 synthetic cases, including 255-option Choice/Score. All probability checks
+  passed; maximum absolute error 6.326030721481857e-8. Native client and official
+  `typesafe-sdk==0.7.4` passed. Observed allocation after tests: 10,050 MiB.
+- The same candidate image ran both JPT-0.8B and NeoHorse via Compose with network
+  disabled, read-only mounted weights/root, UID 10001, and real Choice/Noul/Score.
+  See `validation/reports/multimodel-compose.json` for exact image identity.
+- Kev's first reference/container comparison passed, but a memory audit exposed
+  an ignored FP32 loader argument: all 4,205,751,296 backbone parameters were
+  BF16. Initial reports were retained as `kev-4b-initial-bf16-*` and explicitly
+  invalidated for the declared precision profile. D028 records the correction.
+  A CPU load with the explicit text config found all backbone parameters FP32,
+  with no missing or mismatched checkpoint keys. Corrected GPU validation is
+  underway; no FP32 success is claimed until it completes.
+- Open-Jev-9B has now completed full pinned SHA-256 verification; GPU checks are
+  queued behind Kev. JPT-4B/9B still download in resumable, verified staging.
+- Reproduction: `python -m validation.model_matrix reference --model MODEL_ID
+  --model-dir VERIFIED_DIRECTORY --upstream PINNED_SOURCE --output REPORT`, then
+  `python -m validation.model_matrix http --model MODEL_ID --reference REPORT
+  --url http://127.0.0.1:8000 --output HTTP_REPORT` against the selected container.
+
+- Corrected Kev FP32 GPU reference and container rerun completed: **10/10**
+  probability comparisons passed, no Choice flips; native client and official
+  SDK passed. All reference backbone/head parameters were observed FP32; the
+  serving worker also asserts backbone precision. Observed GPU allocation:
+  **18,790 MiB**. Image identity and exact results are in `kev-4b-runtime.json`
+  and `kev-4b-container.json`. This supersedes the invalid initial BF16 profile.
+  CPU 168 tests, Ruff and mypy remain green. Next GPU task: Open-Jev-9B.

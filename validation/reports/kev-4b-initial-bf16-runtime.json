@@ -1,0 +1,11 @@
+{
+  "model_id": "jaredpalmer/kev-4b",
+  "container_image": "sha256:55742630ded5c4bd6fadf1fbd2f8b878cd61a308c8e4759a43e6b277ff7aa918",
+  "gpu_memory_mib_after_tests": 9428,
+  "weight_mount": "read-only",
+  "root_filesystem": "read-only",
+  "offline_model_load": true,
+  "precision_profile_valid": false,
+  "observed_backbone_precision": "bfloat16",
+  "scope": "Initial run invalidated by dtype audit; not evidence for the declared FP32 profile"
+}

@@ -1,26 +1,83 @@
-# Supported models and test results
+# Models and verification
 
-**Currently supported: Open-Jev-2B only, as a development preview.** It has
-passed real GPU serving, Docker, Compose, cold-start download and offline
-execution checks. It has **not** passed numerical certification against the
-author's reference implementation. “Tested” does not mean production-certified.
+JevServe uses **one generic runtime image with separately mounted weights**.
+The catalog below selects a pinned adapter, checkpoint and execution profile;
+it does not accept arbitrary chat models. Each container owns one model and one GPU.
+Current API support is **text Choice, Noul and Score only**. No vision capability
+is implied by a checkpoint's architecture or name.
 
-**目前仅支持 Open-Jev-2B（开发预览版）**：已通过真实 GPU 推理、Docker、Compose、
-首次下载及离线运行测试；与作者实现的数值一致性尚未通过认证。
+JevServe 使用一个通用镜像，模型权重独立挂载。每个容器运行一个模型、使用一张 GPU。
+下表区分“已接入”“真实推理测试”和“数值对照”，当前 API 仅支持文本，未实现图片输入。
+所有模型均为开发预览；合成用例通过不代表准确率评测或生产认证。
 
-## Support matrix
+## Integration and test matrix
 
-| Model | JevServe support | Tested behavior | Certification |
+| Model | Backend / precision | Real GPU / container test | Probability comparison | Weight license |
+|---|---|---|---|---|
+| [Open-Jev-2B](https://huggingface.co/ZefanCai/Open-Jev-2B) | vLLM pooling, BF16 backbone + FP32 scalar head | Passed Docker, Compose, cold download and offline; common-image regression passed | **Failed:** 36/110 HTTP cases in the original suite | Apache-2.0 |
+| [JPT-0.8B](https://huggingface.co/kirp/jpt-0.8b) | vLLM token readout, BF16 | 10 HTTP cases including 255 options; mounted offline Compose passed | **Failed:** see [container report](../validation/reports/jpt-0.8b-container.json); no Choice label flips | CC-BY-NC-4.0 |
+| [JPT-4B](https://huggingface.co/kirp/jpt-4b) | vLLM token readout, BF16 | Integration complete; GPU checks pending | Pending | CC-BY-NC-4.0 |
+| [JPT-9B](https://huggingface.co/kirp/jpt-9b) | vLLM token readout, BF16 | Integration complete; GPU checks pending | Pending | CC-BY-NC-4.0 |
+| [Open-Jev-9B](https://huggingface.co/ZefanCai/Open-Jev-9B) | vLLM pooling, BF16 backbone + FP32 scalar head | Integration complete; GPU checks pending | Pending | Apache-2.0 |
+| [NeoHorse-Jev-4B](https://huggingface.co/TokenRhythm/NeoHorse-Jev-4B) | Explicit Torch pointer backend, BF16 backbone + FP32 head | 10 HTTP cases, native/official SDK and mounted offline Compose passed | **Passed:** 10/10 synthetic comparisons; max error 6.33e-8 | Apache-2.0 |
+| [Kev-4B](https://huggingface.co/jaredpalmer/kev-4b) | Explicit Torch pointer backend, FP32 | 10 HTTP cases and native/official SDK passed | **Passed:** 10/10 with documented FP32 loader correction | Apache-2.0 |
+
+The certified registry remains empty. Models require `--allow-uncertified`.
+Torch pointer execution is a selected model profile, never a fallback after a
+vLLM failure. Active Torch cancellation terminates the GPU worker and requires
+an explicit service restart; queued cancellation does not kill another request.
+
+## Larger candidates on the current GPU
+
+| Candidate | Verified observation | JevServe status |
+|---|---|---|
+| [autotrust/JEV-27B-VL](https://modelscope.cn/models/autotrust/JEV-27B-VL) | Published inventory ~56.05 GB; author recommends an 80 GB GPU. BF16 weights alone exceed this 48 GiB GPU. Custom decision bias/temperature and VL processing need their own adapter. | Not integrated or GPU-tested. No quantized/offloaded/vision profile is claimed. |
+| [Xor 1.2, 35B-A3B](https://huggingface.co/juspay/xor/tree/release%2Fxor-1.2) | Published inventory ~70.24 GB; the 3B active-expert count does not make all BF16 weights fit in 48 GiB. Author serving uses a patched SGLang path and forward/reverse-option averaging. | Not integrated or GPU-tested. A smaller model is not silently substituted. |
+| [Laya](https://huggingface.co/convaiinnovations/laya) | ModernBERT plus custom decision heads, with multiple variants | Investigated; no adapter or GPU result yet. |
+
+An explicitly engineered CPU-offload or quantized profile might change the
+memory requirement, but it needs separate protocol and probability tests. These
+limitations describe the current implementation, not a claim that the hardware
+can never run those models by other methods.
+
+## Model-specific bounds
+
+| Family | Choice candidates | Score levels | Context / work bounds |
 |---|---|---|---|
-| [`ZefanCai/Open-Jev-2B`](https://huggingface.co/ZefanCai/Open-Jev-2B) | Default model; text Choice, Noul and Score | Real NVIDIA GPU, native HTTP/client, official SDK text subset, Docker, Compose, cold download, offline, graceful stop | **Uncertified**: probability parity fails |
-| `Qwen/Qwen3.5-2B` | Pinned backbone dependency of Open-Jev-2B | Loaded as part of the decision model above | Not a separately supported Jev endpoint |
-| `convaiinnovations/laya` | Not implemented | Not tested by JevServe | Not supported |
-| TypeSafe's official Jev weights / other checkpoints | Not included or accepted by the current model catalog | Not tested by JevServe | Not supported |
+| Open-Jev | 1–255 | 2–10 | 4,096 tokens per candidate; 65,536 summed input tokens |
+| JPT | 2–255 | 2–255 | 4,095 input tokens per question plus one readout token; 65,536 summed tokens |
+| NeoHorse / Kev | 1–255 | 2–255 | 2,048 state tokens; 4,096 per question row; 8,192 summed and padded tokens |
 
-The model selector accepts only `ZefanCai/Open-Jev-2B`; there is no automatic
-substitution or generic “any Hugging Face model” support. The certified registry
-in `models/registry.yaml` remains empty. The locked development model remains
-`pending` certification, even though container smoke gates have passed.
+All profiles additionally bound questions, candidate work, queue length and
+deadlines. See `/v1/models` for the served profile. Token templates, candidate
+order and checkpoint temperature are preserved. JPT uses one masked candidate
+readout per question; its checkpoint temperature is applied once. Softmax and
+`confidence` are not calibrated accuracy. Score confidence follows each adapter
+family's published definition; API usage counters describe this service's work,
+not provider billing.
+
+## Pinned inventories
+
+`prepare --model MODEL_ID` downloads to staging, checks every file's size and
+SHA-256, then publishes atomically. `serve --model MODEL_ID --model-dir PATH
+--offline` verifies mounted files without downloading. [Commands and directory
+layout](quickstart.md#mounted-models).
+
+| Model ID | Checkpoint revision | Temperature | Source download (decimal GB) |
+|---|---|---|---|
+| `ZefanCai/Open-Jev-2B` | `0c7aa498b1627be8da4acf34c863ff0ee0a92785` | 1.518796342858676 | 4.58 |
+| `jaredpalmer/kev-4b` | `6cfce5c2fa4b4bd64026336ab649c5ca78857d52` | 2.406050072164233 | 9.50 |
+| `TokenRhythm/NeoHorse-Jev-4B` | `434cb21d3a994a953d3ae5788405fcb2c4970554` | 1.0 | 9.15 |
+| `ZefanCai/Open-Jev-9B` | `47e966881e489511c0c7f5633a9e1960a676a551` | 1.8969118766347646 | 19.36 |
+| `kirp/jpt-0.8b` | `1431c0509bbc10772cd59964cc7af5835c8720d6` | 1.14 | 1.74 |
+| `kirp/jpt-4b` | `78312f855b8bebf83ae7e9e8f05b5a0f73f519a9` | 1.036 | 9.11 |
+| `kirp/jpt-9b` | `9fda2c7f123d36c4789c46c93737e80fc3a6c9fe` | 1.087 | 18.85 |
+
+Full file hashes and pinned base-model dependencies are shipped in
+[`src/jevserve/data`](../src/jevserve/data). Source download size is not minimum
+VRAM. JPT weights are noncommercial under CC-BY-NC-4.0; the runtime's Apache-2.0
+license does not replace any model license. Weights are downloaded separately
+and are not redistributed in the Docker image.
 
 ## What was actually tested
 
@@ -44,99 +101,33 @@ numerical certification. A separate clean-host installation, image rollback
 exercise and 24/72-hour soak are not complete. See [development status](development/STATUS.md)
 for commands, scope, failures and remaining release gates.
 
-## Verified sources
 
-- [Open-Jev-2B](https://huggingface.co/ZefanCai/Open-Jev-2B/tree/0c7aa498b1627be8da4acf34c863ff0ee0a92785): revision `0c7aa498b1627be8da4acf34c863ff0ee0a92785`.
-- [Base Qwen3.5-2B](https://huggingface.co/Qwen/Qwen3.5-2B/tree/15852e8c16360a2fea060d615a32b45270f8a8fc): revision `15852e8c16360a2fea060d615a32b45270f8a8fc`.
-- [Author implementation](https://github.com/Zefan-Cai/Open-Jev/tree/bd4118882f733574a3250a4b65fe4d884130c08b): MIT source, separate from the weights.
-- [vllm-jev](https://github.com/mode-io/vllm-jev/tree/eae6b2d6dd06fb014118c99f660261cf4ecf04f9): Apache-2.0, declares vLLM 0.29.0.
+## Reproduce the additional comparison suite
 
-The checkpoint and base licenses were read at the pinned revisions: Apache-2.0.
-Keep their notices when redistributing. Source code is MIT. No model weights are
-committed or publicly redistributed by this repository. The published training
-mixture has redistribution caveats; reference inputs here are synthetic and do
-not copy that dataset.
+The [matrix harness](../validation/model_matrix.py) runs author reference and
+container HTTP phases separately so they do not occupy the GPU together.
+Use the pinned upstream source from the corresponding inventory, a verified
+model directory and the same frozen tolerance in `compat/parity-profile.json`.
+The suite includes Chinese text, structured state, candidate order, boundary
+markers, multiple questions and 255-option Choice/Score requests. It is a small
+synthetic compatibility suite, not a representative quality benchmark.
 
-## Semantics that must be preserved
+- [JPT author's token encoding replay](../validation/reports/jpt-encoding.json)
+- [NeoHorse author's encoding and readout positions](../validation/reports/neohorse-encoding.json)
+- [JPT-0.8B GPU reference](../validation/reports/jpt-0.8b-reference.json)
+- [JPT-0.8B container probabilities](../validation/reports/jpt-0.8b-container.json)
+- [NeoHorse-Jev-4B container probabilities](../validation/reports/neohorse-jev-4b-container.json)
+- [Kev-4B FP32 reference and dtype audit](../validation/reports/kev-4b-reference.json)
+- [Kev-4B FP32 container probabilities](../validation/reports/kev-4b-container.json)
+- [Same-image mounted offline Compose](../validation/reports/multimodel-compose.json)
 
-This checkpoint is LoRA plus a scalar head, requiring the separately pinned base
-model. It is not a standalone generative checkpoint. The author compiles each
-candidate independently, applies the tokenizer chat template with thinking off,
-and reads the last non-padding hidden state through the FP32 scalar head.
-The backbone defaults to BF16. Noul uses logits `[0, score]` in false/true order.
-Choice and Score retain caller candidate order. Score is a zero-based ordinal
-expectation. The saved temperature `1.518796342858676` is applied once before
-softmax. Retaining that temperature does not establish calibration on user data;
-JevServe's `calibration_id` remains null.
+Record runtime, precision and revision with every result. A passing CPU suite,
+a successful Docker build, a working GPU endpoint and probability parity are
+separate gates. Full certification, clean-host installation and soak tests
+remain outstanding. [Development status](development/STATUS.md).
 
-Author bounds are Choice 1–255, Score 2–10, 4096 tokens per candidate. Native
-contracts deliberately separate structural validation from these model limits.
-The native protocol restricts instructions/descriptions to text, rejects empty
-state and unknown fields, and accepts at most 16 questions. The tested official SDK subset is documented in [API compatibility](../compat/README.md);
-native schemas do not claim full System One parity.
-
-## Pinned runtime and reference environment
-
-`compat/engine-lock.json` records the pinned upstream linux/amd64 image digest,
-source commit and observed serving-package versions. The tested JevServe image
-adds the hash-pinned runtime dependencies and a non-root service account. Image
-and container evidence live in [the container report](../validation/reports/container-smoke.json).
-A certified minimum driver has not been established.
-
-The author's Transformers 5.10.2/PEFT 0.19.1 environment remains isolated from
-the vLLM serving environment. Do not upgrade the author environment to resolve
-engine dependencies. Hash-pinned reference requirements are in
-`compat/reference-requirements.txt`; serving requirements are in
-`compat/runtime-requirements.txt`.
-
-## Reproduce the baseline
-
-Use a project-local Python 3.12 environment. After `uv sync --locked`:
-
-```bash
-python -m validation.acquire --cache .local/baseline
-# Prints checkpoint and base directories; pass those to the reference command.
-python -m validation.acquire --cache .local/baseline --offline
-```
-
-Prepare a separate reference environment, clone the author repository, and
-checkout the exact revision above. Install its inference requirements without
-installing training/dataset extras:
-
-```bash
-uv venv --python 3.12 .local/reference-venv
-uv pip sync --python .local/reference-venv/bin/python --require-hashes compat/reference-requirements.txt
-.local/reference-venv/bin/python -m validation.reference \
-  --upstream .local/upstream/Open-Jev \
-  --checkpoint CHECKPOINT_DIRECTORY --base BASE_DIRECTORY \
-  --cache .local/reference-cache \
-  --output validation/reports/open-jev-reference.json
-```
-
-The runner verifies all inventory hashes and author commit before loading, uses
-an isolated offline Hub snapshot, requires CUDA, and records tokens, masks,
-logits and probabilities. No reference output is fabricated when dependencies or
-weights are unavailable. `compat/parity-profile.json` freezes tolerances before
-measurement. Empty-state author behavior is recorded separately from the stricter
-native request contract. `python -m validation.locks` must fail until certification
-and its report are complete.
-
-## Encoding evidence
-
-`validation/reports/open-jev-encoding.json` records 110 CPU cases using the pinned
-real tokenizer and clean author source. The adapter matched every token sequence
-and answer-key order. This does not execute the scalar head or certify inference.
-The baseline lock binds the report digest. `validation.encoding` reproduces the
-comparison in a tokenizer environment; ordinary CPU tests replay its token rows
-without downloading models or importing a GPU library.
-
-## Author GPU reference evidence
-
-`validation/reports/open-jev-reference.json` contains 113 actual author GPU
-executions on RTX A6000 with no failures. All source/weight hashes were checked
-before offline loading. Observed Torch is 2.12.0+cu130; the ordinary author Torch
-path ran without optional FLA/causal-conv1d kernels or prefix cache. Backbone/LoRA
-parameters include BF16/FP32 and the scalar head is FP32. The saved temperature
-was preserved. Replaying these logits through the native adapter matches the
-author's probabilities and answer mapping. The separately recorded Docker/Compose smoke checks now pass, but the failed
-vLLM probability comparison still blocks numerical certification.
+Kev's FP32 reference uses the pinned author code with a local configuration view
+setting both outer and text-config dtype to FP32. Transformers 5.10.4 otherwise
+ignored the outer argument and loaded BF16. All loaded backbone parameter dtypes
+are checked. Initial BF16 reports are retained but invalidated for this FP32
+profile; see [D028](development/DECISIONS.md).

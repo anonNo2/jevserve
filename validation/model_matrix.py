@@ -33,6 +33,44 @@ def verify_upstream(directory, revision):
         raise ValueError("upstream reference source must be clean and pinned")
 
 
+def fp32_reference_view(base, cache, identity):
+    """Keep author code untouched; fix only its nested config's ignored dtype.
+
+    Weights remain symlinks to the verified original bytes. This is recorded in
+    the report and is not presented as an unmodified author benchmark run.
+    """
+    view = cache.resolve() / (identity + "-fp32-config-v1")
+    if view.is_symlink():
+        raise ValueError("reference configuration view is a symlink")
+    view.mkdir(parents=True, exist_ok=True)
+    config = json.loads((base / "config.json").read_text())
+    for item in (config, config["text_config"]):
+        item["dtype"] = "float32"
+        if "torch_dtype" in item:
+            item["torch_dtype"] = "float32"
+    encoded = json.dumps(config, sort_keys=True, indent=2) + "\n"
+    for source in base.rglob("*"):
+        if not source.is_file():
+            continue
+        relative = source.relative_to(base)
+        target = view / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        if relative.as_posix() == "config.json":
+            if target.is_symlink():
+                raise ValueError("reference configuration file is a symlink")
+            if target.exists():
+                if target.read_text() != encoded:
+                    raise ValueError("reference configuration view differs")
+            else:
+                with target.open("x") as stream:
+                    stream.write(encoded)
+        elif not target.exists() and not target.is_symlink():
+            target.symlink_to(source.resolve())
+        elif not target.is_symlink() or target.resolve() != source.resolve():
+            raise ValueError("reference weight link differs")
+    return view
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("mode", choices=["reference", "http"])
@@ -40,6 +78,9 @@ def main():
     parser.add_argument("--model-dir", type=Path)
     parser.add_argument("--upstream", type=Path)
     parser.add_argument("--reference-wheel", type=Path)
+    parser.add_argument(
+        "--reference-cache", type=Path, default=Path(".local/model-matrix-reference-cache")
+    )
     parser.add_argument("--url", default="http://127.0.0.1:8000")
     parser.add_argument("--reference", type=Path)
     parser.add_argument("--output", type=Path, required=True)
@@ -105,9 +146,25 @@ def main():
             torch.set_num_threads(4)
             torch.backends.cuda.matmul.allow_tf32 = False
             checkpoint = Checkpoint(str(model.path / "checkpoint"))
-            checkpoint.meta.base = str(model.path / "base")
+            checkpoint.meta.base = str(
+                fp32_reference_view(
+                    model.path / "base", args.reference_cache, model.manifest.identity
+                )
+            )
+            report["reference_config_override"] = {
+                "dtype": "float32",
+                "text_config.dtype": "float32",
+            }
             checkpoint.meta.base_revision = None
             tok, backbone = checkpoint.load("cuda", LoadOptions(dtype=torch.float32, attn="sdpa"))
+
+            observed = sorted({str(p.dtype) for p in backbone.lm.parameters()})
+            if observed != ["torch.float32"]:
+                raise ValueError("Kev reference did not load the declared FP32 precision")
+            report["backbone_parameter_dtypes"] = observed
+            report["head_parameter_dtypes"] = sorted(
+                {str(p.dtype) for p in backbone.head.parameters()}
+            )
 
             def call(data):
                 record, meta = to_record(SystemOneRequest(**data))
@@ -117,9 +174,13 @@ def main():
                 return to_answers(probs, meta)
         else:
             parser.error("use validation.reference for scalar Open-Jev models")
+        report["reference_environment"] = (
+            "pinned author source executed under JevServe runtime packages; not the author benchmark environment"
+        )
         report["upstream_revision"] = selected["upstream_code"]["revision"]
         report["packages"] = {
-            name: importlib.metadata.version(name) for name in ["torch", "transformers"]
+            name: importlib.metadata.version(name)
+            for name in ["torch", "transformers", "peft", "safetensors"]
         }
         for index, data in enumerate(requests()):
             start = time.monotonic()

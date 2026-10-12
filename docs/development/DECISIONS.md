@@ -130,3 +130,13 @@ Add material changes with evidence, compatibility consequences and affected task
   silently select BF16 to save VRAM. The shared image pins the same Torch,
   Transformers, PEFT and safetensors versions for the pointer worker. NeoHorse
   separately retains its author's merged BF16-backbone/FP32-head loading path.
+
+- **D028 — Verify the loaded precision, not only the loader argument.** A GPU
+  memory audit found Transformers 5.10.4's multimodal-to-text config extraction
+  discarded Kev's outer FP32 argument: the initial backbone was actually BF16.
+  Those initial reports are retained with `precision_profile_valid: false`.
+  Production now passes the extracted text config with explicit FP32 and checks
+  every merged backbone parameter. Reference author code remains unchanged, but
+  runs against a documented local configuration view setting both outer and
+  nested dtype to FP32; weight bytes remain the pinned originals. This is a
+  corrected loader profile, not an unmodified author benchmark environment.

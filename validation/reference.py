@@ -123,11 +123,22 @@ def main():
     parser = argparse.ArgumentParser(__doc__)
     for name in ("upstream", "checkpoint", "base", "cache", "output"):
         parser.add_argument("--" + name, type=Path, required=True)
-    parser.add_argument("--model", default="ZefanCai/Open-Jev-2B")
+    parser.add_argument(
+        "--model", default="ZefanCai/Open-Jev-2B",
+        choices=["ZefanCai/Open-Jev-2B", "ZefanCai/Open-Jev-9B"],
+    )
     args = parser.parse_args()
-    from jevserve.artifacts.catalog import profile
-
-    lock = profile(args.model)
+    for name, version in {
+        "torch": "2.12.0",
+        "transformers": "5.10.2",
+        "peft": "0.19.1",
+        "safetensors": "0.7.0",
+    }.items():
+        if importlib.metadata.version(name).split("+")[0] != version:
+            raise RuntimeError("reference packages differ from compat/reference-requirements.txt")
+    # Keep the author environment independent of production API dependencies.
+    inventory = args.model.split("/")[-1].lower() + ".json"
+    lock = json.loads((ROOT / "src/jevserve/data" / inventory).read_text())
     reference_revision = json.loads((ROOT / "models/locks/open-jev-2b.json").read_text())[
         "reference_revision"
     ]

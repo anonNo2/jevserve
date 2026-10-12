@@ -77,7 +77,7 @@ def _worker(connection: Any, model_path: str, memory_fraction: float, model_id: 
             weights = load_file(str(root / "pointer_head.safetensors"))
         elif selected["adapter"] == "kev":
             from peft import PeftModel
-            from transformers import AutoModelForCausalLM
+            from transformers import AutoConfig, AutoModelForCausalLM
 
             meta = torch.load(root / "checkpoint/head.pt", map_location="cpu", weights_only=True)
             if (
@@ -91,9 +91,19 @@ def _worker(connection: Any, model_path: str, memory_fraction: float, model_id: 
                 or meta["temperature"] != selected["temperature"]
             ):
                 raise ValueError("unsupported Kev checkpoint metadata")
-            # Explicit FP32 reference profile: no BF16 rounding or quantization.
+            adapter_config = json.loads((root / "checkpoint/adapter_config.json").read_text())
+            if adapter_config.get("kasa_config") is not None:
+                raise ValueError("unsupported nondefault Kev adapter extension")
+            # AutoModel's multimodal-to-text extraction otherwise discards the outer
+            # dtype argument in Transformers 5.10.4. Set the actual text config.
+            config = AutoConfig.from_pretrained(
+                root / "base", local_files_only=True
+            ).get_text_config()
+            config.dtype = torch.float32
+            # Explicit FP32 profile: merge only after the base really is FP32.
             backbone = AutoModelForCausalLM.from_pretrained(
                 root / "base",
+                config=config,
                 dtype=torch.float32,
                 attn_implementation="sdpa",
                 local_files_only=True,
@@ -107,6 +117,8 @@ def _worker(connection: Any, model_path: str, memory_fraction: float, model_id: 
                 .to("cuda")
                 .eval()
             )
+            if any(p.dtype != torch.float32 for p in lm.parameters()):
+                raise ValueError("Kev backbone did not retain the declared FP32 precision")
             weights = meta["head"]
         else:
             raise ValueError("unsupported pointer backend")

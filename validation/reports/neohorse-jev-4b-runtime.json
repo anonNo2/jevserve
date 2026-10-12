@@ -1,0 +1,8 @@
+{
+  "model_id": "TokenRhythm/NeoHorse-Jev-4B",
+  "container_image": "sha256:55742630ded5c4bd6fadf1fbd2f8b878cd61a308c8e4759a43e6b277ff7aa918",
+  "gpu_memory_mib_after_tests": 10050,
+  "weight_mount": "read-only",
+  "root_filesystem": "read-only",
+  "offline_model_load": true
+}
