@@ -1,0 +1,26 @@
+{
+  "state": "I was charged twice and want a refund. No urgency.",
+  "questions": {
+    "team": {
+      "type": "choice",
+      "instructions": "Which team should handle this?",
+      "criteria": {
+        "technical": "Software and setup",
+        "billing": "Payments and refunds"
+      }
+    },
+    "urgent": {
+      "type": "noul",
+      "instructions": "Does this need an urgent response?"
+    },
+    "priority": {
+      "type": "score",
+      "instructions": "How urgent is this request?",
+      "criteria": [
+        "Routine",
+        "Soon",
+        "Immediate"
+      ]
+    }
+  }
+}

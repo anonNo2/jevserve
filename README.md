@@ -1,74 +1,112 @@
-# JevServe
+<p align="center">
+  <img src="docs/assets/brand/jevserve-logo.png" alt="JevServe" width="480">
+</p>
 
-**Serve Jev-style models. One command.**
+<p align="center"><strong>Turn text into decisions.</strong></p>
+<p align="center">Self-hosted decision models. One GPU. One HTTP API.</p>
+<p align="center"><a href="README.zh-CN.md">简体中文</a> · <a href="#quick-start">Quick Start</a> · <a href="docs/quickstart.md">Deployment guide</a> · <a href="compat/README.md">API compatibility</a></p>
 
-[简体中文](README.zh-CN.md) · [Design](docs/plans/JevServe-design.md) · [Evidence and next steps](docs/development/STATUS.md)
+JevServe runs open Jev-style decision models on your NVIDIA GPU. Send text and a question; get a typed answer with probabilities. Use it to route support tickets, flag urgent messages, or score content against a rubric.
 
-JevServe serves text Choice, Noul and Score decisions on one Linux NVIDIA GPU. One API process owns one vLLM engine. It is independent of **TypeSafe AI** and **JevServe-Bench**; it does not distribute TypeSafe's official Jev weights or imply their endorsement.
+| Ask the model to… | Question type | Answer |
+|---|---|---|
+| Choose a support team | **Choice** | A label and probabilities for each option |
+| Decide whether a message is urgent | **Noul** | A probability between 0 and 1 |
+| Rate priority from low to high | **Score** | An expected level and its distribution |
 
-**Development milestone:** the CLI → HTTP → vLLM → real `ZefanCai/Open-Jev-2B` path runs on an RTX A6000. Native SDK, bounded admission, deadlines, cancellation, health checks, metrics and verified offline artifact loading are implemented. **No model is certified:** the current engine failed 38/113 pretokenized reference comparisons at the frozen tolerance (maximum probability error 0.0218; no label flips). Docker creation on the development host fails before the entrypoint; image build and both container inference paths remain unverified. No image or package has been published.
+Built on **vLLM**, with a Python client, bounded request queues, cancellation, health checks, and an offline mode. Currently serves **[Open-Jev-2B](https://huggingface.co/ZefanCai/Open-Jev-2B)**.
 
-## Run from source
+> **Developer preview.** Real GPU inference works; numerical alignment with the author's implementation is not yet certified. See [known limitations](#status-and-limitations) before relying on the results.
 
-Use a project-local Python 3.12 environment and a compatible NVIDIA host. The runtime lock is large and includes CUDA dependencies. Do not replace system Python or CUDA.
+## Quick Start
+
+You need **Linux x86_64, an NVIDIA GPU, Docker, and NVIDIA Container Toolkit**. The host does not need Python or CUDA Toolkit. Tested host: RTX A6000. See [deployment requirements](docs/quickstart.md#requirements).
+
+From a checkout of this repository:
 
 ```bash
-uv venv --python 3.12 .venv-runtime
-uv pip sync --python .venv-runtime/bin/python --require-hashes compat/runtime-requirements.txt
-uv pip install --python .venv-runtime/bin/python --no-deps .
-.venv-runtime/bin/jevserve serve --allow-uncertified --cache-dir .cache/jevserve
+./scripts/quickstart.sh --build
 ```
 
-The development flag acknowledges incomplete certification; it does not relax parity thresholds. First start downloads exact source revisions, verifies hashes, derives the text checkpoint without merging FP32 LoRA weights, loads the GPU engine and warms it up. Readiness becomes available after startup. Subsequent starts reverify the cache; add `--offline` to prohibit model downloads. [Detailed setup and operation](docs/development/IMPLEMENTATION.md).
+This builds the development image, starts JevServe on `127.0.0.1:8000`, waits for the model to load, and runs a real request covering all three question types. The service stays running. The first start downloads the pinned model; subsequent starts reuse the `jevserve-cache` volume.
+
+**Docker Hub publication is being prepared.** Until a tested image is published, the command above builds locally; there is no claimed public pull tag.
+
+### Make a decision
 
 ```bash
-.venv-runtime/bin/jevserve check
 curl -fsS http://127.0.0.1:8000/v1/decisions \
   -H 'Content-Type: application/json' \
-  -d '{"state":"I was charged twice.","questions":{"team":{"type":"choice","instructions":"Which team should handle this?","criteria":{"billing":"Payments and refunds","technical":"Technical problems"}}}}'
+  -d '{
+    "state": "I was charged twice and want a refund.",
+    "questions": {
+      "team": {
+        "type": "choice",
+        "instructions": "Which team should handle this?",
+        "criteria": {
+          "billing": "Payments and refunds",
+          "technical": "Software and setup"
+        }
+      }
+    }
+  }'
 ```
 
-The native Python client is `jevserve.client.Client`; `decide()` accepts a `DecisionRequest` or dictionary and returns a validated response. It performs no retries.
+Read `answers.team.choice` for the selected team and `answers.team.probabilities` for the candidate distribution. Responses also identify the model revision and execution profile. [Try all three types](examples/decision.json).
 
-## Container paths — implemented, not yet verified
-
-The Dockerfile pins the upstream vLLM image by digest. The Compose configuration passes structural validation. The following still require successful build and real GPU verification on a working Docker host:
+### Docker Compose
 
 ```bash
-docker build -t jevserve:dev .
-docker run --rm --name jevserve-dev --gpus device=0 --shm-size=1g \
-  -p 127.0.0.1:8000:8000 -v jevserve-cache:/cache \
-  jevserve:dev serve --allow-uncertified
-# Alternative:
 docker compose up --build -d
+docker compose exec jevserve jevserve check --wait-seconds 1800
 ```
 
-## API and limits
+Use either Quick Start or Compose on port 8000. [Custom ports, GPU selection, authentication, offline startup, and cleanup →](docs/quickstart.md)
 
-| Endpoint | Behavior |
-|---|---|
-| `POST /v1/decisions` | Native answers and execution metadata |
-| `POST /v1/systemone` | Tested text-question subset of `typesafe-sdk==0.7.4`; exact model ID required |
-| `GET /v1/models` | Model revision and capability limits |
-| `GET /livez`, `/readyz` | API liveness and engine readiness |
-| `GET /metrics` | Prometheus counters, latency and admission gauges |
+## Use Python
 
-Native state is nonempty text or a JSON object. Instructions and descriptions are text; Choice permits null descriptions. Score accepts 2–10 ordered levels. The compatibility endpoint does not promise the hosted API's full object/array question schema or model aliases. [Compatibility details](compat/README.md).
+The native client accepts the same request dictionary as the HTTP API:
 
-Requests are bounded by 1 MiB, 16 questions, 256 candidate sequences, 4096 tokens per candidate and 65536 total input tokens. Defaults: 16 active requests, 64 waiting, 30-second deadline. Inputs are never silently truncated. Bearer authentication uses `--api-key-file`; health endpoints remain public. Bind to loopback by default.
+```python
+from jevserve.client import Client
 
-Probabilities describe the supplied candidate set, **not calibrated accuracy**. `calibration_id` is null; Score is an ordinal expectation. There is no fake production engine, automatic retry, model fallback, quantization or precision fallback.
+with Client("http://127.0.0.1:8000") as client:
+    result = client.decide({
+        "state": "Production is down for all users.",
+        "questions": {
+            "urgent": {
+                "type": "noul",
+                "instructions": "Does this need an urgent response?",
+            }
+        },
+    })
+    print(result.answers["urgent"].noul)
+```
 
-## Development and release gates
+Install the client from this checkout with `pip install .` in a Python 3.12 virtual environment. The client does not install GPU dependencies or retry requests. A tested text-question subset of `typesafe-sdk==0.7.4` is available at `/v1/systemone`; see [compatibility](compat/README.md).
+
+## Status and limitations
+
+- **Model:** Open-Jev-2B; text only, one model and one GPU per container.
+- **Numerics:** the latest pooling comparison failed 38/113 cases at the frozen probability tolerance; no label flips were observed. These probabilities are not calibrated accuracy. [Reports](docs/development/STATUS.md).
+- **Inputs:** up to 16 questions; Choice up to 255 candidates; Score 2–10 text levels. Additional token/work limits apply. No silent truncation, precision change, model fallback, or retry.
+- **Release:** development preview, not an alpha-certified or production release. [Current container and release evidence](docs/development/STATUS.md).
+
+## Documentation and contributing
+
+[Deployment](docs/quickstart.md) · [Development setup](docs/development/IMPLEMENTATION.md) · [Architecture](docs/plans/JevServe-design.md) · [Model details](docs/models.md) · [Contributing](CONTRIBUTING.md)
 
 ```bash
 uv sync --locked
 uv run pytest -q
 uv run ruff check .
 uv run mypy
-uv run python -m build --no-isolation
 ```
 
-CPU tests require no GPU imports or model downloads. Author GPU reference, engine parity, container build, Docker/Compose inference and long-duration soak are separate gates. See [STATUS](docs/development/STATUS.md), [decisions](docs/development/DECISIONS.md) and [contribution guide](CONTRIBUTING.md).
+CPU tests need no GPU or model downloads. Bug reports and contributions are welcome; please include your runtime version and a minimal reproducible example.
 
-Alpha targets one image, one model and one GPU. Kubernetes, training, a web UI, multimodal, multi-node and a Triton implementation are out of scope. A second model is optional. Project code is Apache-2.0; upstream code notices and model licenses are preserved separately in [NOTICE](NOTICE) and `licenses/`.
+## License
+
+Apache-2.0. Upstream code and model licenses are documented in [NOTICE](NOTICE) and [model details](docs/models.md).
+
+JevServe is an independent project, unaffiliated with TypeSafe AI or JevServe-Bench. It does not include TypeSafe's official Jev weights.

@@ -68,10 +68,39 @@ def parser() -> argparse.ArgumentParser:
         command = sub.add_parser(name)
         command.add_argument("--url", default="http://127.0.0.1:8000")
         command.add_argument("--api-key-file", type=Path)
+        if name == "check":
+            command.add_argument(
+                "--wait-seconds",
+                type=int,
+                default=0,
+                help="Wait up to 1800 seconds for readiness before one inference check",
+            )
         if name == "benchmark":
             command.add_argument("--requests", type=int, default=20)
             command.add_argument("--output", type=Path, required=True)
     return root
+
+
+def wait_for_ready(http: httpx.Client, url: str, wait_seconds: int) -> None:
+    """Poll readiness only; inference is still attempted exactly once."""
+    if not 0 <= wait_seconds <= 1800:
+        raise ValueError("readiness wait must be 0..1800 seconds")
+    deadline = time.monotonic() + wait_seconds
+    while True:
+        try:
+            remaining = deadline - time.monotonic()
+            timeout = max(0.001, min(5.0, remaining)) if wait_seconds else 5.0
+            response = http.get(url.rstrip("/") + "/readyz", timeout=timeout)
+            if response.status_code != 503 or not wait_seconds:
+                response.raise_for_status()
+                return
+        except httpx.TransportError:
+            if not wait_seconds:
+                raise
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise TimeoutError("model did not become ready within the requested budget")
+        time.sleep(min(1.0, remaining))
 
 
 def run(args: argparse.Namespace) -> None:
@@ -199,7 +228,7 @@ def run(args: argparse.Namespace) -> None:
             raise RuntimeError("runtime startup or engine failed")
     elif args.command == "check":
         with httpx.Client(timeout=10) as http:
-            http.get(args.url.rstrip("/") + "/readyz").raise_for_status()
+            wait_for_ready(http, args.url, args.wait_seconds)
         with Client(args.url, api_key_file=args.api_key_file) as client:
             print(client.decide(sample_request()).model_dump_json(indent=2))
     elif args.command == "benchmark":

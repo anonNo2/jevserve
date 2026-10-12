@@ -5,26 +5,28 @@
 A usable **development prototype** now loads real Open-Jev-2B through vLLM and
 serves Choice/Noul/Score over HTTP. CLI, native SDK, bounded lifecycle, artifact
 preparation, Dockerfile and Compose framework are implemented. This is **not an
-alpha release or certified model**: frozen numerical parity fails and this
-host cannot create Docker containers. No image/package is published.
+alpha release or certified model**: frozen numerical parity still fails. A real
+development image now builds and serves all three question types with no network
+and a read-only root filesystem. Cold startup and Compose real inference also
+pass. The shared daemon is unchanged. No image/package is published.
 
 ## Task tracking
 
 | Task | Status | Remaining evidence |
 |---|---|---|
-| T00 Baseline | Author reference complete; engine measured | GPU parity failed; Docker baseline blocked |
-| T01 Contracts | CPU complete | 130 CPU tests across current implementation |
-| T02 Artifacts | Preparation and serve integration implemented | Container offline/network-isolation exercise |
+| T00 Baseline | Author reference complete; engine measured | GPU parity failed; isolated Docker CPU/GPU baseline passed |
+| T01 Contracts | CPU complete | 134 CPU tests across current implementation |
+| T02 Artifacts | Cold online preparation and real container offline inference passed | Broader release/fault matrix remains |
 | T03 Adapter | Encoding/readout and fixed FP32 LoRA implemented | Numerical alignment still fails; not certified |
 | T04 Runtime | Real GPU/HTTP inference works | Resolve 38/113 latest pretokenized and 36/110 HTTP parity failures |
 | T05 API/lifecycle | Native and SDK subset implemented | Broader release/fault/soak coverage remains |
-| T06 CLI/SDK | prepare/serve/models/doctor/check/benchmark implemented | Clean-host quickstart not run |
-| T07 Docker | Dockerfile written; base digest pinned | Image build and inference not run; daemon prerequisite blocked |
-| T08 Compose/offline/rollback | Compose config validates; host offline start works | Container offline/rollback exercises not run |
+| T06 CLI/SDK | CLI/SDK and one-command cold container quickstart passed | Separate clean-host installation not run |
+| T07 Docker | Image build, cold online and offline GPU inference passed | Docker Hub namespace/login pending; numerical certification failed |
+| T08 Compose/offline/rollback | Compose real GPU and container offline inference passed | Image-version rollback drill not run |
 | T09 Second model | Optional, not started | No substitute model used |
 | T10 Observability/benchmark | Metrics and short sequential benchmark measured | Capacity study and 24/72-hour soak not run |
 | T11 CI/release | CPU workflow written; local checks pass | Remote CI unrun; image promotion/release absent |
-| T12 Open-source acceptance | Incomplete | Parity, both container paths and clean-host acceptance |
+| T12 Open-source acceptance | Incomplete | Parity, rollback, clean-host and soak acceptance |
 
 ## Session evidence — 2026-10-12
 
@@ -314,3 +316,104 @@ or performed here. Alpha/RC/stable gates remain open.
 
 No push or publication was performed. Weights, caches, credentials and private
 host notes remain ignored. Commits use the user's existing Git identity.
+
+## README, identity and image preparation — 2026-10-12
+
+Replaced both README entry points with a shared logo, plain description, three
+concrete decision examples, one-command startup, HTTP/Python examples and links
+to detailed evidence. Logo source/prompt: `docs/assets/brand/README.md`; selected
+asset: `docs/assets/brand/jevserve-logo.png`. Deployment guide:
+`docs/quickstart.md`. The image is explicitly a development preview; numerical
+certification and stable/alpha promotion remain closed.
+
+`scripts/quickstart.sh` builds or selects an image, preserves existing containers,
+uses a project cache volume, polls readiness and performs one real three-type
+decision request. `check --wait-seconds` bounds polling to 1800 seconds; decision
+requests are not retried. Compose accepts `JEVSERVE_IMAGE`.
+
+Observed checks: `pytest -q` **134 passed**, `ruff check .` passed, strict Mypy
+passed for 28 modules, wheel/sdist build passed; `bash -n` and Compose config
+validation passed. Local README/deployment links resolve.
+
+A separate rootless Docker daemon with project-local state successfully ran
+Python 3.12.15, native NVIDIA CDI and legacy `--gpus device=0` probes on the
+RTX A6000. The shared daemon's running binary/on-disk shim mismatch was observed
+read-only; it was not repaired or restarted. This supersedes the prerequisite
+blocker above for this development session. Private commands/logs and state:
+`.local/SERVER.md`, `.local/evidence/`, `.local/docker/`.
+
+The fixed image builds and passes `pip check`, non-root CLI import, real
+Choice/Noul/Score inference with `--network none --read-only`, and graceful
+SIGTERM (exit 0, GPU returned to idle). Missing-cache offline preparation fails
+with ArtifactMissing (exit 1), as required. Cold online startup from a completely
+empty named volume passed all three decision types in 703.8 seconds, including
+downloads and first warmup (one observation, not a benchmark/SLA). Both README
+curl/Python examples passed. Compose reused this cache through a volume-only
+override, passed all three types and readiness, then stopped with exit 0 and
+released GPU memory. Its read-only root and security settings were preserved. Docker Hub publication was requested by the user, but
+there is no configured registry login or confirmed destination namespace. The
+namespace was requested; no credentials are written to tracked files.
+
+The first actual build exposed two base-image extras incompatible with the
+frozen lock (LMCache and the OpenTelemetry Prometheus exporter). They are now
+removed; `pip check` is a required build step. The first GPU container exposed
+FlashInfer trying to create `/.cache`. A UID 10001 service account and explicit
+writable cache paths fix this while retaining a read-only root filesystem.
+See D022/D023. These were real failures, not skipped checks.
+
+
+### Final artifact and reproduction
+
+Local tags `jevserve:dev` and `jevserve:0.1.0-dev0` identify the tested image:
+`sha256:f27c15c1da40d0c02139672a426d41d5370e6ea061d209b1d3fc5aef53b73396`.
+This is a local image identifier, **not a published Docker Hub pull reference**.
+Image Python: 3.12.3; non-root UID/GID: 10001. Sanitized evidence:
+[`validation/reports/container-smoke.json`](../../validation/reports/container-smoke.json).
+The image uses the frozen runtime lock and pinned upstream image digest.
+
+On a configured Docker host, reproduce with:
+
+```bash
+docker build -t jevserve:dev .
+./scripts/quickstart.sh
+curl -fsS http://127.0.0.1:8000/v1/decisions \
+  -H 'Content-Type: application/json' --data-binary @examples/decision.json
+docker stop --timeout 65 jevserve
+docker compose up --no-build -d
+docker compose exec jevserve jevserve check --wait-seconds 1800
+docker compose down
+```
+
+This host uses an isolated daemon, so prefix Docker/helper commands with
+`DOCKER_HOST="unix://$PWD/.local/docker/run/docker.sock"`. Actual smoke names
+were `jevserve-offline-check`, `jevserve-quickstart-check`, and Compose project
+`jevserve-compose-check`. The Compose override in `.local/compose-validation.yaml`
+only maps its cache to the named volume `jevserve-quickstart-check-cache`.
+The offline test used `--network none --read-only --tmpfs /tmp:size=2g,mode=1777`,
+a verified source cache, and `serve --allow-uncertified --offline`; inference was
+checked through `docker exec`. No host model path was used by the cold startup.
+
+All validation services are stopped and the GPU returned to 11 MiB idle usage.
+The shared daemon still has its original 40 running containers. Verified caches
+and the project-local daemon remain available; no shared daemon restart, global
+prune, driver change or unrelated-container modification occurred. Failed test
+logs remain private; the failed probe container and intermediate candidate tag
+were removed by exact project names. Review was local/manual; independent agent
+review was not allowed by the active session instructions.
+
+**Exact next publication action:** obtain the user's Docker Hub namespace and
+local registry login, tag this already-tested image as that repository's
+`0.1.0-dev0`, push, verify its remote digest, then update both README files with
+the real pull command. Publication is already authorized by the user's request;
+missing destination/authentication is the remaining publication blocker. No
+credentials are requested in chat or committed. There is still no Git remote,
+Git push, PyPI publication, alpha certification, rollback drill or soak claim.
+Numerical drift investigation remains the next model-engineering task; existing
+failed tolerance reports are unchanged.
+
+Container outcomes were synchronized into engine/model metadata, with the
+packaged model lock kept identical to its repository copy. The source-manifest
+identity and all model/runtime bytes remain unchanged. The cold-start report
+records the preceding runtime-identical image ID; the final metadata-refreshed
+image was rechecked with the downloaded cache. Release validation still exits 1
+with `baseline is not certified`, as required by failed numerical parity.

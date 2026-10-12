@@ -15,7 +15,20 @@ uv run python -m build
 
 The CLI, HTTP service, native SDK and pinned vLLM bridge are implemented. The
 runtime is explicitly **uncertified**: see STATUS for failed numerical parity
-and blocked container gates. Use the source setup in the bilingual README.
+and container gates. To install a separate source runtime on another host:
+
+```bash
+uv venv --python 3.12 .venv-runtime
+uv pip sync --python .venv-runtime/bin/python --require-hashes compat/runtime-requirements.txt
+uv pip install --python .venv-runtime/bin/python --no-deps .
+.venv-runtime/bin/jevserve serve --allow-uncertified --cache-dir .cache/jevserve
+```
+
+First startup verifies pinned downloads, builds the text checkpoint, loads the
+GPU engine and warms it up. In another terminal, run
+`.venv-runtime/bin/jevserve check --wait-seconds 1800`.
+For container deployment, use the [deployment guide](../quickstart.md).
+
 The development host uses `.local/engine-venv`, not the CPU `.venv`.
 
 ```bash
@@ -56,9 +69,11 @@ docker compose run --rm --no-deps jevserve prepare
 docker compose run --rm --service-ports jevserve serve --allow-uncertified --offline
 ```
 
-These container commands remain **unexecuted** while Docker creation is blocked.
-Keep prepared caches when changing images; pin an actual built image ID/digest
-for rollback. There is no certified release image or completed rollback drill.
+Image build, cold online startup, real offline container inference and Compose
+inference have passed on the development host; see STATUS for exact scope and
+image ID. Keep prepared caches when changing images and pin an image ID/digest
+for rollback. Docker Hub publication awaits a destination/login. There is no
+certified release image or completed rollback drill.
 
 ## Artifact preparation
 

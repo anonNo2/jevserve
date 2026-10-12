@@ -189,9 +189,9 @@
   "gates": {
     "gpu_reference": "passed",
     "gpu_parity": "failed",
-    "docker_run": "not_run",
-    "compose": "not_run",
-    "offline": "not_run"
+    "docker_run": "passed",
+    "compose": "passed",
+    "offline": "passed"
   },
   "encoding_report": {
     "path": "validation/reports/open-jev-encoding.json",
@@ -199,7 +199,7 @@
     "scope": "CPU encoding only",
     "case_count": 110
   },
-  "host_offline_smoke": "passed; container offline gate remains not_run",
+  "host_offline_smoke": "passed; container offline smoke also passed",
   "runtime_reports": {
     "vllm-pooling-parity": {
       "path": "validation/reports/vllm-pooling-parity.json",
@@ -225,5 +225,9 @@
       "path": "validation/reports/native-http-benchmark.json",
       "sha256": "d80f8b5961bf29b0aaba4f3798e41b770ec2287b14f06defd7679cc47062f916"
     }
+  },
+  "container_report": {
+    "path": "validation/reports/container-smoke.json",
+    "scope": "real cold startup, Docker/Compose and offline smoke; not numerical certification"
   }
 }

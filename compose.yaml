@@ -2,7 +2,7 @@ name: jevserve
 services:
   jevserve:
     build: .
-    image: jevserve:dev
+    image: ${JEVSERVE_IMAGE:-jevserve:dev}
     command: ["serve", "--allow-uncertified"]
     ports:
       - "127.0.0.1:8000:8000"

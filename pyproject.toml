@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "jevserve"
 version = "0.1.0.dev0"
-description = "Typed decision serving contracts for Jev-style models"
+description = "Self-hosted HTTP serving for Jev-style text decision models"
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
 license = "Apache-2.0"

@@ -68,3 +68,25 @@ Add material changes with evidence, compatibility consequences and affected task
   despite T00's Docker blocker. Dockerfile and Compose are reviewable artifacts;
   only Compose structural validation has passed. Container/alpha/soak gates
   remain mandatory and unpassed. No shared daemon/runtime changes were made.
+- **D020 — Ship a clearly labelled development image with a usable default.**
+  The preview image's default command explicitly includes `--allow-uncertified`;
+  source CLI serving still requires that flag. README and startup helper disclose
+  numerical certification status. This is not a certified model-registry entry
+  and must not be published as a stable/alpha-certified release. The helper polls
+  readiness before one real three-question check; it never retries inference.
+- **D021 — Isolate container validation from the shared daemon.** A project-local
+  rootless Docker daemon and generated NVIDIA CDI specification allow CPU/GPU
+  container validation without restarting or changing the shared Docker service.
+  Its socket, state and host observations remain under ignored `.local/`.
+  Both legacy `--gpus device=0` and explicit native CDI probes ran successfully.
+- **D022 — Remove conflicting optional upstream image extras.** The first real
+  image build found base-image LMCache and OpenTelemetry Prometheus exporter
+  constraints conflicting with the frozen runtime lock. Neither is part of this
+  engine profile (prefix caching is disabled; JevServe owns its metrics endpoint).
+  Remove these two extras and require `pip check` during build; preserve the
+  existing pinned runtime versions and failed numerical parity evidence.
+- **D023 — Give the container service account a writable cache home.** Real
+  non-root startup reached model inspection, then FlashInfer failed trying to
+  create `/.cache`. Add the UID 10001 account with `/cache` as its home and route
+  FlashInfer/XDG/CUDA caches explicitly into that volume. Retain non-root
+  execution and Compose's read-only root filesystem; do not broaden permissions.

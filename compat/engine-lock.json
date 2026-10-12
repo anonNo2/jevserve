@@ -12,9 +12,18 @@
   "declared_python": "3.12",
   "declared_torch": "2.13.0",
   "declared_cuda": "13.0.3",
-  "observed_container_versions": null,
+  "observed_container_versions": {
+    "python": "3.12.3",
+    "packages": {
+      "vllm": "0.29.0",
+      "torch": "2.13.0+cu130",
+      "transformers": "5.10.4",
+      "peft": "0.20.0",
+      "safetensors": "0.8.0"
+    }
+  },
   "minimum_driver": null,
-  "container_probe": "blocked: CPU and GPU container creation fail with TTRPC unsupported protocol",
+  "container_probe": "passed: isolated rootless CPU/GPU probes and real Docker/Compose inference",
   "sources": [
     "https://pypi.org/pypi/vllm/0.29.0/json",
     "https://raw.githubusercontent.com/vllm-project/vllm/98dff2a81d747d1dba01a47f939f48c3526d4206/docker/Dockerfile"
@@ -31,5 +40,10 @@
     "requirements": "compat/runtime-requirements.txt",
     "requirements_sha256": "4774b6216fd63868a5c7c2e994ef7053c5d67f5593221662ec4ed844adb12417",
     "status": "real inference passed; probability parity failed"
+  },
+  "container_runtime": {
+    "report": "validation/reports/container-smoke.json",
+    "status": "real cold/online/offline inference passed; numerical certification incomplete",
+    "requirements": "compat/runtime-requirements.txt"
   }
 }
