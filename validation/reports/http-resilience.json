@@ -1,0 +1,27 @@
+{
+  "concurrent_requests": 16,
+  "statuses": [
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200
+  ],
+  "concurrent_seconds": 0.6854354199022055,
+  "deadline_status": 504,
+  "active_zero_after_cancel": true,
+  "waiting_zero_after_cancel": true,
+  "recovery_status": 200,
+  "ready_status": 200
+}

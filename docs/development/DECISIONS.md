@@ -42,3 +42,29 @@ Add material changes with evidence, compatibility consequences and affected task
   offline/failure tests are completed without waiting for an HTTP service. T06
   must call this same function for first-start preparation and verify actual
   serve integration. T02 CPU success does not claim GPU/offline inference.
+- **D015 — Reject BF16 merged-LoRA export for the initial profile.** The isolated
+  HF merge experiment changed probabilities by up to 0.0160318306 and failed the
+  predeclared tolerance on 35/113 cases (no label flips). Evidence is in
+  `validation/reports/bf16-merge-rejected.json`. Use original base tensor bytes
+  plus independent FP32 LoRA weights, subject to real vLLM parity. Do not loosen
+  the original tolerance or call the merged checkpoint certified.
+- **D016 — Bound upstream reuse to the text Qwen3.5 pooling model.** Vendor only
+  the small model registration bridge with Apache attribution. The service owns
+  its admission/API/CLI and does not install unrelated Laya/multimodal adapters.
+- **D017 — Fixed FP32 LoRA is a development profile, not a parity exemption.**
+  Native vLLM dynamic LoRA rejects FP32 in its expansion kernel. The adapter
+  preserves FP32 residuals around native linear layers with TP=1. Real pooling
+  and HTTP execute, but frozen probability tolerances fail. Require the explicit
+  `--allow-uncertified` flag, retain all failed reports and keep the release
+  registry/gates closed. The reference-style normalization experiment was
+  reverted because it did not resolve the discrepancy. No precision change.
+- **D018 — Freeze a narrow official SDK compatibility claim.** Test the actual
+  `typesafe-sdk==0.7.4` against ASGI and GPU HTTP. Support native text-question
+  semantics plus an exact model ID; do not claim hosted account APIs, all JSON
+  question shapes or aliases. Return actual candidate input-token counts and
+  zero generated tokens; preserve the author's concentration formulas.
+- **D019 — Continue framework work without declaring container success.**
+  T05/T06, metrics and CPU CI can be implemented and exercised against host vLLM
+  despite T00's Docker blocker. Dockerfile and Compose are reviewable artifacts;
+  only Compose structural validation has passed. Container/alpha/soak gates
+  remain mandatory and unpassed. No shared daemon/runtime changes were made.

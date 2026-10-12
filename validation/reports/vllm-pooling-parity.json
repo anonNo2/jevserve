@@ -1,0 +1,1880 @@
+{
+  "case_count": 113,
+  "failures": 38,
+  "max_probability_error": 0.02178033668786805,
+  "label_flip_count": 0,
+  "reference_sha256": "938ba97b4acf916d228036f8f21bfc75a74aaddeadaa089cb8abda40beb4a6b4",
+  "source_identity": "223b5dbfb2cfbc6d69cc728994791c46089f647645f3c60fc97aba29e0598d1a",
+  "packages": {
+    "vllm": "0.29.0",
+    "torch": "2.13.0",
+    "transformers": "5.10.4",
+    "peft": "0.20.0"
+  },
+  "execution_profile": "qwen35-unmerged-v1",
+  "tolerance": {
+    "status": "predeclared_unmeasured",
+    "dtype": "bfloat16",
+    "head_dtype": "float32",
+    "probability_atol": 0.001,
+    "probability_rtol": 0.01,
+    "near_tie_margin": 0.01,
+    "report_all_label_flips": true,
+    "prefix_cache": false,
+    "calibration_id": null,
+    "notes": "Preserve checkpoint temperature; thresholds frozen before first reference/parity run. No accuracy or calibration claim."
+  },
+  "cases": [
+    {
+      "id": "00-choice",
+      "within_tolerance": false,
+      "max_probability_error": 0.0015147358707048864,
+      "scores": [
+        -4.576716423034668,
+        -0.09584534168243408
+      ],
+      "probabilities": [
+        [
+          0.049723385205976224,
+          0.9502766147940238
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "00-noul",
+      "within_tolerance": false,
+      "max_probability_error": 0.008589739932090723,
+      "scores": [
+        2.1853721141815186
+      ],
+      "probabilities": [
+        [
+          0.19171819060353074,
+          0.8082818093964693
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "00-score",
+      "within_tolerance": false,
+      "max_probability_error": 0.005033275820057748,
+      "scores": [
+        1.174955129623413,
+        -2.461357355117798,
+        -6.4921650886535645
+      ],
+      "probabilities": [
+        [
+          0.9110237747872806,
+          0.08312639039749686,
+          0.0058498348152225795
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "01-choice",
+      "within_tolerance": true,
+      "max_probability_error": 0.001944060255785196,
+      "scores": [
+        -5.035551071166992,
+        0.05679118633270264,
+        -2.7278404235839844
+      ],
+      "probabilities": [
+        [
+          0.02927864633907113,
+          0.8369285509978773,
+          0.13379280266305152
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "01-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.0001268438940604799,
+      "scores": [
+        -5.752419948577881
+      ],
+      "probabilities": [
+        [
+          0.9778492907315997,
+          0.022150709268400338
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "01-score",
+      "within_tolerance": false,
+      "max_probability_error": 0.002543399083676956,
+      "scores": [
+        1.0540846586227417,
+        -2.708524703979492,
+        -6.496718883514404
+      ],
+      "probabilities": [
+        [
+          0.916677140798505,
+          0.0769682237880021,
+          0.006354635413492883
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "02-choice",
+      "within_tolerance": false,
+      "max_probability_error": 0.004266029643739899,
+      "scores": [
+        -1.9778629541397095,
+        -3.8088717460632324
+      ],
+      "probabilities": [
+        [
+          0.7695134123361228,
+          0.23048658766387717
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "02-noul",
+      "within_tolerance": false,
+      "max_probability_error": 0.00584094963793598,
+      "scores": [
+        -2.989818811416626
+      ],
+      "probabilities": [
+        [
+          0.8774547363833867,
+          0.12254526361661326
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "02-score",
+      "within_tolerance": true,
+      "max_probability_error": 0.00025357449497405427,
+      "scores": [
+        0.9663925170898438,
+        -2.4162559509277344,
+        -5.9684014320373535
+      ],
+      "probabilities": [
+        [
+          0.8942698819758879,
+          0.09642999653122775,
+          0.009300121492884452
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "03-choice",
+      "within_tolerance": true,
+      "max_probability_error": 0.0006895720619476825,
+      "scores": [
+        -2.8236913681030273,
+        0.4130398631095886,
+        -5.643545627593994
+      ],
+      "probabilities": [
+        [
+          0.10437911895498383,
+          0.8793171800670565,
+          0.016303700977959707
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "03-noul",
+      "within_tolerance": true,
+      "max_probability_error": 6.187323142084261e-05,
+      "scores": [
+        -9.478145599365234
+      ],
+      "probabilities": [
+        [
+          0.9980550339180946,
+          0.001944966081905491
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "03-score",
+      "within_tolerance": true,
+      "max_probability_error": 0.0008255856213045254,
+      "scores": [
+        2.448911428451538,
+        -2.658400774002075,
+        -7.7369160652160645
+      ],
+      "probabilities": [
+        [
+          0.9653783934565108,
+          0.03344102506904477,
+          0.001180581474444339
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "04-choice",
+      "within_tolerance": true,
+      "max_probability_error": 0.0012939155811174663,
+      "scores": [
+        0.14258456230163574,
+        -4.291537761688232
+      ],
+      "probabilities": [
+        [
+          0.9488019010483123,
+          0.05119809895168759
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "04-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.0006441366047291799,
+      "scores": [
+        4.629251003265381
+      ],
+      "probabilities": [
+        [
+          0.04530504399490847,
+          0.9546949560050915
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "04-score",
+      "within_tolerance": true,
+      "max_probability_error": 0.0009720445285660295,
+      "scores": [
+        1.0974546670913696,
+        -2.7771332263946533,
+        -6.234879016876221
+      ],
+      "probabilities": [
+        [
+          0.9208092854485203,
+          0.07181991473752533,
+          0.0073707998139545166
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "05-choice",
+      "within_tolerance": true,
+      "max_probability_error": 0.00026655395369145664,
+      "scores": [
+        -5.6333746910095215,
+        0.7690198421478271,
+        -2.8257806301116943
+      ],
+      "probabilities": [
+        [
+          0.013320076401055925,
+          0.9020881013669843,
+          0.08459182223195985
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "05-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.0002659286659255772,
+      "scores": [
+        -6.257829666137695
+      ],
+      "probabilities": [
+        [
+          0.9840191770573872,
+          0.015980822942612948
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "05-score",
+      "within_tolerance": true,
+      "max_probability_error": 0.00030658679845331493,
+      "scores": [
+        1.3220062255859375,
+        -2.6931769847869873,
+        -6.831867694854736
+      ],
+      "probabilities": [
+        [
+          0.9295745720419916,
+          0.06609318688786307,
+          0.004332241070145263
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "06-choice",
+      "within_tolerance": true,
+      "max_probability_error": 0.002340306507866763,
+      "scores": [
+        -1.6549949645996094,
+        -2.171365737915039
+      ],
+      "probabilities": [
+        [
+          0.5841873268668065,
+          0.41581267313319353
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "06-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.0005907437088537026,
+      "scores": [
+        -4.759913921356201
+      ],
+      "probabilities": [
+        [
+          0.9582737903578173,
+          0.04172620964218267
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "06-score",
+      "within_tolerance": true,
+      "max_probability_error": 0.0002694495118450435,
+      "scores": [
+        0.7924880385398865,
+        -2.468334197998047,
+        -6.143026351928711
+      ],
+      "probabilities": [
+        [
+          0.8871292487488645,
+          0.1036492653171594,
+          0.009221485933976295
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "07-choice",
+      "within_tolerance": false,
+      "max_probability_error": 0.003593279003891392,
+      "scores": [
+        -6.4105143547058105,
+        -7.340474605560303,
+        -3.3286678791046143
+      ],
+      "probabilities": [
+        [
+          0.10929411468854397,
+          0.0592485747662407,
+          0.8314573105452153
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "07-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.0006205865225263896,
+      "scores": [
+        -6.292029857635498
+      ],
+      "probabilities": [
+        [
+          0.9843694493013618,
+          0.015630550698638196
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "07-score",
+      "within_tolerance": true,
+      "max_probability_error": 6.30652091947459e-05,
+      "scores": [
+        2.191134214401245,
+        -4.47390604019165,
+        -7.762437343597412
+      ],
+      "probabilities": [
+        [
+          0.9863431449304542,
+          0.012251328079999691,
+          0.0014055269895462547
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "08-choice",
+      "within_tolerance": true,
+      "max_probability_error": 0.004316807325835281,
+      "scores": [
+        -2.9006919860839844,
+        -2.6494247913360596
+      ],
+      "probabilities": [
+        [
+          0.45873448329803923,
+          0.5412655167019608
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "08-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.00020379953679198343,
+      "scores": [
+        -4.371781349182129
+      ],
+      "probabilities": [
+        [
+          0.9467708710044445,
+          0.05322912899555554
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "08-score",
+      "within_tolerance": false,
+      "max_probability_error": 0.014770643651923154,
+      "scores": [
+        -3.742725372314453,
+        -2.149341344833374,
+        -0.20678943395614624
+      ],
+      "probabilities": [
+        [
+          0.07085305762823789,
+          0.2022931444809909,
+          0.7268537978907711
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "09-choice",
+      "within_tolerance": false,
+      "max_probability_error": 0.006977687470756,
+      "scores": [
+        -2.7265372276306152,
+        -0.8343655467033386,
+        -1.5034149885177612
+      ],
+      "probabilities": [
+        [
+          0.14895891391831648,
+          0.517757437387761,
+          0.33328364869392246
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "09-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.00013208949305676398,
+      "scores": [
+        -2.8037705421447754
+      ],
+      "probabilities": [
+        [
+          0.8636623931392173,
+          0.13633760686078267
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "09-score",
+      "within_tolerance": false,
+      "max_probability_error": 0.001722639367926923,
+      "scores": [
+        -1.2069932222366333,
+        -2.318439245223999,
+        -4.579381942749023
+      ],
+      "probabilities": [
+        [
+          0.6290862724510438,
+          0.30261895014545565,
+          0.06829477740350064
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "10-choice",
+      "within_tolerance": false,
+      "max_probability_error": 0.006068395291431772,
+      "scores": [
+        -0.6864751577377319,
+        -3.676617383956909
+      ],
+      "probabilities": [
+        [
+          0.8774776317022721,
+          0.12252236829772796
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "10-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.0005471721230233539,
+      "scores": [
+        -5.916714668273926
+      ],
+      "probabilities": [
+        [
+          0.9800751261370045,
+          0.01992487386299541
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "10-score",
+      "within_tolerance": true,
+      "max_probability_error": 0.00022940436588481106,
+      "scores": [
+        2.4338061809539795,
+        -6.0616350173950195,
+        -7.0018744468688965
+      ],
+      "probabilities": [
+        [
+          0.9943067409512555,
+          0.003700656709080141,
+          0.0019926023396644506
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "11-choice",
+      "within_tolerance": false,
+      "max_probability_error": 0.004465106632348115,
+      "scores": [
+        -4.339834690093994,
+        -2.4926486015319824,
+        -3.2261717319488525
+      ],
+      "probabilities": [
+        [
+          0.15488887189172082,
+          0.5226567858877544,
+          0.3224543422205247
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "11-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.0002587565056690472,
+      "scores": [
+        -6.518710613250732
+      ],
+      "probabilities": [
+        [
+          0.9865073298607526,
+          0.013492670139247376
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "11-score",
+      "within_tolerance": true,
+      "max_probability_error": 0.00020008867189780233,
+      "scores": [
+        1.330641269683838,
+        -6.252320766448975,
+        -8.017121315002441
+      ],
+      "probabilities": [
+        [
+          0.9911682422205927,
+          0.006727070935260983,
+          0.0021046868441462097
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "12-choice",
+      "within_tolerance": true,
+      "max_probability_error": 0.0007423137484066089,
+      "scores": [
+        -4.713991165161133,
+        0.14079153537750244
+      ],
+      "probabilities": [
+        [
+          0.03929888478758051,
+          0.9607011152124194
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "12-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.0017127691146884283,
+      "scores": [
+        -1.876896858215332
+      ],
+      "probabilities": [
+        [
+          0.7748284603219306,
+          0.2251715396780695
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "12-score",
+      "within_tolerance": true,
+      "max_probability_error": 0.002279855289411853,
+      "scores": [
+        -2.467374086380005,
+        -1.5194153785705566,
+        0.004941581282764673
+      ],
+      "probabilities": [
+        [
+          0.12563787565276313,
+          0.23452332823204283,
+          0.639838796115194
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "13-choice",
+      "within_tolerance": true,
+      "max_probability_error": 0.0006690491205102456,
+      "scores": [
+        -4.774459362030029,
+        0.10207110643386841,
+        -2.580713987350464
+      ],
+      "probabilities": [
+        [
+          0.0332913044125463,
+          0.8255769868316284,
+          0.14113170875582534
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "13-noul",
+      "within_tolerance": false,
+      "max_probability_error": 0.0023528856786119157,
+      "scores": [
+        3.052112340927124
+      ],
+      "probabilities": [
+        [
+          0.11820283430733569,
+          0.8817971656926643
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "13-score",
+      "within_tolerance": false,
+      "max_probability_error": 0.006251563753963518,
+      "scores": [
+        -2.608379364013672,
+        -1.9693500995635986,
+        -0.4054529666900635
+      ],
+      "probabilities": [
+        [
+          0.14731663900897665,
+          0.22437784705986513,
+          0.6283055139311582
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "14-choice",
+      "within_tolerance": true,
+      "max_probability_error": 0.0004452017225984317,
+      "scores": [
+        -1.722821593284607,
+        -3.645812749862671
+      ],
+      "probabilities": [
+        [
+          0.7800792704774879,
+          0.219920729522512
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "14-noul",
+      "within_tolerance": false,
+      "max_probability_error": 0.011683879840984401,
+      "scores": [
+        -2.259967565536499
+      ],
+      "probabilities": [
+        [
+          0.8157777559420053,
+          0.18422224405799473
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "14-score",
+      "within_tolerance": false,
+      "max_probability_error": 0.0054289535973903735,
+      "scores": [
+        -2.8531923294067383,
+        -1.8277302980422974,
+        0.5536141395568848
+      ],
+      "probabilities": [
+        [
+          0.08073078159496912,
+          0.15858657681233113,
+          0.7606826415926997
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "15-choice",
+      "within_tolerance": false,
+      "max_probability_error": 0.0026617308653241745,
+      "scores": [
+        -2.9872243404388428,
+        0.6185047626495361,
+        -5.637938022613525
+      ],
+      "probabilities": [
+        [
+          0.08392346439570184,
+          0.9014237183793526,
+          0.014652817224945467
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "15-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.0018431955935999805,
+      "scores": [
+        3.2499630451202393
+      ],
+      "probabilities": [
+        [
+          0.1052855844410257,
+          0.8947144155589744
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "15-score",
+      "within_tolerance": true,
+      "max_probability_error": 0.002266144593821906,
+      "scores": [
+        -1.080567717552185,
+        -1.5593421459197998,
+        -2.526568651199341
+      ],
+      "probabilities": [
+        [
+          0.4726880451397713,
+          0.34488217738587174,
+          0.18242977747435699
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "16-choice",
+      "within_tolerance": true,
+      "max_probability_error": 0.0014360744002535827,
+      "scores": [
+        0.2578660845756531,
+        -4.1009602546691895
+      ],
+      "probabilities": [
+        [
+          0.946339363841627,
+          0.05366063615837296
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "16-noul",
+      "within_tolerance": false,
+      "max_probability_error": 0.017652496819363872,
+      "scores": [
+        -1.16212797164917
+      ],
+      "probabilities": [
+        [
+          0.6824737979041392,
+          0.3175262020958608
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "16-score",
+      "within_tolerance": false,
+      "max_probability_error": 0.005125241219476412,
+      "scores": [
+        -2.33978271484375,
+        -1.3131766319274902,
+        0.21650278568267822
+      ],
+      "probabilities": [
+        [
+          0.11978800840427757,
+          0.2354874405530493,
+          0.6447245510426732
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "17-choice",
+      "within_tolerance": true,
+      "max_probability_error": 0.00011798017734943045,
+      "scores": [
+        -5.461561679840088,
+        1.1831625699996948,
+        -3.036141872406006
+      ],
+      "probabilities": [
+        [
+          0.011712728006119066,
+          0.9304512603188526,
+          0.05783601167502834
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "17-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.0008135451401469762,
+      "scores": [
+        5.065487384796143
+      ],
+      "probabilities": [
+        [
+          0.03438321424705904,
+          0.965616785752941
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "17-score",
+      "within_tolerance": false,
+      "max_probability_error": 0.003539212249835777,
+      "scores": [
+        -3.142618417739868,
+        -2.0318048000335693,
+        0.7118895053863525
+      ],
+      "probabilities": [
+        [
+          0.06357022344787489,
+          0.13209518638676765,
+          0.8043345901653574
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "18-choice",
+      "within_tolerance": false,
+      "max_probability_error": 0.007256876250085975,
+      "scores": [
+        -1.1990561485290527,
+        -1.9590919017791748
+      ],
+      "probabilities": [
+        [
+          0.6225579793128991,
+          0.3774420206871008
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "18-noul",
+      "within_tolerance": false,
+      "max_probability_error": 0.0054505061079656025,
+      "scores": [
+        1.2828677892684937
+      ],
+      "probabilities": [
+        [
+          0.3005540669354249,
+          0.6994459330645751
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "18-score",
+      "within_tolerance": true,
+      "max_probability_error": 0.005799884415068124,
+      "scores": [
+        -2.285963773727417,
+        -1.450715184211731,
+        -0.7902382612228394
+      ],
+      "probabilities": [
+        [
+          0.1848273869628961,
+          0.32033377026704823,
+          0.4948388427700556
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "19-choice",
+      "within_tolerance": true,
+      "max_probability_error": 0.00112476209759578,
+      "scores": [
+        -6.490861415863037,
+        -7.217987537384033,
+        -3.3123977184295654
+      ],
+      "probabilities": [
+        [
+          0.10280926504482882,
+          0.0636961367927597,
+          0.8334945981624114
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "19-noul",
+      "within_tolerance": true,
+      "max_probability_error": 1.0815768377265417e-05,
+      "scores": [
+        -9.030547142028809
+      ],
+      "probabilities": [
+        [
+          0.9973901723097407,
+          0.002609827690259287
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "19-score",
+      "within_tolerance": true,
+      "max_probability_error": 0.0021783694299429834,
+      "scores": [
+        0.40601983666419983,
+        -3.293038845062256,
+        -4.606494903564453
+      ],
+      "probabilities": [
+        [
+          0.8893445761997191,
+          0.0778640909719957,
+          0.03279133282828518
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "20-choice",
+      "within_tolerance": true,
+      "max_probability_error": 0.001597789353765533,
+      "scores": [
+        -3.696587085723877,
+        -2.701470375061035
+      ],
+      "probabilities": [
+        [
+          0.3418184882899639,
+          0.6581815117100361
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "20-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.0003232886658941503,
+      "scores": [
+        3.8074090480804443
+      ],
+      "probabilities": [
+        [
+          0.07537870011541166,
+          0.9246212998845883
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "20-score",
+      "within_tolerance": true,
+      "max_probability_error": 0.000825816524384404,
+      "scores": [
+        -5.697535514831543,
+        -4.051119327545166,
+        2.1910455226898193
+      ],
+      "probabilities": [
+        [
+          0.0054306850797710806,
+          0.016056154835323844,
+          0.978513160084905
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "21-choice",
+      "within_tolerance": false,
+      "max_probability_error": 0.004919530132281136,
+      "scores": [
+        -2.67807936668396,
+        -0.9457231163978577,
+        -1.5873730182647705
+      ],
+      "probabilities": [
+        [
+          0.16183081036618452,
+          0.506316868361942,
+          0.3318523212718736
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "21-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.00015499658995687948,
+      "scores": [
+        -0.27777135372161865
+      ],
+      "probabilities": [
+        [
+          0.5455952643972741,
+          0.4544047356027259
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "21-score",
+      "within_tolerance": false,
+      "max_probability_error": 0.005500301144162112,
+      "scores": [
+        -2.265099048614502,
+        -1.6383428573608398,
+        -1.717634916305542
+      ],
+      "probabilities": [
+        [
+          0.2534964341877077,
+          0.3829927801617588,
+          0.3635107856505335
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "22-choice",
+      "within_tolerance": false,
+      "max_probability_error": 0.005780177894391558,
+      "scores": [
+        -1.1850255727767944,
+        -3.911583662033081
+      ],
+      "probabilities": [
+        [
+          0.8575648270630356,
+          0.14243517293696434
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "22-noul",
+      "within_tolerance": false,
+      "max_probability_error": 0.02178033668786805,
+      "scores": [
+        -0.43892788887023926
+      ],
+      "probabilities": [
+        [
+          0.5717506129272131,
+          0.4282493870727868
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "22-score",
+      "within_tolerance": false,
+      "max_probability_error": 0.004243242332899633,
+      "scores": [
+        -3.737973928451538,
+        -1.982366681098938,
+        0.9361820816993713
+      ],
+      "probabilities": [
+        [
+          0.03863706846471329,
+          0.12274785061356426,
+          0.8386150809217224
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "23-choice",
+      "within_tolerance": false,
+      "max_probability_error": 0.005305437923289635,
+      "scores": [
+        -4.368042945861816,
+        -3.109189033508301,
+        -3.2598695755004883
+      ],
+      "probabilities": [
+        [
+          0.18639279077554102,
+          0.4269666632033258,
+          0.38664054602113324
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "23-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.003257810312555176,
+      "scores": [
+        -0.21433007717132568
+      ],
+      "probabilities": [
+        [
+          0.5352211633301692,
+          0.4647788366698308
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "23-score",
+      "within_tolerance": true,
+      "max_probability_error": 0.0020490756200979288,
+      "scores": [
+        -4.120091438293457,
+        -2.8915460109710693,
+        1.5232570171356201
+      ],
+      "probabilities": [
+        [
+          0.02255727534766092,
+          0.050650634774156225,
+          0.9267920898781828
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "24-choice",
+      "within_tolerance": true,
+      "max_probability_error": 0.0009376045907584646,
+      "scores": [
+        -4.131252288818359,
+        -1.1738861799240112
+      ],
+      "probabilities": [
+        [
+          0.12486144626257657,
+          0.8751385537374234
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "24-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.004565951696827275,
+      "scores": [
+        0.8011507987976074
+      ],
+      "probabilities": [
+        [
+          0.37110235495771104,
+          0.628897645042289
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "24-score",
+      "within_tolerance": false,
+      "max_probability_error": 0.001385042545990145,
+      "scores": [
+        -4.0873308181762695,
+        1.4497005939483643
+      ],
+      "probabilities": [
+        [
+          0.025439816340285356,
+          0.9745601836597148
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "25-choice",
+      "within_tolerance": true,
+      "max_probability_error": 0.0014018340235009141,
+      "scores": [
+        -4.238337516784668,
+        0.21727901697158813,
+        -3.0205037593841553
+      ],
+      "probabilities": [
+        [
+          0.04540140600089456,
+          0.8533696772157291,
+          0.10122891678337646
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "25-noul",
+      "within_tolerance": false,
+      "max_probability_error": 0.002435270196973434,
+      "scores": [
+        -4.061428546905518
+      ],
+      "probabilities": [
+        [
+          0.9354815406136874,
+          0.06451845938631265
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "25-score",
+      "within_tolerance": true,
+      "max_probability_error": 0.0001388607657186909,
+      "scores": [
+        -4.739373683929443,
+        1.3551626205444336
+      ],
+      "probabilities": [
+        [
+          0.01776254663130133,
+          0.9822374533686986
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "26-choice",
+      "within_tolerance": true,
+      "max_probability_error": 0.0015449132348814842,
+      "scores": [
+        -1.4776661396026611,
+        -3.0550503730773926
+      ],
+      "probabilities": [
+        [
+          0.7385749986996526,
+          0.26142500130034746
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "26-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.0005070523627700441,
+      "scores": [
+        -1.2413749694824219
+      ],
+      "probabilities": [
+        [
+          0.6936716795309935,
+          0.3063283204690065
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "26-score",
+      "within_tolerance": true,
+      "max_probability_error": 0.0007293261491674308,
+      "scores": [
+        -4.269774913787842,
+        1.0898587703704834
+      ],
+      "probabilities": [
+        [
+          0.02850188142712975,
+          0.9714981185728703
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "27-choice",
+      "within_tolerance": false,
+      "max_probability_error": 0.004476724440459989,
+      "scores": [
+        -2.789149045944214,
+        -0.6372156739234924,
+        -4.298227787017822
+      ],
+      "probabilities": [
+        [
+          0.1820027498534416,
+          0.7506124131829852,
+          0.06738483696357322
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "27-noul",
+      "within_tolerance": true,
+      "max_probability_error": 7.786338462892253e-05,
+      "scores": [
+        -8.316451072692871
+      ],
+      "probabilities": [
+        [
+          0.9958301036047681,
+          0.004169896395231875
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "27-score",
+      "within_tolerance": true,
+      "max_probability_error": 0.000522580061218603,
+      "scores": [
+        -5.095550537109375,
+        1.6614875793457031
+      ],
+      "probabilities": [
+        [
+          0.011555821421934592,
+          0.9884441785780655
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "28-choice",
+      "within_tolerance": true,
+      "max_probability_error": 9.07804798774281e-05,
+      "scores": [
+        -0.8158754110336304,
+        -3.4090054035186768
+      ],
+      "probabilities": [
+        [
+          0.8464933681286255,
+          0.15350663187137445
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "28-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.0001054170201070237,
+      "scores": [
+        2.4359686374664307
+      ],
+      "probabilities": [
+        [
+          0.16743988661827705,
+          0.832560113381723
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "28-score",
+      "within_tolerance": true,
+      "max_probability_error": 0.00029875982156847905,
+      "scores": [
+        -4.312473773956299,
+        1.6377609968185425
+      ],
+      "probabilities": [
+        [
+          0.019498425936026086,
+          0.980501574063974
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "29-choice",
+      "within_tolerance": true,
+      "max_probability_error": 0.0008622023303769405,
+      "scores": [
+        -4.699626445770264,
+        0.671054482460022,
+        -2.902184009552002
+      ],
+      "probabilities": [
+        [
+          0.025906800273383088,
+          0.8894901280999968,
+          0.08460307162662013
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "29-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.0002923751594172616,
+      "scores": [
+        -5.047056198120117
+      ],
+      "probabilities": [
+        [
+          0.9652115940069753,
+          0.034788405993024754
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "29-score",
+      "within_tolerance": true,
+      "max_probability_error": 3.7068772042125886e-05,
+      "scores": [
+        -5.4664835929870605,
+        1.9350206851959229
+      ],
+      "probabilities": [
+        [
+          0.007590263519464427,
+          0.9924097364805357
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "30-choice",
+      "within_tolerance": false,
+      "max_probability_error": 0.007473333215288425,
+      "scores": [
+        -0.7707533836364746,
+        -2.3951215744018555
+      ],
+      "probabilities": [
+        [
+          0.7445037595492298,
+          0.25549624045077024
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "30-noul",
+      "within_tolerance": false,
+      "max_probability_error": 0.004389152343813207,
+      "scores": [
+        -1.7617149353027344
+      ],
+      "probabilities": [
+        [
+          0.7613220881764731,
+          0.23867791182352685
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "30-score",
+      "within_tolerance": true,
+      "max_probability_error": 0.001315564865130292,
+      "scores": [
+        -3.889155387878418,
+        0.7462632060050964
+      ],
+      "probabilities": [
+        [
+          0.045129726432272,
+          0.9548702735677279
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "31-choice",
+      "within_tolerance": true,
+      "max_probability_error": 0.0003850040651489778,
+      "scores": [
+        -7.470424652099609,
+        -7.161143779754639,
+        -3.896015167236328
+      ],
+      "probabilities": [
+        [
+          0.07844585316378792,
+          0.09616294834327313,
+          0.8253911984929388
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "31-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.00042457935180839623,
+      "scores": [
+        -5.768275737762451
+      ],
+      "probabilities": [
+        [
+          0.9780742908875419,
+          0.021925709112458083
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "31-score",
+      "within_tolerance": true,
+      "max_probability_error": 0.00012611301763592805,
+      "scores": [
+        -5.976724624633789,
+        1.696495532989502
+      ],
+      "probabilities": [
+        [
+          0.0063547867382121315,
+          0.9936452132617879
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "32-choice",
+      "within_tolerance": true,
+      "max_probability_error": 0.003820010282911679,
+      "scores": [
+        -2.542168378829956,
+        -1.9546242952346802
+      ],
+      "probabilities": [
+        [
+          0.4044761903611313,
+          0.5955238096388688
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "32-noul",
+      "within_tolerance": true,
+      "max_probability_error": 8.735929547323829e-05,
+      "scores": [
+        -2.8888139724731445
+      ],
+      "probabilities": [
+        [
+          0.8701224309047879,
+          0.12987756909521206
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "32-score",
+      "within_tolerance": true,
+      "max_probability_error": 4.104187437314888e-05,
+      "scores": [
+        -6.650391578674316,
+        1.3566251993179321
+      ],
+      "probabilities": [
+        [
+          0.005107376513095805,
+          0.9948926234869041
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "33-choice",
+      "within_tolerance": true,
+      "max_probability_error": 0.003126706201688839,
+      "scores": [
+        -2.5658743381500244,
+        -0.8701600432395935,
+        -2.284850835800171
+      ],
+      "probabilities": [
+        [
+          0.19020963948761568,
+          0.5809196560951937,
+          0.22887070441719054
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "33-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.00027164015761793614,
+      "scores": [
+        -2.468747138977051
+      ],
+      "probabilities": [
+        [
+          0.8355471560016797,
+          0.16445284399832027
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "33-score",
+      "within_tolerance": false,
+      "max_probability_error": 0.0015814451360403048,
+      "scores": [
+        -3.9216763973236084,
+        0.5203690528869629
+      ],
+      "probabilities": [
+        [
+          0.05094527988827397,
+          0.9490547201117261
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "34-choice",
+      "within_tolerance": false,
+      "max_probability_error": 0.010959474705370287,
+      "scores": [
+        -2.1950900554656982,
+        -2.5274856090545654
+      ],
+      "probabilities": [
+        [
+          0.5544963024271192,
+          0.4455036975728807
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "34-noul",
+      "within_tolerance": false,
+      "max_probability_error": 0.004776302554270112,
+      "scores": [
+        -2.9386703968048096
+      ],
+      "probabilities": [
+        [
+          0.8737872522254565,
+          0.12621274777454353
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "34-score",
+      "within_tolerance": true,
+      "max_probability_error": 4.118278494935623e-05,
+      "scores": [
+        -5.8522186279296875,
+        2.003084659576416
+      ],
+      "probabilities": [
+        [
+          0.0056408800576756585,
+          0.9943591199423243
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "35-choice",
+      "within_tolerance": false,
+      "max_probability_error": 0.006654399414707912,
+      "scores": [
+        -3.789008855819702,
+        -2.0903570652008057,
+        -3.154466152191162
+      ],
+      "probabilities": [
+        [
+          0.17925576195500015,
+          0.548525270359311,
+          0.2722189676856889
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "35-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.0007568318487617964,
+      "scores": [
+        -4.478619575500488
+      ],
+      "probabilities": [
+        [
+          0.9502065218700586,
+          0.049793478129941365
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "35-score",
+      "within_tolerance": true,
+      "max_probability_error": 6.927833455849797e-05,
+      "scores": [
+        -5.722818374633789,
+        2.616042375564575
+      ],
+      "probabilities": [
+        [
+          0.004109072663804698,
+          0.9958909273361952
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "empty-0",
+      "within_tolerance": true,
+      "max_probability_error": 0.0013761821514990946,
+      "scores": [
+        -0.5371760725975037
+      ],
+      "probabilities": [
+        [
+          0.5875109895071597,
+          0.4124890104928402
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "empty-1",
+      "within_tolerance": false,
+      "max_probability_error": 0.006724599125644715,
+      "scores": [
+        -0.6428661942481995
+      ],
+      "probabilities": [
+        [
+          0.6042662958966303,
+          0.3957337041033698
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "empty-2",
+      "within_tolerance": true,
+      "max_probability_error": 0.0018559238325119853,
+      "scores": [
+        -1.2472280263900757
+      ],
+      "probabilities": [
+        [
+          0.69448995543154,
+          0.30551004456846
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "exact-tie",
+      "within_tolerance": true,
+      "max_probability_error": 0.0,
+      "scores": [
+        0.20998436212539673,
+        0.20998436212539673
+      ],
+      "probabilities": [
+        [
+          0.5,
+          0.5
+        ]
+      ],
+      "label_flips": []
+    },
+    {
+      "id": "single-candidate",
+      "within_tolerance": true,
+      "max_probability_error": 0.0,
+      "scores": [
+        -0.6420893669128418
+      ],
+      "probabilities": [
+        [
+          1.0
+        ]
+      ],
+      "label_flips": []
+    }
+  ]
+}

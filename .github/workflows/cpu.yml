@@ -1,0 +1,22 @@
+name: CPU contracts and packaging
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  cpu:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4, verified during implementation
+      - name: Create project Python environment
+        run: |
+          python3.12 -m venv .venv
+          .venv/bin/pip install uv==0.13.0
+          .venv/bin/uv sync --locked --python .venv/bin/python
+      - name: CPU checks only
+        run: |
+          .venv/bin/pytest -q
+          .venv/bin/ruff check .
+          .venv/bin/mypy
+          .venv/bin/python -m build --no-isolation

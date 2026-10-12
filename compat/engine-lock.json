@@ -24,6 +24,12 @@
     "python": "3.12",
     "package_count": 201,
     "installed": false,
-    "note": "Resolved pinned plugin pyproject; candidate engine was not installed or executed."
+    "note": "Historical upstream plugin dependency resolution only. Current bounded runtime uses the separate hash-pinned requirements and host_runtime evidence."
+  },
+  "host_runtime": {
+    "report": "validation/reports/runtime-environment.json",
+    "requirements": "compat/runtime-requirements.txt",
+    "requirements_sha256": "4774b6216fd63868a5c7c2e994ef7053c5d67f5593221662ec4ed844adb12417",
+    "status": "real inference passed; probability parity failed"
   }
 }

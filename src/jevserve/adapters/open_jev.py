@@ -90,6 +90,8 @@ class OpenJevAdapter:
                 )
                 tokens = tuple(self._tokenizer.encode(rendered, add_special_tokens=True))
                 inputs.append(tokens)
+                # Reject excess work before tokenizing further candidates.
+                self._capabilities.validate_token_lengths([len(row) for row in inputs])
             groups.append(ReadoutGroup(question_id, question.type, keys, legend, len(suffixes)))
         lengths = [len(row) for row in inputs]
         self._capabilities.validate_token_lengths(lengths)

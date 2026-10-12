@@ -1,5 +1,6 @@
 """Validated administrator settings; no engine imports or ambient env parsing."""
 
+from pathlib import Path
 from typing import Annotated, Self
 
 from pydantic import Field, model_validator
@@ -8,6 +9,7 @@ from jevserve.contracts.requests import Contract, Text
 
 
 class ServerConfig(Contract):
+    api_key_file: Path | None = None
     host: Text = "127.0.0.1"
     port: Annotated[int, Field(ge=1, le=65535)] = 8000
     api_workers: Annotated[int, Field(ge=1, le=1)] = 1

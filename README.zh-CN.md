@@ -2,89 +2,73 @@
 
 **一条命令，部署决策模型。**
 
-[English](README.md) · [架构设计](docs/plans/JevServe-design.md) · [任务规划](docs/plans/JevServe-task-plan.md) · [开发交接](docs/development/HANDOFF.md)
+[English](README.md) · [架构设计](docs/plans/JevServe-design.md) · [实测证据与下一步](docs/development/STATUS.md)
 
-JevServe 计划成为面向 Jev 类 / System One 决策模型的开源推理服务框架。目标是让决策模型像 LLM 一样容易部署：一个容器镜像、一条启动命令、明确的 API，以及可复现的模型验证。
+JevServe 在单机 Linux NVIDIA GPU 上提供文本 Choice、Noul 和 Score 决策服务。一个 API 进程拥有一个 vLLM 引擎。本项目独立于 **TypeSafe AI** 和 **JevServe-Bench**，不分发 TypeSafe 官方 Jev 权重，也不暗示获得其背书。
 
-> **当前状态：已开始实施，CPU 协议、经校验的模型准备流程和 Open-Jev 适配器已实现。110 条真实 tokenizer 编码对照、113 条作者 GPU 参考用例通过；JevServe/vLLM 推理和容器认证待完成。** Python 开发包可安装；推理、CLI 和容器尚未实现，没有认证模型或已发布镜像。下方启动命令仍为目标接口。参见[开发安装](docs/development/IMPLEMENTATION.md)及[当前验证记录](docs/development/STATUS.md)。
+**开发阶段进展：** CLI → HTTP → vLLM → 真实 `ZefanCai/Open-Jev-2B` 已在 RTX A6000 上跑通。原生 SDK、有界准入、超时、取消、健康检查、指标及经校验的离线模型加载已实现。**尚无认证模型：** 当前引擎在固定容差下有 38/113 条预编码参考对照失败（最大概率偏差 0.0218，无标签翻转）。本机 Docker 在 entrypoint 执行前创建容器失败，镜像构建及两条容器推理路径仍未验证。没有发布镜像或软件包。
 
-## 项目目标
+## 从源码运行
 
-- **极简部署：** 单机 Linux + NVIDIA GPU，支持 Docker 与 Docker Compose。
-- **类型化决策：** Choice、Noul（是/否）、Score，明确说明概率的真实含义。
-- **复用成熟引擎：** 使用 vLLM 的调度和批处理，维护范围受控的模型适配器。
-- **可复现产物：** 固定权重、tokenizer、模板、运行时版本和镜像 digest。
-- **运行保障：** 就绪检查、有界队列、超时、取消、指标、离线包和回滚。
-- **以证据认证：** 每个认证配置均有真实 GPU 测试和作者参考实现对照。
-
-首个里程碑是可运行的 alpha 仓库，并不承诺达到 vLLM 的功能范围或成熟度。首版不包含 Triton、Kubernetes、训练、Web UI、多模态或自动切换模型。
-
-## 目标启动体验——尚未实现
-
-未来运行环境需具备 Linux x86_64、兼容的 NVIDIA GPU/驱动、Docker Engine 和 NVIDIA Container Toolkit。宿主机不应需要安装 Python 或 CUDA Toolkit。
-
-Dockerfile 和推理功能实现后，本地开发镜像应可这样启动：
+使用项目内 Python 3.12 环境和兼容的 NVIDIA 主机。运行依赖锁包含 CUDA，体积较大；不要替换系统 Python 或 CUDA。
 
 ```bash
-docker build -t jevserve:dev .
-docker run --rm --gpus 'device=0' --shm-size=2g \
-  -p 127.0.0.1:8000:8000 \
-  -v jevserve-cache:/var/lib/jevserve \
-  jevserve:dev serve --model ZefanCai/Open-Jev-2B
+uv venv --python 3.12 .venv-runtime
+uv pip sync --python .venv-runtime/bin/python --require-hashes compat/runtime-requirements.txt
+uv pip install --python .venv-runtime/bin/python --no-deps .
+.venv-runtime/bin/jevserve serve --allow-uncertified --cache-dir .cache/jevserve
 ```
 
-正式发布时提供真实可拉取的镜像，用户不必自行构建。另一条目标启动路径是：
+开发标志明确承认认证未完成，不会放宽对照容差。首次启动下载固定 revision、校验哈希，保留独立 FP32 LoRA 生成文本 checkpoint，然后加载 GPU 引擎并预热。启动完成后才提供 readiness。后续启动重新校验缓存；加 `--offline` 禁止模型下载。详见[开发与运维说明](docs/development/IMPLEMENTATION.md)。
 
 ```bash
-docker compose up -d
-```
-
-首次在线启动由容器准备并校验已锁定模型，后续复用缓存；离线运行使用提前准备的模型包。等待服务就绪后调用：
-
-```bash
-curl -fsS http://127.0.0.1:8000/readyz
-curl -fsS http://127.0.0.1:8000/v1/systemone \
+.venv-runtime/bin/jevserve check
+curl -fsS http://127.0.0.1:8000/v1/decisions \
   -H 'Content-Type: application/json' \
   -d '{"state":"I was charged twice.","questions":{"team":{"type":"choice","instructions":"Which team should handle this?","criteria":{"billing":"Payments and refunds","technical":"Technical problems"}}}}'
 ```
 
-这里不提供冒充实测结果的示例响应。鉴权和部署设置将随服务实现一并记录。
+原生 Python 客户端为 `jevserve.client.Client`；`decide()` 接收 `DecisionRequest` 或字典，返回经校验的响应，不自动重试。
 
-## 模型规划
+## 容器路径——已编写，尚未验证
 
-| 模型 | 定位 | 当前状态 |
-|---|---|---|
-| `ZefanCai/Open-Jev-2B` | 首个适配目标 | 固定版本作者 GPU 参考用例 113 条通过；JevServe/vLLM 和容器未认证 |
-| `convaiinnovations/laya` | 可选第二适配器 | 规划中，不阻塞 alpha |
-| TypeSafe 官方 Jev | 本项目不分发 | 不包含官方权重 |
+Dockerfile 以 digest 固定上游 vLLM 镜像，Compose 配置已通过结构校验。以下命令仍需在 Docker 正常的主机上完成构建和真实 GPU 验证：
 
-写入计划不等于已经支持。发布矩阵将认证绑定到 checkpoint revision、GPU、精度、运行时和测试报告。历史检索所得上游版本和能力必须在实施前重新核验。
+```bash
+docker build -t jevserve:dev .
+docker run --rm --name jevserve-dev --gpus device=0 --shm-size=1g \
+  -p 127.0.0.1:8000:8000 -v jevserve-cache:/cache \
+  jevserve:dev serve --allow-uncertified
+# 或者：
+docker compose up --build -d
+```
 
-## API 规划
+## API 与限制
 
-| 接口 | 用途 |
+| 接口 | 行为 |
 |---|---|
-| `POST /v1/decisions` | 原生类型化决策与执行元数据 |
-| `POST /v1/systemone` | 按版本测试的兼容接口 |
-| `GET /v1/models` | 已部署模型与能力 |
-| `GET /livez`、`GET /readyz` | 存活与模型就绪检查 |
-| `GET /metrics` | Prometheus 指标 |
+| `POST /v1/decisions` | 原生回答与执行元数据 |
+| `POST /v1/systemone` | 经 `typesafe-sdk==0.7.4` 测试的文本问题子集；必须指定完整模型 ID |
+| `GET /v1/models` | 模型 revision 与能力限制 |
+| `GET /livez`、`/readyz` | API 存活与引擎就绪 |
+| `GET /metrics` | Prometheus 计数、延迟与准入指标 |
 
-归一化概率不等于经过校准的正确率。初版默认返回 `calibration_id: null`，除非显式使用经过验证的校准产物。
+原生 state 为非空文本或 JSON 对象，指令与描述为文本；Choice 描述可为 null。Score 接受 2–10 个有序等级。兼容端点不承诺托管 API 的全部对象/数组问题结构或模型别名。详见[兼容范围](compat/README.md)。
 
-## 从这里开始开发
+单请求上限为 1 MiB、16 个问题、256 条候选序列、每候选 4096 tokens、总计 65536 输入 tokens。默认最多 16 个执行请求、64 个等待请求、30 秒期限，不静默截断输入。`--api-key-file` 启用 Bearer 鉴权，健康端点保持公开；默认仅监听 loopback。
 
-1. 阅读 [AGENTS.md](AGENTS.md)、[开发交接](docs/development/HANDOFF.md)、[设计](docs/plans/JevServe-design.md)和[任务规划](docs/plans/JevServe-task-plan.md)。
-2. 在 [STATUS.md](docs/development/STATUS.md) 查找下一任务：**T00——完成真实参考执行和容器基线**，并查看其中记录的 CPU 工作。
-3. CPU 测试与 GPU 认证分开；mock、镜像构建成功或上游 README 均不能替代真实验证。
-4. 保存命令、版本和证据后，才能标记任务完成。
+概率表示给定候选集上的分布，**不代表经过校准的正确率**。`calibration_id` 为 null，Score 是有序等级期望。没有生产假引擎、自动重试、模型回退、量化或精度回退。
 
-执行顺序：基线与协议 → 模型包与适配器 → vLLM 真实推理 → API/CLI → Docker/Compose → 可靠性与验证 → 发布文档。
+## 开发与发布门禁
 
-协作约定见 [CONTRIBUTING.md](CONTRIBUTING.md)。设计和任务规划当前以中文维护，英文 README 作为对外入口。
+```bash
+uv sync --locked
+uv run pytest -q
+uv run ruff check .
+uv run mypy
+uv run python -m build --no-isolation
+```
 
-## 独立身份与许可证
+CPU 测试无需 GPU 导入或模型下载。作者 GPU 参考、引擎对齐、容器构建、Docker/Compose 推理和长稳测试是独立门禁。详见 [STATUS](docs/development/STATUS.md)、[决策记录](docs/development/DECISIONS.md)和[贡献指南](CONTRIBUTING.md)。
 
-JevServe 是独立项目，不隶属于 TypeSafe AI 或 JevServe-Bench，也不暗示获得其背书。“Jev 类”描述决策模型类别，本仓库不提供 TypeSafe 官方 Jev 权重。
-
-仓库内容采用 [Apache-2.0](LICENSE)。模型权重和第三方组件遵循各自许可证，详见 [NOTICE](NOTICE)。仓库、软件包和镜像发布 namespace 尚未注册或发布。
+Alpha 面向一个镜像、一个模型、一个 GPU；不包含 Kubernetes、训练、Web UI、多模态、多机或 Triton 实现。第二模型可选。项目代码采用 Apache-2.0；上游代码声明及模型许可证分别保留于 [NOTICE](NOTICE) 和 `licenses/`。

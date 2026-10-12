@@ -2,28 +2,29 @@
 
 ## Current milestone
 
-Implementation started on 2026-10-12. CPU contracts, artifact preparation and the Open-Jev adapter are
-implemented; real-tokenizer encoding parity is verified. No inference server, CLI, Dockerfile or Compose service
-exists yet. No model is certified and no release has been published.
+A usable **development prototype** now loads real Open-Jev-2B through vLLM and
+serves Choice/Noul/Score over HTTP. CLI, native SDK, bounded lifecycle, artifact
+preparation, Dockerfile and Compose framework are implemented. This is **not an
+alpha release or certified model**: frozen numerical parity fails and this
+host cannot create Docker containers. No image/package is published.
 
 ## Task tracking
 
 | Task | Status | Remaining evidence |
 |---|---|---|
-| Bootstrap | Complete | Historical documentation baseline |
-| T00 Baseline | Reference complete; engine/container baseline incomplete | Author GPU 113/113 passed; candidate engine runtime and container startup still unverified |
-| T01 Contracts | CPU complete | 116 total current CPU tests include T00/T02/T03; wheel build/import verified |
-| T02 Artifacts | CPU implementation complete | Shared preparer exists; actual serve startup integration belongs to T06 |
-| T03 Adapter | CPU encoding/readout implemented | Author GPU-logit decoding matches; vLLM registration/runtime parity remains unverified |
-| T04 Runtime | Not started | Real vLLM GPU inference |
-| T05 API/lifecycle | Not started | Protocol, overload, cancellation and failure tests |
-| T06 CLI/SDK | Not started | Real end-to-end check and prepare/serve integration |
-| T07 Docker | Blocked prerequisite; not started | Container daemon can create project containers, then real inference |
-| T08 Compose/offline/rollback | Not started | Real deployment and recovery exercises |
-| T09 Second model | Optional, not started | Independent reference/GPU certification |
-| T10 Observability/benchmark | Not started | Measured reports and milestone-specific soak |
-| T11 CI/release | Not started | Exact tested image promotion |
-| T12 Open-source acceptance | Not started | Clean-host quickstart and complete alpha gates |
+| T00 Baseline | Author reference complete; engine measured | GPU parity failed; Docker baseline blocked |
+| T01 Contracts | CPU complete | 130 CPU tests across current implementation |
+| T02 Artifacts | Preparation and serve integration implemented | Container offline/network-isolation exercise |
+| T03 Adapter | Encoding/readout and fixed FP32 LoRA implemented | Numerical alignment still fails; not certified |
+| T04 Runtime | Real GPU/HTTP inference works | Resolve 38/113 latest pretokenized and 36/110 HTTP parity failures |
+| T05 API/lifecycle | Native and SDK subset implemented | Broader release/fault/soak coverage remains |
+| T06 CLI/SDK | prepare/serve/models/doctor/check/benchmark implemented | Clean-host quickstart not run |
+| T07 Docker | Dockerfile written; base digest pinned | Image build and inference not run; daemon prerequisite blocked |
+| T08 Compose/offline/rollback | Compose config validates; host offline start works | Container offline/rollback exercises not run |
+| T09 Second model | Optional, not started | No substitute model used |
+| T10 Observability/benchmark | Metrics and short sequential benchmark measured | Capacity study and 24/72-hour soak not run |
+| T11 CI/release | CPU workflow written; local checks pass | Remote CI unrun; image promotion/release absent |
+| T12 Open-source acceptance | Incomplete | Parity, both container paths and clean-host acceptance |
 
 ## Session evidence — 2026-10-12
 
@@ -210,22 +211,106 @@ CPU suite now passes **116 tests**, including replay of these actual GPU logits.
 required. First implementation commit: `4908d0d`; reference evidence is committed
 separately in the following commit (see `git log --oneline`).
 
-## Next action and reproduction
+## Development runtime milestone — 2026-10-12
 
-1. Resolve the remaining T00 engine/container baseline. Host administrator must
-   diagnose Docker's TTRPC startup failure; after recovery rerun the two probes
-   above, then inspect/start the pinned official engine image. No daemon restart
-   or driver/runtime change was performed in this session.
-2. Continue T03's bounded vLLM model registration and T04 runtime bridge against
-   the committed author token/logit fixtures. Preserve LoRA, scalar head and
-   temperature semantics. Do not mark `gpu_parity` passed on reference replay.
-3. CPU reproduction: `uv sync --locked && uv run pytest -q`; then
-   `uv run ruff check .`, `uv run mypy`, `uv build`.
-4. GPU reference reproduction: install `compat/reference-requirements.txt` into
-   the separate Python 3.12 reference environment with `--require-hashes`,
-   recheck GPU occupancy, and execute the command above. Sources can be prepared
-   with `uv run python -m validation.acquire --cache .local/baseline`; use the
-   printed checkpoint/base paths. `--offline` verifies existing safe packages.
+The engine environment installed the exact `compat/runtime-requirements.txt`
+(200 packages, wheel hashes). Observed: Python 3.12.15, vLLM 0.29.0, Torch 2.13.0,
+CUDA 13.0, Transformers 5.10.4 and PEFT 0.20.0. Source/base hashes remain unchanged.
+A safe combined source package is compiled atomically into a text-only checkpoint:
+BF16 base tensors are unchanged; the original FP32 LoRA and head are retained.
 
-No remote push or publication was performed. No model/weight/cache/private host
-file is committed. Commits use the user's existing Git identity.
+Numerical experiments (fixed atol=0.001, rtol=0.01; never relaxed):
+
+- BF16 merged LoRA: 35/113 failures, maximum probability error 0.0160318306.
+  Rejected; report `validation/reports/bf16-merge-rejected.json`.
+- Native vLLM dynamic FP32 LoRA: fails its FP16/BF16-only expansion-kernel assertion.
+  No precision fallback. A bounded fixed FP32 LoRA module supplies the residuals.
+- Fixed FP32 LoRA, native kernels: 33/113 pretokenized failures, maximum error
+  0.0217803367, no label flips. `vllm-unmerged-initial.json`.
+- Reference-style residual normalization experiment: 35/113 failures, maximum
+  error 0.0195144937, no flips. `vllm-unmerged-norm.json`; experiment reverted.
+- Final standalone reproduction with `validation.pooling`: **38/113 failures**,
+  maximum error 0.0217803367, no flips. `vllm-pooling-parity.json`. Differences
+  from the initial 33/113 run are retained as evidence of numerical variability;
+  identical results across batch shapes/runs are not claimed.
+- Actual HTTP: all 110 native requests completed, **36/110 fail parity**, same
+  maximum error, no flips. Three empty-state reference cases are intentionally
+  rejected by the native contract. `native-http-parity.json`.
+- Serving-environment tokenizer: **110/110** author encoding comparisons pass.
+  `engine-tokenizer-parity.json`. The tokenizer warning is not automatically
+  “fixed,” because that could change IDs; actual IDs were compared instead.
+
+The code has no fake production runtime or merged/low-precision fallback.
+`--allow-uncertified` is required to serve this development profile. Its purpose
+is to expose the incomplete certification, never to weaken the release gate.
+The certification registry remains empty; `python -m validation.locks` still
+fails with `baseline is not certified`.
+
+Actual service observations:
+
+- Started offline from verified cache; engine warmed before readiness. Initial
+  kernel compilation took about 94 seconds on this host; startup is not an SLA.
+- `jevserve check` returned real Choice/Noul/Score. Its refund sample selected
+  billing with probability 0.9488854504; this is a model output, not an accuracy claim.
+- Official `typesafe-sdk==0.7.4` made a real network call for all three types.
+  Only the text-question subset is promised; see `compat/README.md`.
+- Sixteen concurrent requests: 16 HTTP 200 responses. A 1 ms deadline returned
+  504. Client cancellation returned active/waiting gauges to zero, followed by
+  successful inference and readiness. `http-resilience.json`.
+- Twenty sequential six-candidate/three-question requests: p50 0.141754 s,
+  p95 0.170816 s, total 2.799689 s. `native-http-benchmark.json`. This short,
+  synthetic, warmed workload is not a capacity/accuracy/soak claim.
+- SIGTERM on our API process closed its engine and released GPU memory. SIGTERM
+  on **only our worker** caused API nonzero exit (1); GPU returned to idle.
+  `runtime-environment.json`. No other process or shared service was changed.
+- `docker compose config --quiet` passed. Dockerfile build, `docker run` inference,
+  Compose inference and container network isolation are **unrun**, not passed.
+  The shared daemon's earlier CPU/GPU TTRPC failure remains a prerequisite blocker.
+
+Verification: 130 CPU tests passed, Ruff and strict Mypy (28 CPU-visible source
+modules) passed, wheel/sdist build passed. The GPU model module uses a dynamic
+vLLM base class and is excluded from Mypy; real loading and inference validate
+that boundary. Manual review covered cache integrity, cancellation, secret/body
+logging, checkpoint dtypes and release claims. Independent agent review was not
+available under the session's no-delegation instruction. CI workflow is written
+but has not run remotely.
+
+## Reproduction and exact next action
+
+CPU:
+
+```bash
+uv sync --locked
+uv run pytest -q
+uv run ruff check .
+uv run mypy
+uv run python -m build --no-isolation
+```
+
+Real serving on this development host (check GPU occupancy first):
+
+```bash
+.local/engine-venv/bin/jevserve serve --allow-uncertified --offline \
+  --cache-dir .local/runtime-cache --port 18791
+.venv/bin/jevserve check --url http://127.0.0.1:18791
+.venv/bin/python -m validation.http --url http://127.0.0.1:18791 \
+  --output .local/http-parity.json
+```
+
+The HTTP parity command exits **1** for the measured tolerance failures. To
+reproduce pretokenized pooling, run `python -m validation.pooling --help` in the
+engine environment and supply the verified compiled path and cache directory.
+Author reference reproduction remains the command in the preceding section.
+For another host, use the README's pinned Python 3.12 installation and prepare
+commands; the local cache paths are not committed artifacts.
+
+**Next engineering action:** isolate numerical drift at per-layer/sequence-batch
+boundaries between the author's Torch path and vLLM kernels while preserving
+checkpoint precision and the existing tolerance. Do not certify on label agreement
+alone. Independently, the host administrator must restore Docker container creation;
+then run the existing CPU/GPU probes, build the pinned Dockerfile, and verify both
+container paths, offline startup and rollback. No daemon restart is authorized
+or performed here. Alpha/RC/stable gates remain open.
+
+No push or publication was performed. Weights, caches, credentials and private
+host notes remain ignored. Commits use the user's existing Git identity.

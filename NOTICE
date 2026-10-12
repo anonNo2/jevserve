@@ -12,3 +12,8 @@ Pinned source: bd4118882f733574a3250a4b65fe4d884130c08b
 Copyright (c) 2026 Open-Jev contributors
 MIT license preserved in licenses/Open-Jev-MIT.txt.
 Model/base weights are not included; their Apache-2.0 licenses remain separate.
+
+The text-only Qwen3.5 vLLM pooling model adapter is derived from mode-io/vllm-jev
+commit eae6b2d6dd06fb014118c99f660261cf4ecf04f9 (Apache-2.0).
+Upstream license: licenses/vllm-jev-Apache-2.0.txt.
+JevServe does not bundle the upstream HTTP endpoint or other model adapters.

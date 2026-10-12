@@ -1,6 +1,6 @@
 # Codex 开发交接
 
-实施已于 2026-10-12 开始。下方初始化记录属于历史基线；当前完成项、阻塞项和下一步以 [STATUS.md](STATUS.md) 为准。CPU 开发命令见 [IMPLEMENTATION.md](IMPLEMENTATION.md)。
+实施已于 2026-10-12 开始，真实 Open-Jev-2B 的 CLI/HTTP/vLLM 开发闭环已运行；数值对齐失败、容器认证受阻，尚非 alpha。下方初始化记录属于历史基线；当前完成项、阻塞项和下一步以 [STATUS.md](STATUS.md) 为准。CPU 开发命令见 [IMPLEMENTATION.md](IMPLEMENTATION.md)。
 
 ## 用户目标
 

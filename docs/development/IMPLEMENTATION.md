@@ -11,26 +11,59 @@ uv run mypy
 uv run python -m build
 ```
 
-The package currently exposes Python contracts, artifact preparation and an
-Open-Jev encoding/readout adapter. The adapter requires an explicitly supplied
-tokenizer and verified model capabilities; it never constructs a fake engine. There is
-no `jevserve` CLI or HTTP server yet. `DecisionRequest.from_json` / `parse_request`
-reject duplicate JSON fields recursively; a future HTTP handler must call that
-parser after enforcing the body limit. Calling Pydantic's generic JSON method
-directly does not provide duplicate-field rejection. Native instructions and
-candidate descriptions are text (Choice permits null descriptions); broader
-upstream object/array description compatibility is deferred to T05.
+## Real development service
 
-`Capabilities` enforces model candidate and token work budgets separately from
-request structure. The adapter must validate token lengths after encoding and
-before admission to GPU work. A model's limits are not inferred from available
-GPU memory. Responses reject invalid distributions, mismatched ordinal scores,
-and unstable tie selection. These types are not evidence of a running model.
+The CLI, HTTP service, native SDK and pinned vLLM bridge are implemented. The
+runtime is explicitly **uncertified**: see STATUS for failed numerical parity
+and blocked container gates. Use the source setup in the bilingual README.
+The development host uses `.local/engine-venv`, not the CPU `.venv`.
+
+```bash
+.local/engine-venv/bin/jevserve serve --allow-uncertified --offline \
+  --cache-dir .local/runtime-cache --port 18791
+.venv/bin/jevserve check --url http://127.0.0.1:18791
+.venv/bin/jevserve benchmark --url http://127.0.0.1:18791 \
+  --requests 20 --output .local/benchmark.json
+```
+
+For another host, prepare with `jevserve prepare --cache-dir CACHE` before
+using `--offline`. Set `--token-file` for a Hub credential file; never place its
+contents in command arguments. `--api-key-file` enables constant-time Bearer
+authentication on decisions/models/metrics; health endpoints stay unauthenticated.
+The local default bind is 127.0.0.1. Container defaults use 0.0.0.0 internally
+and the documented port publication binds the host to loopback.
+
+Source and derived checkpoints are separate immutable cache directories.
+Preparation verifies source hashes; compilation strips vision-only tensors,
+renames text tensors and preserves base/head/LoRA values. The FP32 LoRA residual
+path is fixed to this checkpoint and never switches to BF16 dynamic LoRA.
+Startup verifies versions and warms the engine before readiness. Engine death
+closes admission and makes the CLI exit nonzero. SIGTERM drains pending requests
+within the configured budget and closes the engine. No access/body logging or
+vLLM scheduler-input failure dumps are enabled.
+
+`jevserve models list` reports development status. `doctor` reports installed
+versions and a read-only GPU observation; it neither reserves the GPU nor
+certifies Docker. `check` performs actual HTTP inference. `benchmark` is a
+bounded sequential workload (up to 1000 requests), not a capacity or soak test.
+The native SDK never retries. Official SDK compatibility is documented in
+[compat/README.md](../../compat/README.md).
+
+For Compose preparation/offline use, after a verified image build:
+
+```bash
+docker compose run --rm --no-deps jevserve prepare
+docker compose run --rm --service-ports jevserve serve --allow-uncertified --offline
+```
+
+These container commands remain **unexecuted** while Docker creation is blocked.
+Keep prepared caches when changing images; pin an actual built image ID/digest
+for rollback. There is no certified release image or completed rollback drill.
 
 ## Artifact preparation
 
 `prepare_model(manifest, cache_dir, offline=False)` uses an explicit immutable
-`ModelManifest`. Unknown registry IDs fail; there is no default model yet. Each
+`ModelManifest`. Only the pinned Open-Jev-2B development target is accepted; unknown IDs fail. Each
 file binds its local path, immutable source revision, byte length and SHA-256.
 The preparation identity hashes the full manifest, including base-model sources.
 
@@ -52,7 +85,7 @@ readers seeing partially prepared packages; it does not promise power-loss
 survival on every filesystem. Read-only verified caches work offline.
 
 The preparation library verifies byte integrity and paths, not model-specific
-head/tokenizer structure; T03/T04 must additionally validate those before engine
+head/tokenizer structure; the bounded converter/runtime additionally validate those before engine
 startup. `validation.acquire` exercises this same preparer for baseline sources.
 
 ## Gates

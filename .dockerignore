@@ -1,0 +1,15 @@
+*
+!Dockerfile
+!pyproject.toml
+!README.md
+!LICENSE
+!NOTICE
+!licenses/
+!licenses/**
+!src/
+!src/**
+!compat/
+!compat/build-requirements.txt
+!compat/runtime-requirements.txt
+**/__pycache__
+*.pyc

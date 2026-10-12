@@ -1,0 +1,1858 @@
+{
+  "case_count": 110,
+  "native_rejected_case_ids": [
+    "empty-0",
+    "empty-1",
+    "empty-2"
+  ],
+  "failures": 36,
+  "max_probability_error": 0.02178033668786783,
+  "label_flip_count": 0,
+  "model_revision": "0c7aa498b1627be8da4acf34c863ff0ee0a92785",
+  "execution_profile": "qwen35-unmerged-v1",
+  "reference_sha256": "938ba97b4acf916d228036f8f21bfc75a74aaddeadaa089cb8abda40beb4a6b4",
+  "tolerance": {
+    "status": "predeclared_unmeasured",
+    "dtype": "bfloat16",
+    "head_dtype": "float32",
+    "probability_atol": 0.001,
+    "probability_rtol": 0.01,
+    "near_tie_margin": 0.01,
+    "report_all_label_flips": true,
+    "prefix_cache": false,
+    "calibration_id": null,
+    "notes": "Preserve checkpoint temperature; thresholds frozen before first reference/parity run. No accuracy or calibration claim."
+  },
+  "transport": "real HTTP, sequential requests",
+  "cases": [
+    {
+      "id": "00-choice",
+      "within_tolerance": false,
+      "max_probability_error": 0.0015147358707048864,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "technical": 0.049723385205976224,
+            "billing": 0.9502766147940238
+          },
+          "type": "choice",
+          "choice": "billing"
+        }
+      }
+    },
+    {
+      "id": "00-noul",
+      "within_tolerance": false,
+      "max_probability_error": 0.008589739932090668,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "type": "noul",
+          "noul": 0.8082818093964693
+        }
+      }
+    },
+    {
+      "id": "00-score",
+      "within_tolerance": false,
+      "max_probability_error": 0.004397337025288661,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "0": 0.9116597135820497,
+            "1": 0.08232782102379656,
+            "2": 0.0060124653941538994
+          },
+          "type": "score",
+          "score": 0.09435275181210435,
+          "legend": {
+            "0": "low",
+            "1": "medium",
+            "2": "high"
+          }
+        }
+      }
+    },
+    {
+      "id": "01-choice",
+      "within_tolerance": true,
+      "max_probability_error": 0.001944060255785085,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "billing": 0.02927864633907113,
+            "technical": 0.8369285509978773,
+            "other": 0.13379280266305152
+          },
+          "type": "choice",
+          "choice": "technical"
+        }
+      }
+    },
+    {
+      "id": "01-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.00012684389406040358,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "type": "noul",
+          "noul": 0.022150709268400338
+        }
+      }
+    },
+    {
+      "id": "01-score",
+      "within_tolerance": false,
+      "max_probability_error": 0.002543399083676956,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "0": 0.916677140798505,
+            "1": 0.0769682237880021,
+            "2": 0.006354635413492883
+          },
+          "type": "score",
+          "score": 0.08967749461498786,
+          "legend": {
+            "0": "low",
+            "1": "medium",
+            "2": "high"
+          }
+        }
+      }
+    },
+    {
+      "id": "02-choice",
+      "within_tolerance": true,
+      "max_probability_error": 0.0023868405341845866,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "billing": 0.7628605421581984,
+            "technical": 0.2371394578418015
+          },
+          "type": "choice",
+          "choice": "billing"
+        }
+      }
+    },
+    {
+      "id": "02-noul",
+      "within_tolerance": false,
+      "max_probability_error": 0.0058409496379360215,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "type": "noul",
+          "noul": 0.12254526361661326
+        }
+      }
+    },
+    {
+      "id": "02-score",
+      "within_tolerance": false,
+      "max_probability_error": 0.002840780488508221,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "0": 0.8914400468781691,
+            "1": 0.09854197717028636,
+            "2": 0.010017975951544572
+          },
+          "type": "score",
+          "score": 0.1185779290733755,
+          "legend": {
+            "0": "low",
+            "1": "medium",
+            "2": "high"
+          }
+        }
+      }
+    },
+    {
+      "id": "03-choice",
+      "within_tolerance": true,
+      "max_probability_error": 0.0018806623383457177,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "other": 0.1061096118991799,
+            "technical": 0.8772094175743852,
+            "billing": 0.016680970526434896
+          },
+          "type": "choice",
+          "choice": "technical"
+        }
+      }
+    },
+    {
+      "id": "03-noul",
+      "within_tolerance": true,
+      "max_probability_error": 6.187323142092804e-05,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "type": "noul",
+          "noul": 0.001944966081905491
+        }
+      }
+    },
+    {
+      "id": "03-score",
+      "within_tolerance": true,
+      "max_probability_error": 0.0008255856213045254,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "0": 0.9653783934565108,
+            "1": 0.03344102506904477,
+            "2": 0.001180581474444339
+          },
+          "type": "score",
+          "score": 0.035802188017933445,
+          "legend": {
+            "0": "low",
+            "1": "medium",
+            "2": "high"
+          }
+        }
+      }
+    },
+    {
+      "id": "04-choice",
+      "within_tolerance": false,
+      "max_probability_error": 0.002450598962355603,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "billing": 0.947645217667074,
+            "technical": 0.052354782332925946
+          },
+          "type": "choice",
+          "choice": "billing"
+        }
+      }
+    },
+    {
+      "id": "04-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.000644136604729284,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "type": "noul",
+          "noul": 0.9546949560050915
+        }
+      }
+    },
+    {
+      "id": "04-score",
+      "within_tolerance": true,
+      "max_probability_error": 0.0009720445285660295,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "0": 0.9208092854485203,
+            "1": 0.07181991473752533,
+            "2": 0.0073707998139545166
+          },
+          "type": "score",
+          "score": 0.08656151436543437,
+          "legend": {
+            "0": "low",
+            "1": "medium",
+            "2": "high"
+          }
+        }
+      }
+    },
+    {
+      "id": "05-choice",
+      "within_tolerance": true,
+      "max_probability_error": 0.00026655395369145664,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "billing": 0.013320076401055925,
+            "technical": 0.9020881013669843,
+            "other": 0.08459182223195985
+          },
+          "type": "choice",
+          "choice": "technical"
+        }
+      }
+    },
+    {
+      "id": "05-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.0002659286659255737,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "type": "noul",
+          "noul": 0.015980822942612948
+        }
+      }
+    },
+    {
+      "id": "05-score",
+      "within_tolerance": true,
+      "max_probability_error": 0.0006150057695538669,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "0": 0.9292240662959353,
+            "1": 0.06632870862022626,
+            "2": 0.004447225083838504
+          },
+          "type": "score",
+          "score": 0.07522315878790327,
+          "legend": {
+            "0": "low",
+            "1": "medium",
+            "2": "high"
+          }
+        }
+      }
+    },
+    {
+      "id": "06-choice",
+      "within_tolerance": true,
+      "max_probability_error": 0.002340306507866763,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "technical": 0.5841873268668065,
+            "billing": 0.41581267313319353
+          },
+          "type": "choice",
+          "choice": "technical"
+        }
+      }
+    },
+    {
+      "id": "06-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.0005907437088535986,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "type": "noul",
+          "noul": 0.04172620964218267
+        }
+      }
+    },
+    {
+      "id": "06-score",
+      "within_tolerance": true,
+      "max_probability_error": 0.00026944951184526555,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "0": 0.8871292487488645,
+            "1": 0.1036492653171594,
+            "2": 0.009221485933976295
+          },
+          "type": "score",
+          "score": 0.12209223718511199,
+          "legend": {
+            "0": "low",
+            "1": "medium",
+            "2": "high"
+          }
+        }
+      }
+    },
+    {
+      "id": "07-choice",
+      "within_tolerance": false,
+      "max_probability_error": 0.003593279003891392,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "billing": 0.10929411468854397,
+            "technical": 0.0592485747662407,
+            "other": 0.8314573105452153
+          },
+          "type": "choice",
+          "choice": "other"
+        }
+      }
+    },
+    {
+      "id": "07-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.0006205865225263896,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "type": "noul",
+          "noul": 0.015630550698638196
+        }
+      }
+    },
+    {
+      "id": "07-score",
+      "within_tolerance": true,
+      "max_probability_error": 6.30652091947459e-05,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "0": 0.9863431449304542,
+            "1": 0.012251328079999691,
+            "2": 0.0014055269895462547
+          },
+          "type": "score",
+          "score": 0.0150623820590922,
+          "legend": {
+            "0": "low",
+            "1": "medium",
+            "2": "high"
+          }
+        }
+      }
+    },
+    {
+      "id": "08-choice",
+      "within_tolerance": true,
+      "max_probability_error": 0.004316807325835281,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "billing": 0.45873448329803923,
+            "technical": 0.5412655167019608
+          },
+          "type": "choice",
+          "choice": "technical"
+        }
+      }
+    },
+    {
+      "id": "08-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.00020379953679198343,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "type": "noul",
+          "noul": 0.05322912899555554
+        }
+      }
+    },
+    {
+      "id": "08-score",
+      "within_tolerance": false,
+      "max_probability_error": 0.014770643651923154,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "0": 0.07085305762823789,
+            "1": 0.2022931444809909,
+            "2": 0.7268537978907711
+          },
+          "type": "score",
+          "score": 1.6560007402625332,
+          "legend": {
+            "0": "low",
+            "1": "medium",
+            "2": "high"
+          }
+        }
+      }
+    },
+    {
+      "id": "09-choice",
+      "within_tolerance": false,
+      "max_probability_error": 0.006977687470756,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "other": 0.14895891391831648,
+            "technical": 0.517757437387761,
+            "billing": 0.33328364869392246
+          },
+          "type": "choice",
+          "choice": "technical"
+        }
+      }
+    },
+    {
+      "id": "09-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.00013208949305676398,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "type": "noul",
+          "noul": 0.13633760686078267
+        }
+      }
+    },
+    {
+      "id": "09-score",
+      "within_tolerance": true,
+      "max_probability_error": 0.0007663237668674439,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "0": 0.6283883221266712,
+            "1": 0.3023605848687687,
+            "2": 0.06925109300456013
+          },
+          "type": "score",
+          "score": 0.44086277087788894,
+          "legend": {
+            "0": "low",
+            "1": "medium",
+            "2": "high"
+          }
+        }
+      }
+    },
+    {
+      "id": "10-choice",
+      "within_tolerance": false,
+      "max_probability_error": 0.006068395291431772,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "billing": 0.8774776317022721,
+            "technical": 0.12252236829772796
+          },
+          "type": "choice",
+          "choice": "billing"
+        }
+      }
+    },
+    {
+      "id": "10-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.0005471721230232499,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "type": "noul",
+          "noul": 0.01992487386299541
+        }
+      }
+    },
+    {
+      "id": "10-score",
+      "within_tolerance": true,
+      "max_probability_error": 0.00022940436588492208,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "0": 0.9943067409512555,
+            "1": 0.003700656709080141,
+            "2": 0.0019926023396644506
+          },
+          "type": "score",
+          "score": 0.007685861388409042,
+          "legend": {
+            "0": "low",
+            "1": "medium",
+            "2": "high"
+          }
+        }
+      }
+    },
+    {
+      "id": "11-choice",
+      "within_tolerance": false,
+      "max_probability_error": 0.004465106632348115,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "billing": 0.15488887189172082,
+            "technical": 0.5226567858877544,
+            "other": 0.3224543422205247
+          },
+          "type": "choice",
+          "choice": "technical"
+        }
+      }
+    },
+    {
+      "id": "11-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.0002587565056690888,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "type": "noul",
+          "noul": 0.013492670139247376
+        }
+      }
+    },
+    {
+      "id": "11-score",
+      "within_tolerance": true,
+      "max_probability_error": 0.0002000886718976913,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "0": 0.9911682422205927,
+            "1": 0.006727070935260983,
+            "2": 0.0021046868441462097
+          },
+          "type": "score",
+          "score": 0.010936444623553403,
+          "legend": {
+            "0": "low",
+            "1": "medium",
+            "2": "high"
+          }
+        }
+      }
+    },
+    {
+      "id": "12-choice",
+      "within_tolerance": true,
+      "max_probability_error": 0.0010282583747754925,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "technical": 0.039584829413949384,
+            "billing": 0.9604151705860505
+          },
+          "type": "choice",
+          "choice": "billing"
+        }
+      }
+    },
+    {
+      "id": "12-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.0017127691146884838,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "type": "noul",
+          "noul": 0.2251715396780695
+        }
+      }
+    },
+    {
+      "id": "12-score",
+      "within_tolerance": true,
+      "max_probability_error": 0.0019102752134571577,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "0": 0.12615847248191128,
+            "1": 0.23033319772917382,
+            "2": 0.6435083297889149
+          },
+          "type": "score",
+          "score": 1.5173498573070037,
+          "legend": {
+            "0": "low",
+            "1": "medium",
+            "2": "high"
+          }
+        }
+      }
+    },
+    {
+      "id": "13-choice",
+      "within_tolerance": true,
+      "max_probability_error": 0.0006690491205102178,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "billing": 0.0332913044125463,
+            "technical": 0.8255769868316284,
+            "other": 0.14113170875582534
+          },
+          "type": "choice",
+          "choice": "technical"
+        }
+      }
+    },
+    {
+      "id": "13-noul",
+      "within_tolerance": false,
+      "max_probability_error": 0.0023528856786116936,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "type": "noul",
+          "noul": 0.8817971656926643
+        }
+      }
+    },
+    {
+      "id": "13-score",
+      "within_tolerance": true,
+      "max_probability_error": 0.004021533168582669,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "0": 0.14661288210710477,
+            "1": 0.22731163454711772,
+            "2": 0.6260754833457775
+          },
+          "type": "score",
+          "score": 1.4794626012386727,
+          "legend": {
+            "0": "low",
+            "1": "medium",
+            "2": "high"
+          }
+        }
+      }
+    },
+    {
+      "id": "14-choice",
+      "within_tolerance": true,
+      "max_probability_error": 0.0004452017225984317,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "billing": 0.7800792704774879,
+            "technical": 0.219920729522512
+          },
+          "type": "choice",
+          "choice": "billing"
+        }
+      }
+    },
+    {
+      "id": "14-noul",
+      "within_tolerance": false,
+      "max_probability_error": 0.011683879840984318,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "type": "noul",
+          "noul": 0.18422224405799473
+        }
+      }
+    },
+    {
+      "id": "14-score",
+      "within_tolerance": false,
+      "max_probability_error": 0.005326295661091884,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "0": 0.08121734239926463,
+            "1": 0.15820267394433404,
+            "2": 0.7605799836564013
+          },
+          "type": "score",
+          "score": 1.6793626412571367,
+          "legend": {
+            "0": "low",
+            "1": "medium",
+            "2": "high"
+          }
+        }
+      }
+    },
+    {
+      "id": "15-choice",
+      "within_tolerance": false,
+      "max_probability_error": 0.004412599753523594,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "other": 0.0855705914745209,
+            "technical": 0.8996728494911532,
+            "billing": 0.014756559034325942
+          },
+          "type": "choice",
+          "choice": "technical"
+        }
+      }
+    },
+    {
+      "id": "15-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.0018431955935999111,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "type": "noul",
+          "noul": 0.8947144155589744
+        }
+      }
+    },
+    {
+      "id": "15-score",
+      "within_tolerance": true,
+      "max_probability_error": 0.002905837284926771,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "0": 0.4733156989302962,
+            "1": 0.3442092959445656,
+            "2": 0.18247500512513823
+          },
+          "type": "score",
+          "score": 0.709159306194842,
+          "legend": {
+            "0": "low",
+            "1": "medium",
+            "2": "high"
+          }
+        }
+      }
+    },
+    {
+      "id": "16-choice",
+      "within_tolerance": true,
+      "max_probability_error": 0.0014360744002535827,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "billing": 0.946339363841627,
+            "technical": 0.05366063615837296
+          },
+          "type": "choice",
+          "choice": "billing"
+        }
+      }
+    },
+    {
+      "id": "16-noul",
+      "within_tolerance": false,
+      "max_probability_error": 0.017652496819363817,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "type": "noul",
+          "noul": 0.3175262020958608
+        }
+      }
+    },
+    {
+      "id": "16-score",
+      "within_tolerance": false,
+      "max_probability_error": 0.005125241219476412,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "0": 0.11978800840427757,
+            "1": 0.2354874405530493,
+            "2": 0.6447245510426732
+          },
+          "type": "score",
+          "score": 1.5249365426383958,
+          "legend": {
+            "0": "low",
+            "1": "medium",
+            "2": "high"
+          }
+        }
+      }
+    },
+    {
+      "id": "17-choice",
+      "within_tolerance": true,
+      "max_probability_error": 0.00011798017734943045,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "billing": 0.011712728006119066,
+            "technical": 0.9304512603188526,
+            "other": 0.05783601167502834
+          },
+          "type": "choice",
+          "choice": "technical"
+        }
+      }
+    },
+    {
+      "id": "17-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.0008135451401469762,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "type": "noul",
+          "noul": 0.965616785752941
+        }
+      }
+    },
+    {
+      "id": "17-score",
+      "within_tolerance": false,
+      "max_probability_error": 0.0025119261401148896,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "0": 0.06453746438584369,
+            "1": 0.1326392174918096,
+            "2": 0.8028233181223466
+          },
+          "type": "score",
+          "score": 1.738285853736503,
+          "legend": {
+            "0": "low",
+            "1": "medium",
+            "2": "high"
+          }
+        }
+      }
+    },
+    {
+      "id": "18-choice",
+      "within_tolerance": false,
+      "max_probability_error": 0.007256876250085975,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "technical": 0.6225579793128991,
+            "billing": 0.3774420206871008
+          },
+          "type": "choice",
+          "choice": "technical"
+        }
+      }
+    },
+    {
+      "id": "18-noul",
+      "within_tolerance": false,
+      "max_probability_error": 0.0054505061079654915,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "type": "noul",
+          "noul": 0.6994459330645751
+        }
+      }
+    },
+    {
+      "id": "18-score",
+      "within_tolerance": true,
+      "max_probability_error": 0.005799884415068124,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "0": 0.1848273869628961,
+            "1": 0.32033377026704823,
+            "2": 0.4948388427700556
+          },
+          "type": "score",
+          "score": 1.3100114558071594,
+          "legend": {
+            "0": "low",
+            "1": "medium",
+            "2": "high"
+          }
+        }
+      }
+    },
+    {
+      "id": "19-choice",
+      "within_tolerance": false,
+      "max_probability_error": 0.002928256454266087,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "billing": 0.1062356459519781,
+            "technical": 0.0631208436422469,
+            "other": 0.830643510405775
+          },
+          "type": "choice",
+          "choice": "other"
+        }
+      }
+    },
+    {
+      "id": "19-noul",
+      "within_tolerance": true,
+      "max_probability_error": 1.0815768377265417e-05,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "type": "noul",
+          "noul": 0.002609827690259287
+        }
+      }
+    },
+    {
+      "id": "19-score",
+      "within_tolerance": true,
+      "max_probability_error": 0.0021783694299429834,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "0": 0.8893445761997191,
+            "1": 0.0778640909719957,
+            "2": 0.03279133282828518
+          },
+          "type": "score",
+          "score": 0.14344675662856607,
+          "legend": {
+            "0": "low",
+            "1": "medium",
+            "2": "high"
+          }
+        }
+      }
+    },
+    {
+      "id": "20-choice",
+      "within_tolerance": true,
+      "max_probability_error": 0.001597789353765533,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "billing": 0.3418184882899639,
+            "technical": 0.6581815117100361
+          },
+          "type": "choice",
+          "choice": "technical"
+        }
+      }
+    },
+    {
+      "id": "20-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.0003232886658941503,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "type": "noul",
+          "noul": 0.9246212998845883
+        }
+      }
+    },
+    {
+      "id": "20-score",
+      "within_tolerance": true,
+      "max_probability_error": 0.000825816524384404,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "0": 0.0054306850797710806,
+            "1": 0.016056154835323844,
+            "2": 0.978513160084905
+          },
+          "type": "score",
+          "score": 1.9730824750051337,
+          "legend": {
+            "0": "low",
+            "1": "medium",
+            "2": "high"
+          }
+        }
+      }
+    },
+    {
+      "id": "21-choice",
+      "within_tolerance": false,
+      "max_probability_error": 0.006355222148082762,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "other": 0.1582662816805234,
+            "technical": 0.5084457050318013,
+            "billing": 0.33328801328767527
+          },
+          "type": "choice",
+          "choice": "technical"
+        }
+      }
+    },
+    {
+      "id": "21-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.00015499658995687948,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "type": "noul",
+          "noul": 0.4544047356027259
+        }
+      }
+    },
+    {
+      "id": "21-score",
+      "within_tolerance": false,
+      "max_probability_error": 0.005500301144162112,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "0": 0.2534964341877077,
+            "1": 0.3829927801617588,
+            "2": 0.3635107856505335
+          },
+          "type": "score",
+          "score": 1.1100143514628258,
+          "legend": {
+            "0": "low",
+            "1": "medium",
+            "2": "high"
+          }
+        }
+      }
+    },
+    {
+      "id": "22-choice",
+      "within_tolerance": true,
+      "max_probability_error": 0.0017784051782063215,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "billing": 0.8535630543468504,
+            "technical": 0.14643694565314958
+          },
+          "type": "choice",
+          "choice": "billing"
+        }
+      }
+    },
+    {
+      "id": "22-noul",
+      "within_tolerance": false,
+      "max_probability_error": 0.02178033668786783,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "type": "noul",
+          "noul": 0.4282493870727868
+        }
+      }
+    },
+    {
+      "id": "22-score",
+      "within_tolerance": false,
+      "max_probability_error": 0.004243242332899633,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "0": 0.03863706846471329,
+            "1": 0.12274785061356426,
+            "2": 0.8386150809217224
+          },
+          "type": "score",
+          "score": 1.799978012457009,
+          "legend": {
+            "0": "low",
+            "1": "medium",
+            "2": "high"
+          }
+        }
+      }
+    },
+    {
+      "id": "23-choice",
+      "within_tolerance": false,
+      "max_probability_error": 0.004294032716252005,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "billing": 0.1906705550037664,
+            "technical": 0.43228836961464195,
+            "other": 0.3770410753815916
+          },
+          "type": "choice",
+          "choice": "technical"
+        }
+      }
+    },
+    {
+      "id": "23-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.0032578103125552316,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "type": "noul",
+          "noul": 0.4647788366698308
+        }
+      }
+    },
+    {
+      "id": "23-score",
+      "within_tolerance": true,
+      "max_probability_error": 0.0020490756200979288,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "0": 0.02255727534766092,
+            "1": 0.050650634774156225,
+            "2": 0.9267920898781828
+          },
+          "type": "score",
+          "score": 1.904234814530522,
+          "legend": {
+            "0": "low",
+            "1": "medium",
+            "2": "high"
+          }
+        }
+      }
+    },
+    {
+      "id": "24-choice",
+      "within_tolerance": true,
+      "max_probability_error": 0.0009376045907584646,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "technical": 0.12486144626257657,
+            "billing": 0.8751385537374234
+          },
+          "type": "choice",
+          "choice": "billing"
+        }
+      }
+    },
+    {
+      "id": "24-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.004565951696827275,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "type": "noul",
+          "noul": 0.628897645042289
+        }
+      }
+    },
+    {
+      "id": "24-score",
+      "within_tolerance": false,
+      "max_probability_error": 0.001385042545990145,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "0": 0.025439816340285356,
+            "1": 0.9745601836597148
+          },
+          "type": "score",
+          "score": 0.9745601836597148,
+          "legend": {
+            "0": "low",
+            "1": "high"
+          }
+        }
+      }
+    },
+    {
+      "id": "25-choice",
+      "within_tolerance": true,
+      "max_probability_error": 0.0014018340235009141,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "billing": 0.04540140600089456,
+            "technical": 0.8533696772157291,
+            "other": 0.10122891678337646
+          },
+          "type": "choice",
+          "choice": "technical"
+        }
+      }
+    },
+    {
+      "id": "25-noul",
+      "within_tolerance": false,
+      "max_probability_error": 0.002435270196973427,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "type": "noul",
+          "noul": 0.06451845938631265
+        }
+      }
+    },
+    {
+      "id": "25-score",
+      "within_tolerance": true,
+      "max_probability_error": 0.0001388607657186909,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "0": 0.01776254663130133,
+            "1": 0.9822374533686986
+          },
+          "type": "score",
+          "score": 0.9822374533686986,
+          "legend": {
+            "0": "low",
+            "1": "high"
+          }
+        }
+      }
+    },
+    {
+      "id": "26-choice",
+      "within_tolerance": true,
+      "max_probability_error": 0.0015449132348813732,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "billing": 0.7385749986996526,
+            "technical": 0.26142500130034746
+          },
+          "type": "choice",
+          "choice": "billing"
+        }
+      }
+    },
+    {
+      "id": "26-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.0005070523627700441,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "type": "noul",
+          "noul": 0.3063283204690065
+        }
+      }
+    },
+    {
+      "id": "26-score",
+      "within_tolerance": true,
+      "max_probability_error": 0.00016664682490639265,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "0": 0.029397854401203502,
+            "1": 0.9706021455987965
+          },
+          "type": "score",
+          "score": 0.9706021455987965,
+          "legend": {
+            "0": "low",
+            "1": "high"
+          }
+        }
+      }
+    },
+    {
+      "id": "27-choice",
+      "within_tolerance": true,
+      "max_probability_error": 0.0010732365573900005,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "other": 0.17754660172843587,
+            "technical": 0.7561623741808352,
+            "billing": 0.06629102409072893
+          },
+          "type": "choice",
+          "choice": "technical"
+        }
+      }
+    },
+    {
+      "id": "27-noul",
+      "within_tolerance": true,
+      "max_probability_error": 7.786338462892253e-05,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "type": "noul",
+          "noul": 0.004169896395231875
+        }
+      }
+    },
+    {
+      "id": "27-score",
+      "within_tolerance": true,
+      "max_probability_error": 0.0008585932379890915,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "0": 0.01189183459870498,
+            "1": 0.988108165401295
+          },
+          "type": "score",
+          "score": 0.988108165401295,
+          "legend": {
+            "0": "low",
+            "1": "high"
+          }
+        }
+      }
+    },
+    {
+      "id": "28-choice",
+      "within_tolerance": true,
+      "max_probability_error": 0.00014922014864454658,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "billing": 0.8464349284598585,
+            "technical": 0.15356507154014157
+          },
+          "type": "choice",
+          "choice": "billing"
+        }
+      }
+    },
+    {
+      "id": "28-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.0001054170201070237,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "type": "noul",
+          "noul": 0.832560113381723
+        }
+      }
+    },
+    {
+      "id": "28-score",
+      "within_tolerance": true,
+      "max_probability_error": 0.0002987598215684756,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "0": 0.019498425936026086,
+            "1": 0.980501574063974
+          },
+          "type": "score",
+          "score": 0.980501574063974,
+          "legend": {
+            "0": "low",
+            "1": "high"
+          }
+        }
+      }
+    },
+    {
+      "id": "29-choice",
+      "within_tolerance": true,
+      "max_probability_error": 0.0008622023303769405,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "billing": 0.025906800273383088,
+            "technical": 0.8894901280999968,
+            "other": 0.08460307162662013
+          },
+          "type": "choice",
+          "choice": "technical"
+        }
+      }
+    },
+    {
+      "id": "29-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.00029237515941726855,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "type": "noul",
+          "noul": 0.034788405993024754
+        }
+      }
+    },
+    {
+      "id": "29-score",
+      "within_tolerance": true,
+      "max_probability_error": 3.7068772042125886e-05,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "0": 0.007590263519464427,
+            "1": 0.9924097364805357
+          },
+          "type": "score",
+          "score": 0.9924097364805357,
+          "legend": {
+            "0": "low",
+            "1": "high"
+          }
+        }
+      }
+    },
+    {
+      "id": "30-choice",
+      "within_tolerance": false,
+      "max_probability_error": 0.007473333215288425,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "technical": 0.7445037595492298,
+            "billing": 0.25549624045077024
+          },
+          "type": "choice",
+          "choice": "technical"
+        }
+      }
+    },
+    {
+      "id": "30-noul",
+      "within_tolerance": false,
+      "max_probability_error": 0.004389152343813207,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "type": "noul",
+          "noul": 0.23867791182352685
+        }
+      }
+    },
+    {
+      "id": "30-score",
+      "within_tolerance": true,
+      "max_probability_error": 0.0003432273767625324,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "0": 0.04347093419037918,
+            "1": 0.9565290658096207
+          },
+          "type": "score",
+          "score": 0.9565290658096207,
+          "legend": {
+            "0": "low",
+            "1": "high"
+          }
+        }
+      }
+    },
+    {
+      "id": "31-choice",
+      "within_tolerance": true,
+      "max_probability_error": 0.0003850040651489778,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "billing": 0.07844585316378792,
+            "technical": 0.09616294834327313,
+            "other": 0.8253911984929388
+          },
+          "type": "choice",
+          "choice": "other"
+        }
+      }
+    },
+    {
+      "id": "31-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.0004245793518083095,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "type": "noul",
+          "noul": 0.021925709112458083
+        }
+      }
+    },
+    {
+      "id": "31-score",
+      "within_tolerance": true,
+      "max_probability_error": 0.00012611301763592805,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "0": 0.0063547867382121315,
+            "1": 0.9936452132617879
+          },
+          "type": "score",
+          "score": 0.9936452132617879,
+          "legend": {
+            "0": "low",
+            "1": "high"
+          }
+        }
+      }
+    },
+    {
+      "id": "32-choice",
+      "within_tolerance": true,
+      "max_probability_error": 0.003820010282911679,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "billing": 0.4044761903611313,
+            "technical": 0.5955238096388688
+          },
+          "type": "choice",
+          "choice": "technical"
+        }
+      }
+    },
+    {
+      "id": "32-noul",
+      "within_tolerance": true,
+      "max_probability_error": 8.735929547323829e-05,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "type": "noul",
+          "noul": 0.12987756909521206
+        }
+      }
+    },
+    {
+      "id": "32-score",
+      "within_tolerance": true,
+      "max_probability_error": 4.104187437314888e-05,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "0": 0.005107376513095805,
+            "1": 0.9948926234869041
+          },
+          "type": "score",
+          "score": 0.9948926234869041,
+          "legend": {
+            "0": "low",
+            "1": "high"
+          }
+        }
+      }
+    },
+    {
+      "id": "33-choice",
+      "within_tolerance": false,
+      "max_probability_error": 0.005442326125021157,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "other": 0.18923040861155738,
+            "technical": 0.5838644531124646,
+            "billing": 0.22690513827597797
+          },
+          "type": "choice",
+          "choice": "technical"
+        }
+      }
+    },
+    {
+      "id": "33-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.00027164015761793614,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "type": "noul",
+          "noul": 0.16445284399832027
+        }
+      }
+    },
+    {
+      "id": "33-score",
+      "within_tolerance": false,
+      "max_probability_error": 0.0015814451360401938,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "0": 0.05094527988827397,
+            "1": 0.9490547201117261
+          },
+          "type": "score",
+          "score": 0.9490547201117261,
+          "legend": {
+            "0": "low",
+            "1": "high"
+          }
+        }
+      }
+    },
+    {
+      "id": "34-choice",
+      "within_tolerance": false,
+      "max_probability_error": 0.019609768422085616,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "billing": 0.5631465961438346,
+            "technical": 0.43685340385616545
+          },
+          "type": "choice",
+          "choice": "billing"
+        }
+      }
+    },
+    {
+      "id": "34-noul",
+      "within_tolerance": false,
+      "max_probability_error": 0.004776302554270112,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "type": "noul",
+          "noul": 0.12621274777454353
+        }
+      }
+    },
+    {
+      "id": "34-score",
+      "within_tolerance": true,
+      "max_probability_error": 4.118278494935623e-05,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "0": 0.0056408800576756585,
+            "1": 0.9943591199423243
+          },
+          "type": "score",
+          "score": 0.9943591199423243,
+          "legend": {
+            "0": "low",
+            "1": "high"
+          }
+        }
+      }
+    },
+    {
+      "id": "35-choice",
+      "within_tolerance": false,
+      "max_probability_error": 0.006654399414708023,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "billing": 0.17925576195500015,
+            "technical": 0.548525270359311,
+            "other": 0.2722189676856889
+          },
+          "type": "choice",
+          "choice": "technical"
+        }
+      }
+    },
+    {
+      "id": "35-noul",
+      "within_tolerance": true,
+      "max_probability_error": 0.0007568318487618519,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "type": "noul",
+          "noul": 0.049793478129941365
+        }
+      }
+    },
+    {
+      "id": "35-score",
+      "within_tolerance": true,
+      "max_probability_error": 6.927833455849797e-05,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "0": 0.004109072663804698,
+            "1": 0.9958909273361952
+          },
+          "type": "score",
+          "score": 0.9958909273361952,
+          "legend": {
+            "0": "low",
+            "1": "high"
+          }
+        }
+      }
+    },
+    {
+      "id": "exact-tie",
+      "within_tolerance": true,
+      "max_probability_error": 0.0,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "0": 0.5,
+            "1": 0.5
+          },
+          "type": "score",
+          "score": 0.5,
+          "legend": {
+            "0": "equivalent",
+            "1": "equivalent"
+          }
+        }
+      }
+    },
+    {
+      "id": "single-candidate",
+      "within_tolerance": true,
+      "max_probability_error": 0.0,
+      "label_flips": [],
+      "answers": {
+        "q": {
+          "probabilities": {
+            "billing": 1.0
+          },
+          "type": "choice",
+          "choice": "billing"
+        }
+      }
+    }
+  ]
+}

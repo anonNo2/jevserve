@@ -1,0 +1,16 @@
+"""One runtime owner per API process."""
+
+from typing import Protocol
+
+from jevserve.adapters.base import EncodedDecision, RawDecision
+from jevserve.artifacts.manifest import PreparedModel
+
+
+class Runtime(Protocol):
+    async def start(self, model: PreparedModel) -> None: ...
+    async def infer(
+        self, encoded: EncodedDecision, request_id: str, deadline: float
+    ) -> RawDecision: ...
+    async def abort(self, request_id: str) -> None: ...
+    def healthy(self) -> bool: ...
+    async def close(self) -> None: ...

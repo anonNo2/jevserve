@@ -2,89 +2,73 @@
 
 **Serve Jev-style models. One command.**
 
-[简体中文](README.zh-CN.md) · [Design](docs/plans/JevServe-design.md) · [Implementation plan](docs/plans/JevServe-task-plan.md) · [Development handoff](docs/development/HANDOFF.md)
+[简体中文](README.zh-CN.md) · [Design](docs/plans/JevServe-design.md) · [Evidence and next steps](docs/development/STATUS.md)
 
-JevServe is a planned open-source inference server for Jev-style / System One decision models. Its goal is to make typed decisions as easy to serve as an LLM: one container image, one command, a documented API, and reproducible model validation.
+JevServe serves text Choice, Noul and Score decisions on one Linux NVIDIA GPU. One API process owns one vLLM engine. It is independent of **TypeSafe AI** and **JevServe-Bench**; it does not distribute TypeSafe's official Jev weights or imply their endorsement.
 
-> **Status: implementation started; CPU contracts, verified artifact preparation and an Open-Jev adapter are implemented. Its encoding matches 110 author/real-tokenizer cases; 113 author GPU reference cases passed. JevServe/vLLM inference and container certification remain pending.** The Python development package is installable; inference, CLI and containers are not implemented. No model is certified or image published. The quickstart commands below remain targets. See [development setup](docs/development/IMPLEMENTATION.md) and [current evidence](docs/development/STATUS.md).
+**Development milestone:** the CLI → HTTP → vLLM → real `ZefanCai/Open-Jev-2B` path runs on an RTX A6000. Native SDK, bounded admission, deadlines, cancellation, health checks, metrics and verified offline artifact loading are implemented. **No model is certified:** the current engine failed 38/113 pretokenized reference comparisons at the frozen tolerance (maximum probability error 0.0218; no label flips). Docker creation on the development host fails before the entrypoint; image build and both container inference paths remain unverified. No image or package has been published.
 
-## What we are building
+## Run from source
 
-- **Simple deployment:** Docker or Docker Compose on a single Linux NVIDIA GPU host.
-- **Typed decisions:** Choice, Noul (yes/no), and Score with explicit probability semantics.
-- **A proven execution engine:** vLLM scheduling and batching with bounded model adapters.
-- **Reproducible artifacts:** pinned weights, tokenizers, templates, runtime versions, and image digests.
-- **Operational essentials:** readiness, bounded queues, deadlines, cancellation, metrics, offline packages, and rollback.
-- **Evidence-based support:** real GPU tests and reference comparisons for every certified configuration.
-
-The first milestone is a working alpha repository, not feature parity or maturity parity with vLLM. Triton, Kubernetes, training, a web UI, multimodal input, and automatic model switching are outside the first release.
-
-## Target quickstart — not available yet
-
-Prerequisites for the future runtime: Linux x86_64, a compatible NVIDIA GPU and driver, Docker Engine, and NVIDIA Container Toolkit. Host Python and CUDA Toolkit should not be required.
-
-After the Dockerfile and runtime have been implemented, a local development build should run with:
+Use a project-local Python 3.12 environment and a compatible NVIDIA host. The runtime lock is large and includes CUDA dependencies. Do not replace system Python or CUDA.
 
 ```bash
-docker build -t jevserve:dev .
-docker run --rm --gpus 'device=0' --shm-size=2g \
-  -p 127.0.0.1:8000:8000 \
-  -v jevserve-cache:/var/lib/jevserve \
-  jevserve:dev serve --model ZefanCai/Open-Jev-2B
+uv venv --python 3.12 .venv-runtime
+uv pip sync --python .venv-runtime/bin/python --require-hashes compat/runtime-requirements.txt
+uv pip install --python .venv-runtime/bin/python --no-deps .
+.venv-runtime/bin/jevserve serve --allow-uncertified --cache-dir .cache/jevserve
 ```
 
-The release quickstart will use an actual published image instead of requiring a build. The alternative target is:
+The development flag acknowledges incomplete certification; it does not relax parity thresholds. First start downloads exact source revisions, verifies hashes, derives the text checkpoint without merging FP32 LoRA weights, loads the GPU engine and warms it up. Readiness becomes available after startup. Subsequent starts reverify the cache; add `--offline` to prohibit model downloads. [Detailed setup and operation](docs/development/IMPLEMENTATION.md).
 
 ```bash
-docker compose up -d
-```
-
-On the first online start, the container will prepare and verify the pinned model; later starts will reuse the cache. Offline operation will require a prepared model package. Wait for readiness before inference:
-
-```bash
-curl -fsS http://127.0.0.1:8000/readyz
-curl -fsS http://127.0.0.1:8000/v1/systemone \
+.venv-runtime/bin/jevserve check
+curl -fsS http://127.0.0.1:8000/v1/decisions \
   -H 'Content-Type: application/json' \
   -d '{"state":"I was charged twice.","questions":{"team":{"type":"choice","instructions":"Which team should handle this?","criteria":{"billing":"Payments and refunds","technical":"Technical problems"}}}}'
 ```
 
-No example response is presented as a measured model result. Authentication and deployment settings will be documented alongside the implemented service.
+The native Python client is `jevserve.client.Client`; `decide()` accepts a `DecisionRequest` or dictionary and returns a validated response. It performs no retries.
 
-## Planned model support
+## Container paths — implemented, not yet verified
 
-| Model | Role | Current status |
-|---|---|---|
-| `ZefanCai/Open-Jev-2B` | First adapter target | Pinned author GPU reference: 113 cases passed; JevServe/vLLM and containers unverified |
-| `convaiinnovations/laya` | Optional second adapter | Planned; not required for alpha |
-| TypeSafe's official Jev | Not distributed by this project | No official weights included |
+The Dockerfile pins the upstream vLLM image by digest. The Compose configuration passes structural validation. The following still require successful build and real GPU verification on a working Docker host:
 
-A model name in a plan does not mean it is supported. The release matrix will bind each certification to a checkpoint revision, GPU, precision, runtime, and test report. Historical upstream claims and versions must be rechecked before implementation.
+```bash
+docker build -t jevserve:dev .
+docker run --rm --name jevserve-dev --gpus device=0 --shm-size=1g \
+  -p 127.0.0.1:8000:8000 -v jevserve-cache:/cache \
+  jevserve:dev serve --allow-uncertified
+# Alternative:
+docker compose up --build -d
+```
 
-## Planned API
+## API and limits
 
-| Endpoint | Purpose |
+| Endpoint | Behavior |
 |---|---|
-| `POST /v1/decisions` | Native typed decisions and execution metadata |
-| `POST /v1/systemone` | Version-tested compatibility interface |
-| `GET /v1/models` | Deployed model and capabilities |
-| `GET /livez`, `GET /readyz` | Liveness and model readiness |
-| `GET /metrics` | Prometheus metrics |
+| `POST /v1/decisions` | Native answers and execution metadata |
+| `POST /v1/systemone` | Tested text-question subset of `typesafe-sdk==0.7.4`; exact model ID required |
+| `GET /v1/models` | Model revision and capability limits |
+| `GET /livez`, `/readyz` | API liveness and engine readiness |
+| `GET /metrics` | Prometheus counters, latency and admission gauges |
 
-A normalized probability is not automatically calibrated accuracy. The initial service will report `calibration_id: null` unless a validated calibration artifact is explicitly used.
+Native state is nonempty text or a JSON object. Instructions and descriptions are text; Choice permits null descriptions. Score accepts 2–10 ordered levels. The compatibility endpoint does not promise the hosted API's full object/array question schema or model aliases. [Compatibility details](compat/README.md).
 
-## Start development here
+Requests are bounded by 1 MiB, 16 questions, 256 candidate sequences, 4096 tokens per candidate and 65536 total input tokens. Defaults: 16 active requests, 64 waiting, 30-second deadline. Inputs are never silently truncated. Bearer authentication uses `--api-key-file`; health endpoints remain public. Bind to loopback by default.
 
-1. Read [AGENTS.md](AGENTS.md), the [handoff](docs/development/HANDOFF.md), the [design](docs/plans/JevServe-design.md), and the [task plan](docs/plans/JevServe-task-plan.md).
-2. Use [STATUS.md](docs/development/STATUS.md) to locate the next task: **T00 — complete the real reference and container baseline**, alongside the CPU work recorded there.
-3. Keep CPU tests and GPU certification separate. A mock, successful image build, or upstream README is not GPU validation.
-4. Record commands, versions, and evidence before marking a task complete.
+Probabilities describe the supplied candidate set, **not calibrated accuracy**. `calibration_id` is null; Score is an ordinal expectation. There is no fake production engine, automatic retry, model fallback, quantization or precision fallback.
 
-Implementation phases: baseline and contracts → model package and adapter → real vLLM inference → API/CLI → Docker/Compose → reliability and validation → release documentation.
+## Development and release gates
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for working conventions. The design and task plan currently use Chinese; the English README is the public entry point.
+```bash
+uv sync --locked
+uv run pytest -q
+uv run ruff check .
+uv run mypy
+uv run python -m build --no-isolation
+```
 
-## Independence and license
+CPU tests require no GPU imports or model downloads. Author GPU reference, engine parity, container build, Docker/Compose inference and long-duration soak are separate gates. See [STATUS](docs/development/STATUS.md), [decisions](docs/development/DECISIONS.md) and [contribution guide](CONTRIBUTING.md).
 
-JevServe is an independent project, not affiliated with or endorsed by TypeSafe AI or JevServe-Bench. “Jev-style” describes the class of decision models; this repository does not provide TypeSafe's official Jev weights.
-
-Repository materials are licensed under [Apache-2.0](LICENSE). Model weights and third-party components retain their own licenses. See [NOTICE](NOTICE). Repository, package, and image publication namespaces have not been reserved or published.
+Alpha targets one image, one model and one GPU. Kubernetes, training, a web UI, multimodal, multi-node and a Triton implementation are out of scope. A second model is optional. Project code is Apache-2.0; upstream code notices and model licenses are preserved separately in [NOTICE](NOTICE) and `licenses/`.

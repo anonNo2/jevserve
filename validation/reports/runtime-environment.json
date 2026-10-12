@@ -1,0 +1,27 @@
+{
+  "packages": {
+    "vllm": "0.29.0",
+    "torch": "2.13.0",
+    "transformers": "5.10.4",
+    "peft": "0.20.0",
+    "safetensors": "0.8.0"
+  },
+  "cuda": "13.0",
+  "gpu": "NVIDIA RTX A6000",
+  "model_revision": "0c7aa498b1627be8da4acf34c863ff0ee0a92785",
+  "execution_profile": "qwen35-unmerged-v1",
+  "dtype": "bfloat16",
+  "lora_dtype": "float32",
+  "head_dtype": "float32",
+  "prefix_cache": false,
+  "eager": true,
+  "tensor_parallel_size": 1,
+  "offline_source_start": true,
+  "sigterm_shutdown": "completed; GPU returned to idle",
+  "engine_worker_failure": {
+    "signal": "SIGTERM sent only to project worker",
+    "api_exit_code": 1,
+    "gpu_released": true
+  },
+  "certification": "incomplete: reference parity failed and Docker unavailable"
+}

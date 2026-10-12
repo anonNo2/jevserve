@@ -1,0 +1,27 @@
+name: jevserve
+services:
+  jevserve:
+    build: .
+    image: jevserve:dev
+    command: ["serve", "--allow-uncertified"]
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - jevserve-cache:/cache
+    read_only: true
+    tmpfs:
+      - /tmp:size=2g,mode=1777
+    shm_size: 1gb
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    stop_grace_period: 65s
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ["0"]
+              capabilities: [gpu]
+    restart: "no"
+volumes:
+  jevserve-cache:

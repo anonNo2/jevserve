@@ -188,7 +188,7 @@
   "template_digest": "273d8e0e683b885071fb17e08d71e5f2a5ddfb5309756181681de4f5a1822d80",
   "gates": {
     "gpu_reference": "passed",
-    "gpu_parity": "not_run",
+    "gpu_parity": "failed",
     "docker_run": "not_run",
     "compose": "not_run",
     "offline": "not_run"
@@ -198,5 +198,32 @@
     "sha256": "e48566c4810130b16e2d5e1f11441aa60f5281ba61bbf29943b1cb7d21426b65",
     "scope": "CPU encoding only",
     "case_count": 110
+  },
+  "host_offline_smoke": "passed; container offline gate remains not_run",
+  "runtime_reports": {
+    "vllm-pooling-parity": {
+      "path": "validation/reports/vllm-pooling-parity.json",
+      "sha256": "17279426b356d1e7c480ed4ea2164f2ad335b67cb8eadd1ab064d52a9ac3fdac"
+    },
+    "native-http-parity": {
+      "path": "validation/reports/native-http-parity.json",
+      "sha256": "b86a7ad122e422a2d73cf54fa315a84f9b8d6eae89470c0d74568db0c24b5c3a"
+    },
+    "runtime-environment": {
+      "path": "validation/reports/runtime-environment.json",
+      "sha256": "5d38e08d20d11603fb9199d8cb707aee21b11e77089042a7ad01c1e1df977015"
+    },
+    "engine-tokenizer-parity": {
+      "path": "validation/reports/engine-tokenizer-parity.json",
+      "sha256": "1afcdafa119d56b895ac01fe80054c7061cb22d5a513960dab728ad74f93affc"
+    },
+    "http-resilience": {
+      "path": "validation/reports/http-resilience.json",
+      "sha256": "5bd7fe5513327fc32d6c58ba55b2d64570d8c62f3dfe2b550d07e8bc783f553f"
+    },
+    "native-http-benchmark": {
+      "path": "validation/reports/native-http-benchmark.json",
+      "sha256": "d80f8b5961bf29b0aaba4f3798e41b770ec2287b14f06defd7679cc47062f916"
+    }
   }
 }
