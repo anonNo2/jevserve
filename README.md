@@ -6,7 +6,7 @@
 
 JevServe is a planned open-source inference server for Jev-style / System One decision models. Its goal is to make typed decisions as easy to serve as an LLM: one container image, one command, a documented API, and reproducible model validation.
 
-> **Status: implementation started; CPU contracts, verified artifact preparation and an Open-Jev adapter are implemented. Its encoding matches 110 author/real-tokenizer cases; GPU inference remains unverified.** The Python development package is installable; inference, CLI and containers are not implemented. No model is certified or image published. The quickstart commands below remain targets. See [development setup](docs/development/IMPLEMENTATION.md) and [current evidence](docs/development/STATUS.md).
+> **Status: implementation started; CPU contracts, verified artifact preparation and an Open-Jev adapter are implemented. Its encoding matches 110 author/real-tokenizer cases; 113 author GPU reference cases passed. JevServe/vLLM inference and container certification remain pending.** The Python development package is installable; inference, CLI and containers are not implemented. No model is certified or image published. The quickstart commands below remain targets. See [development setup](docs/development/IMPLEMENTATION.md) and [current evidence](docs/development/STATUS.md).
 
 ## What we are building
 
@@ -54,7 +54,7 @@ No example response is presented as a measured model result. Authentication and 
 
 | Model | Role | Current status |
 |---|---|---|
-| `ZefanCai/Open-Jev-2B` | First adapter target | Sources, licenses and revisions verified; reference/GPU/container certification pending |
+| `ZefanCai/Open-Jev-2B` | First adapter target | Pinned author GPU reference: 113 cases passed; JevServe/vLLM and containers unverified |
 | `convaiinnovations/laya` | Optional second adapter | Planned; not required for alpha |
 | TypeSafe's official Jev | Not distributed by this project | No official weights included |
 

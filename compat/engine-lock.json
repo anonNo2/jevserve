@@ -18,5 +18,12 @@
   "sources": [
     "https://pypi.org/pypi/vllm/0.29.0/json",
     "https://raw.githubusercontent.com/vllm-project/vllm/98dff2a81d747d1dba01a47f939f48c3526d4206/docker/Dockerfile"
-  ]
+  ],
+  "dependency_resolution": {
+    "status": "passed",
+    "python": "3.12",
+    "package_count": 201,
+    "installed": false,
+    "note": "Resolved pinned plugin pyproject; candidate engine was not installed or executed."
+  }
 }

@@ -11,10 +11,10 @@ exists yet. No model is certified and no release has been published.
 | Task | Status | Remaining evidence |
 |---|---|---|
 | Bootstrap | Complete | Historical documentation baseline |
-| T00 Baseline | In progress; container gate blocked | Finish base/dependency downloads, execute author GPU reference, recover container startup through host administrator |
-| T01 Contracts | CPU complete | 115 total current CPU tests include T00/T02; wheel build/import verified |
+| T00 Baseline | Reference complete; engine/container baseline incomplete | Author GPU 113/113 passed; candidate engine runtime and container startup still unverified |
+| T01 Contracts | CPU complete | 116 total current CPU tests include T00/T02/T03; wheel build/import verified |
 | T02 Artifacts | CPU implementation complete | Shared preparer exists; actual serve startup integration belongs to T06 |
-| T03 Adapter | CPU encoding/readout implemented | Real head outputs and vLLM model registration/parity remain unverified |
+| T03 Adapter | CPU encoding/readout implemented | Author GPU-logit decoding matches; vLLM registration/runtime parity remains unverified |
 | T04 Runtime | Not started | Real vLLM GPU inference |
 | T05 API/lifecycle | Not started | Protocol, overload, cancellation and failure tests |
 | T06 CLI/SDK | Not started | Real end-to-end check and prepare/serve integration |
@@ -52,7 +52,10 @@ Both container probes failed before entrypoint execution with Docker TTRPC
 `unsupported protocol`. The CPU probe shows this is not solely an NVIDIA
 passthrough problem. Existing shared services, daemon, drivers and runtime
 settings were not changed. The cached Python 3.10 image was only a daemon probe,
-not a development or inference environment. Registry manifest inspection passed.
+not a development or inference environment. Registry manifest inspection passed. Later,
+`uv pip compile --python-version 3.12 .local/upstream/vllm-jev/pyproject.toml`
+resolved 201 candidate engine dependencies successfully; this is not an engine
+installation or inference result.
 
 Verified immutable sources and inspected licenses/model/tokenizer/readout code:
 
@@ -82,7 +85,7 @@ intentionally failing for pending certification. The reference runner now define
 113 unique synthetic requests covering three types, Chinese, structured state,
 null descriptions, empty-state author behavior, one candidate and an exact tie.
 It requires real CUDA, records tokens/masks/logits/probabilities and refuses
-modified source or artifact bytes. This is not evidence of executed inference.
+modified source or artifact bytes. The later real GPU run is recorded below.
 Parity tolerances were frozen before measurement in `compat/parity-profile.json`.
 
 ### T01: installable CPU contracts
@@ -132,7 +135,7 @@ followed by offline cache re-verification of those real bytes. Report:
 `validation/reports/open-jev-prepare.json`. This is artifact verification, not
 model inference.
 
-Most recent suite: **115 passed**. Ruff clean; mypy checks all 15 package source
+Most recent suite: **116 passed**. Ruff clean; mypy checks all 15 package source
 files without issues. Self-review found and fixed acceptance of undeclared cache
 files and added metadata size checks. Independent agent review was not used
 because active session instructions disallow unrequested delegation.
@@ -160,23 +163,27 @@ After base publication, use `.local/models/base` for `--tokenizer`. The report
 records complete golden inputs/readout positions and is hashed in the model
 lock. Unit tests replay those recorded token rows and verify prompts/metadata;
 that replay is explicitly a test double, not a production tokenizer or inference
-fallback. GPU inference and special-head output parity are still unrun.
+fallback. Author GPU inference has now passed; replaying all 113 recorded GPU logit rows
+through the adapter also matches author probabilities, choices and ordinal
+scores (CPU regression tolerance 1e-12). This is not a vLLM engine comparison.
 
 ## Unrun gates
 
-Real author reference, vLLM parity, container GPU passthrough, Docker build,
-docker-run/Compose inference, real offline inference, cancellation under GPU
+vLLM parity, container GPU passthrough, Docker build,
+docker-run/Compose inference, service offline inference, cancellation under GPU
 load, official SDK compatibility, performance/soak and clean-host installation
 are not passed. No fake runtime or substitute model was introduced.
 
-## Next action and reproduction
+## Real GPU reference completion — 2026-10-12
 
-1. Finish verified baseline/reference dependency acquisition; details and retained
-   local paths are in `.local/SERVER.md`. New acquisitions should use:
-   `uv run python -m validation.acquire --cache .local/baseline`.
-2. Install the exact author environment with
-   `uv pip sync --python .local/reference-venv/bin/python --require-hashes compat/reference-requirements.txt`.
-3. Recheck GPU occupancy, then run the offline author reference:
+All base files completed SHA-256 verification and were atomically published to
+`.local/models/base`. The 56-package reference environment installed from
+hash-verified wheels; `uv pip check --python .local/reference-venv/bin/python`
+passed. Large PyPI transfers were slow; identical locked wheels were retrieved
+through a public mirror and verified against the original PyPI/requirements
+hashes. No dependency version or model precision was changed to accelerate this.
+
+The exact reference command below completed successfully, offline, on RTX A6000:
 
 ```bash
 .local/reference-venv/bin/python -m validation.reference \
@@ -186,11 +193,39 @@ are not passed. No fake runtime or substitute model was introduced.
   --output validation/reports/open-jev-reference.json
 ```
 
-4. Bind a successful report digest in the pending model lock. Do not change its
-   certification status until all gates pass. Continue T03 encoding/readout
-   parity against actual golden results.
-5. Container startup requires host administrator diagnosis; rerun the two probes
-   above after recovery. Do not restart the shared daemon from this session.
+Result: **113 real GPU cases, zero failures**. Report includes input token IDs,
+attention masks, raw logits, probabilities and typed author responses. Exact-tie
+case observed `[0.5, 0.5]`. Runtime observed: Python 3.12.15, Torch 2.12.0+cu130,
+CUDA 13.0, Transformers 5.10.2, PEFT 0.19.1, Accelerate 1.13.0. Backbone parameters
+include BF16 and FP32 (LoRA); head is FP32. The author's ordinary Torch path was
+used; optional FLA/causal-conv1d fast kernels were not installed. Prefix cache was
+off, and saved temperature was retained. This is a reference baseline, not a
+performance or calibrated-accuracy claim.
 
-No remote push or publication is authorized or performed. Commits use the
-existing Git identity; see `git log --oneline` for this session's task commits.
+The report and reference-requirements SHA-256 are bound in the inventory/report.
+Only `gpu_reference` changes to passed; engine, model certification and other
+gates remain pending. GPU returned to 11 MiB used after process exit. The whole
+CPU suite now passes **116 tests**, including replay of these actual GPU logits.
+`python -m validation.locks` exits nonzero with `baseline is not certified`, as
+required. First implementation commit: `4908d0d`; reference evidence is committed
+separately in the following commit (see `git log --oneline`).
+
+## Next action and reproduction
+
+1. Resolve the remaining T00 engine/container baseline. Host administrator must
+   diagnose Docker's TTRPC startup failure; after recovery rerun the two probes
+   above, then inspect/start the pinned official engine image. No daemon restart
+   or driver/runtime change was performed in this session.
+2. Continue T03's bounded vLLM model registration and T04 runtime bridge against
+   the committed author token/logit fixtures. Preserve LoRA, scalar head and
+   temperature semantics. Do not mark `gpu_parity` passed on reference replay.
+3. CPU reproduction: `uv sync --locked && uv run pytest -q`; then
+   `uv run ruff check .`, `uv run mypy`, `uv build`.
+4. GPU reference reproduction: install `compat/reference-requirements.txt` into
+   the separate Python 3.12 reference environment with `--require-hashes`,
+   recheck GPU occupancy, and execute the command above. Sources can be prepared
+   with `uv run python -m validation.acquire --cache .local/baseline`; use the
+   printed checkpoint/base paths. `--offline` verifies existing safe packages.
+
+No remote push or publication was performed. No model/weight/cache/private host
+file is committed. Commits use the user's existing Git identity.

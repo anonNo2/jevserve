@@ -174,17 +174,20 @@
         "size": 6722759
       }
     ],
-    "verification": "download_in_progress; LFS hashes from pinned Hub API"
+    "verification": "all downloaded bytes verified against pinned inventory SHA256"
   },
   "readout": "scalar_head",
   "dtype": "bfloat16",
   "temperature": 1.518796342858676,
   "calibration_id": null,
-  "reference_report": null,
+  "reference_report": {
+    "path": "validation/reports/open-jev-reference.json",
+    "sha256": "938ba97b4acf916d228036f8f21bfc75a74aaddeadaa089cb8abda40beb4a6b4"
+  },
   "tokenizer_digest": "5f9e4d4901a92b997e463c1f46055088b6cca5ca61a6522d1b9f64c4bb81cb42",
   "template_digest": "273d8e0e683b885071fb17e08d71e5f2a5ddfb5309756181681de4f5a1822d80",
   "gates": {
-    "gpu_reference": "not_run",
+    "gpu_reference": "passed",
     "gpu_parity": "not_run",
     "docker_run": "not_run",
     "compose": "not_run",

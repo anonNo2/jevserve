@@ -117,7 +117,7 @@ T09 第二模型不阻塞 alpha，但不得用它填充未经验证的支持矩�
 
 - [x] 查验模型卡/许可证与 tokenizer/head 实现，记录 upstream commit，禁止用 main 作为 release revision。
 - [ ] 验证 vLLM 候选发行版及官方镜像可获取性，记录 digest、Python/PyTorch/CUDA 与最低驱动要求；vllm-jev 0.3.6/vLLM 0.29.0 仅作候选。
-- [ ] 在实际 NVIDIA 机器记录 GPU 型号、显存、驱动；运行模型作者参考实现，建立至少 100 条合成/许可允许的用例，覆盖三种 question、中文、空值/边界和近并列选项。
+- [x] 在实际 NVIDIA 机器记录 GPU 型号、显存、驱动；运行模型作者参考实现，建立至少 100 条合成/许可允许的用例，覆盖三种 question、中文、空值/边界和近并列选项。
 - [x] 锁文件检查先失败，再实现检查器；命令 `pytest tests/contract/test_release_lock.py -q`。
 
 ```python
@@ -191,7 +191,7 @@ def test_offline_missing_never_downloads(preparer, model_id, cache_dir):
 
 **接口：** ModelAdapter、EncodedDecision、RawDecision、Answers；字段结构遵循接口约定。
 
-- [ ] 冻结参考 token 序列/特殊标记、question order 与 readout 位置；先测试 encode，再实现。
+- [x] 冻结参考 token 序列/特殊标记、question order 与 readout 位置；先测试 encode，再实现。
 
 ```python
 def test_encoding_matches_reference(adapter, reference_case):

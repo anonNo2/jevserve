@@ -6,7 +6,7 @@
 
 JevServe 计划成为面向 Jev 类 / System One 决策模型的开源推理服务框架。目标是让决策模型像 LLM 一样容易部署：一个容器镜像、一条启动命令、明确的 API，以及可复现的模型验证。
 
-> **当前状态：已开始实施，CPU 协议、经校验的模型准备流程和 Open-Jev 适配器已实现。110 条真实 tokenizer 编码对照通过，GPU 推理仍未验证。** Python 开发包可安装；推理、CLI 和容器尚未实现，没有认证模型或已发布镜像。下方启动命令仍为目标接口。参见[开发安装](docs/development/IMPLEMENTATION.md)及[当前验证记录](docs/development/STATUS.md)。
+> **当前状态：已开始实施，CPU 协议、经校验的模型准备流程和 Open-Jev 适配器已实现。110 条真实 tokenizer 编码对照、113 条作者 GPU 参考用例通过；JevServe/vLLM 推理和容器认证待完成。** Python 开发包可安装；推理、CLI 和容器尚未实现，没有认证模型或已发布镜像。下方启动命令仍为目标接口。参见[开发安装](docs/development/IMPLEMENTATION.md)及[当前验证记录](docs/development/STATUS.md)。
 
 ## 项目目标
 
@@ -54,7 +54,7 @@ curl -fsS http://127.0.0.1:8000/v1/systemone \
 
 | 模型 | 定位 | 当前状态 |
 |---|---|---|
-| `ZefanCai/Open-Jev-2B` | 首个适配目标 | 已核验来源、许可证和 revision；参考执行、GPU 和容器认证待完成 |
+| `ZefanCai/Open-Jev-2B` | 首个适配目标 | 固定版本作者 GPU 参考用例 113 条通过；JevServe/vLLM 和容器未认证 |
 | `convaiinnovations/laya` | 可选第二适配器 | 规划中，不阻塞 alpha |
 | TypeSafe 官方 Jev | 本项目不分发 | 不包含官方权重 |
 

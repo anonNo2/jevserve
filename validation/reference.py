@@ -218,7 +218,11 @@ def main():
             p: importlib.metadata.version(p) for p in ("transformers", "peft", "accelerate")
         },
         "dtype": "bfloat16",
-        "head_dtype": "float32",
+        "backbone_parameter_dtypes": sorted({str(p.dtype) for p in model.backbone.parameters()}),
+        "head_dtype": str(model.head.weight.dtype),
+        "requirements_sha256": hashlib.sha256(
+            (ROOT / "compat/reference-requirements.txt").read_bytes()
+        ).hexdigest(),
         "temperature": temperature,
         "prefix_cache": False,
         "candidate_batching": "per request",

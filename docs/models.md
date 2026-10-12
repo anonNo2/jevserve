@@ -90,3 +90,14 @@ and answer-key order. This does not execute the scalar head or certify inference
 The baseline lock binds the report digest. `validation.encoding` reproduces the
 comparison in a tokenizer environment; ordinary CPU tests replay its token rows
 without downloading models or importing a GPU library.
+
+## Author GPU reference evidence
+
+`validation/reports/open-jev-reference.json` contains 113 actual author GPU
+executions on RTX A6000 with no failures. All source/weight hashes were checked
+before offline loading. Observed Torch is 2.12.0+cu130; the ordinary author Torch
+path ran without optional FLA/causal-conv1d kernels or prefix cache. Backbone/LoRA
+parameters include BF16/FP32 and the scalar head is FP32. The saved temperature
+was preserved. Replaying these logits through the native adapter matches the
+author's probabilities and answer mapping. This does not certify vLLM or either
+container deployment path; those gates remain pending.

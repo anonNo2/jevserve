@@ -17,9 +17,17 @@
   "container_error": "failed to create TTRPC connection: unsupported protocol",
   "shared_daemon_modified": false,
   "checkpoint_bytes_verified": true,
-  "base_weights_verified": false,
-  "author_gpu_reference": "not_run",
+  "base_weights_verified": true,
+  "author_gpu_reference": "passed: 113 cases",
   "vllm_gpu_parity": "not_run",
   "docker_run_inference": "not_run",
-  "compose_inference": "not_run"
+  "compose_inference": "not_run",
+  "reference_runtime": {
+    "python": "3.12.15",
+    "torch": "2.12.0+cu130",
+    "cuda": "13.0",
+    "transformers": "5.10.2",
+    "peft": "0.19.1",
+    "accelerate": "1.13.0"
+  }
 }
