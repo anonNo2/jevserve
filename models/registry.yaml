@@ -1,0 +1,2 @@
+# No model is certified for serving yet. T00 discovery locks are not serving manifests.
+models: {}

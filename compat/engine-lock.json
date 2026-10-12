@@ -1,0 +1,22 @@
+{
+  "status": "candidate",
+  "version": "0.29.0",
+  "source_repository": "https://github.com/vllm-project/vllm",
+  "source_revision": "98dff2a81d747d1dba01a47f939f48c3526d4206",
+  "plugin_repository": "https://github.com/mode-io/vllm-jev",
+  "plugin_revision": "eae6b2d6dd06fb014118c99f660261cf4ecf04f9",
+  "plugin_version": "0.3.6",
+  "image": "vllm/vllm-openai",
+  "image_digest": "sha256:082ca6f035279109041ffd3fe0695cb568b29bc580b35c4f297a66a08b216c1b",
+  "platform": "linux/amd64",
+  "declared_python": "3.12",
+  "declared_torch": "2.13.0",
+  "declared_cuda": "13.0.3",
+  "observed_container_versions": null,
+  "minimum_driver": null,
+  "container_probe": "blocked: CPU and GPU container creation fail with TTRPC unsupported protocol",
+  "sources": [
+    "https://pypi.org/pypi/vllm/0.29.0/json",
+    "https://raw.githubusercontent.com/vllm-project/vllm/98dff2a81d747d1dba01a47f939f48c3526d4206/docker/Dockerfile"
+  ]
+}

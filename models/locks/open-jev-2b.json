@@ -1,0 +1,199 @@
+{
+  "model_id": "ZefanCai/Open-Jev-2B",
+  "revision": "0c7aa498b1627be8da4acf34c863ff0ee0a92785",
+  "files": [
+    {
+      "path": ".gitattributes",
+      "sha256": "11ad7efa24975ee4b0c3c3a38ed18737f0658a5f75a0a96787b576a78a023361",
+      "size": 1519
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "bbedc3fda3305820b977265f01b8619d87570a6739de3a5582c3464840f1e57a",
+      "size": 11544
+    },
+    {
+      "path": "LICENSE-CODE",
+      "sha256": "ef2f6f6db605a2f611bc2d037c59276f615cdea76ac6e7551a28f71db890c9d2",
+      "size": 1078
+    },
+    {
+      "path": "README.md",
+      "sha256": "2e0005c57ee7e3fe0f6fff57071314d260fd7978bf72dba70237865bcb4f9538",
+      "size": 7400
+    },
+    {
+      "path": "UPSTREAM.md",
+      "sha256": "8d77b0b07ec0e34af6dfa238d05d2f95109926df91b468bfb238276610d1c420",
+      "size": 1875
+    },
+    {
+      "path": "evaluation/full-data.json",
+      "sha256": "a7313152440ae9ecfd8e9b25b73564ee505e3ca6f3080294d84f8b350baf89f7",
+      "size": 181427
+    },
+    {
+      "path": "package/LICENSE",
+      "sha256": "bbedc3fda3305820b977265f01b8619d87570a6739de3a5582c3464840f1e57a",
+      "size": 11544
+    },
+    {
+      "path": "package/LICENSE-CODE",
+      "sha256": "ef2f6f6db605a2f611bc2d037c59276f615cdea76ac6e7551a28f71db890c9d2",
+      "size": 1078
+    },
+    {
+      "path": "package/README.md",
+      "sha256": "396ae55276e6535efd13c818388085d6e3bf41102320616acbae612bb5c19514",
+      "size": 3490
+    },
+    {
+      "path": "package/UPSTREAM.md",
+      "sha256": "8d77b0b07ec0e34af6dfa238d05d2f95109926df91b468bfb238276610d1c420",
+      "size": 1875
+    },
+    {
+      "path": "package/checkpoint/adapter/adapter_config.json",
+      "sha256": "d27624bdbbe984cf175e10c7fa3d9beaea9876231ce943a248ad40e12742fe74",
+      "size": 1170
+    },
+    {
+      "path": "package/checkpoint/adapter/adapter_model.safetensors",
+      "sha256": "2d23935b1a7380db444abac572c04646918ba794e59002d1588236182a3ca18f",
+      "size": 10042480
+    },
+    {
+      "path": "package/checkpoint/head.pt",
+      "sha256": "3532cd576c58d5ad5bf17c3e9f2df4be8c70e08c07fa6bb7fa673dcd7b401f2a",
+      "size": 9997
+    },
+    {
+      "path": "package/checkpoint/model.json",
+      "sha256": "d985eafa4d635113ee8cc912e0512a95aac0bed3426e9256931235b75cb3d6c5",
+      "size": 186
+    },
+    {
+      "path": "package/checkpoint/temperature.json",
+      "sha256": "090fb330a616338210a924d1c370c934e934f30f53f92c8a52a5cc7852cadd99",
+      "size": 161
+    },
+    {
+      "path": "package/manifest.json",
+      "sha256": "58319da5c2a948a4645e46d9c982be44867d78779ea1c3bfb81b64867f58ef3a",
+      "size": 1888
+    },
+    {
+      "path": "package/metrics.json",
+      "sha256": "cfa9b7450af2858723385300d99410ecad68eea4ccd2b4154dd1de17e91f0a66",
+      "size": 1932691
+    },
+    {
+      "path": "package/provenance.json",
+      "sha256": "2fe168e8d4569b8d351312fc30b884105924bb79e17c7f62c0f7882d36dbc995",
+      "size": 4349
+    },
+    {
+      "path": "release-manifest.json",
+      "sha256": "fd4c1b0785b3b57fa05b1aa06d7e4daf08445ffcd27e9bd2da6fca949823407e",
+      "size": 3296
+    }
+  ],
+  "status": "pending",
+  "license": "Apache-2.0",
+  "reference_license": "MIT",
+  "reference_repository": "https://github.com/Zefan-Cai/Open-Jev",
+  "reference_revision": "bd4118882f733574a3250a4b65fe4d884130c08b",
+  "base": {
+    "model_id": "Qwen/Qwen3.5-2B",
+    "revision": "15852e8c16360a2fea060d615a32b45270f8a8fc",
+    "license": "Apache-2.0",
+    "files": [
+      {
+        "path": ".gitattributes",
+        "sha256": "34448b82c17d60fec9b65b1f093c115ddbaadc04beb1b0140b6bfed2e012a930",
+        "size": 1570
+      },
+      {
+        "path": "LICENSE",
+        "sha256": "bbedc3fda3305820b977265f01b8619d87570a6739de3a5582c3464840f1e57a",
+        "size": 11544
+      },
+      {
+        "path": "README.md",
+        "sha256": "c0e83a849c776e6fa843d011f023132d942a0f0140d903205bf1c363adad2275",
+        "size": 62814
+      },
+      {
+        "path": "chat_template.jinja",
+        "sha256": "273d8e0e683b885071fb17e08d71e5f2a5ddfb5309756181681de4f5a1822d80",
+        "size": 7755
+      },
+      {
+        "path": "config.json",
+        "sha256": "ed1c1723241f23f7f4e23430759cbd7dcfb4103cbdfe052bfe7626b57c2615b4",
+        "size": 2908
+      },
+      {
+        "path": "merges.txt",
+        "sha256": "a9d356d7bdf1ef4949e3e748e95b8e10ad9d4e2e838eddc38a0a7b6b94d1db8d",
+        "size": 3353259
+      },
+      {
+        "path": "model.safetensors-00001-of-00001.safetensors",
+        "sha256": "aa33250c4fc64891ddfaba3a314fd9542ea371843c387178b425fbcc5ed680b1",
+        "size": 4548221488
+      },
+      {
+        "path": "model.safetensors.index.json",
+        "sha256": "aca8afed9da75b0f050b408d270766fd77627f1af401e240f61c3b47d0db02f9",
+        "size": 64460
+      },
+      {
+        "path": "preprocessor_config.json",
+        "sha256": "27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516",
+        "size": 390
+      },
+      {
+        "path": "tokenizer.json",
+        "sha256": "5f9e4d4901a92b997e463c1f46055088b6cca5ca61a6522d1b9f64c4bb81cb42",
+        "size": 12807982
+      },
+      {
+        "path": "tokenizer_config.json",
+        "sha256": "49e2b6e395f959f077f1e992b338919c0d4a9732fc6e613995e06557f843500c",
+        "size": 16709
+      },
+      {
+        "path": "video_preprocessor_config.json",
+        "sha256": "7768af27c1fafa9cc9011c1dc20067e03f8915e03b63504550e11d5066986d13",
+        "size": 385
+      },
+      {
+        "path": "vocab.json",
+        "sha256": "ce99b4cb2983d118806ce0a8b777a35b093e2000a503ebde25853284c9dfa003",
+        "size": 6722759
+      }
+    ],
+    "verification": "download_in_progress; LFS hashes from pinned Hub API"
+  },
+  "readout": "scalar_head",
+  "dtype": "bfloat16",
+  "temperature": 1.518796342858676,
+  "calibration_id": null,
+  "reference_report": null,
+  "tokenizer_digest": "5f9e4d4901a92b997e463c1f46055088b6cca5ca61a6522d1b9f64c4bb81cb42",
+  "template_digest": "273d8e0e683b885071fb17e08d71e5f2a5ddfb5309756181681de4f5a1822d80",
+  "gates": {
+    "gpu_reference": "not_run",
+    "gpu_parity": "not_run",
+    "docker_run": "not_run",
+    "compose": "not_run",
+    "offline": "not_run"
+  },
+  "encoding_report": {
+    "path": "validation/reports/open-jev-encoding.json",
+    "sha256": "e48566c4810130b16e2d5e1f11441aa60f5281ba61bbf29943b1cb7d21426b65",
+    "scope": "CPU encoding only",
+    "case_count": 110
+  }
+}

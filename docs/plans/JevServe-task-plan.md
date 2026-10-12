@@ -115,10 +115,10 @@ T09 第二模型不阻塞 alpha，但不得用它填充未经验证的支持矩�
 
 **输入：** 设计、上游仓库与模型卡。**输出：** 锁定的版本组合、参考数据与模型许可证结论。
 
-- [ ] 查验模型卡/许可证与 tokenizer/head 实现，记录 upstream commit，禁止用 main 作为 release revision。
+- [x] 查验模型卡/许可证与 tokenizer/head 实现，记录 upstream commit，禁止用 main 作为 release revision。
 - [ ] 验证 vLLM 候选发行版及官方镜像可获取性，记录 digest、Python/PyTorch/CUDA 与最低驱动要求；vllm-jev 0.3.6/vLLM 0.29.0 仅作候选。
 - [ ] 在实际 NVIDIA 机器记录 GPU 型号、显存、驱动；运行模型作者参考实现，建立至少 100 条合成/许可允许的用例，覆盖三种 question、中文、空值/边界和近并列选项。
-- [ ] 锁文件检查先失败，再实现检查器；命令 `pytest tests/contract/test_release_lock.py -q`。
+- [x] 锁文件检查先失败，再实现检查器；命令 `pytest tests/contract/test_release_lock.py -q`。
 
 ```python
 def test_release_lock_pins_artifacts(release_lock):
@@ -139,8 +139,8 @@ def test_release_lock_pins_artifacts(release_lock):
 
 **输入：** T00 锁定 Python/引擎边界。**输出：** 上述公共类型和可安装包，核心类型不导入 CUDA。
 
-- [ ] 创建包结构和 dev 依赖、ruff、类型检查、pytest markers；GPU 依赖和纯 CPU 合约测试分离。
-- [ ] 先写下列契约测试，再实现 discriminated union、配置和错误模型。
+- [x] 创建包结构和 dev 依赖、ruff、类型检查、pytest markers；GPU 依赖和纯 CPU 合约测试分离。
+- [x] 先写下列契约测试，再实现 discriminated union、配置和错误模型。
 
 ```python
 @pytest.mark.parametrize("count", [0, 17])
@@ -153,8 +153,8 @@ def test_choice_order_is_preserved(valid_request):
     assert list(req.questions["team"].criteria) == ["billing", "technical"]
 ```
 
-- [ ] 补测非有限数值、空 instructions、重复/非法字段、Score 至少两级、超过 1 MiB 在 HTTP 层处理的约定；明确定义允许的空 state 行为为拒绝。
-- [ ] 执行 `pytest tests/contract/test_requests.py tests/unit/test_config.py -q`、`ruff check .` 和类型检查，记录红/绿结果后提交。
+- [x] 补测非有限数值、空 instructions、重复/非法字段、Score 至少两级、超过 1 MiB 在 HTTP 层处理的约定；明确定义允许的空 state 行为为拒绝。
+- [x] 执行 `pytest tests/contract/test_requests.py tests/unit/test_config.py -q`、`ruff check .` 和类型检查，记录红/绿结果后提交。
 
 **验收：** 模型能力与协议结构分开，CPU CI 可运行且不下载权重。
 
@@ -164,7 +164,7 @@ def test_choice_order_is_preserved(valid_request):
 
 **接口：** `prepare_model(model_id: str, cache_dir: Path, offline: bool) -> PreparedModel`；下载函数可注入测试替身；manifest 只允许相对包内路径。
 
-- [ ] 先写缓存命中、错误 digest、离线缺失、并发锁、中断及目录穿越测试。
+- [x] 先写缓存命中、错误 digest、离线缺失、并发锁、中断及目录穿越测试。
 
 ```python
 def test_interrupted_download_is_not_ready(preparer, model_id, cache_dir):
@@ -179,9 +179,9 @@ def test_offline_missing_never_downloads(preparer, model_id, cache_dir):
     assert preparer.download_calls == 0
 ```
 
-- [ ] 实现锁、staging、hash、原子发布与 bounded retry；staging/final 在同一文件系统；中断只清理自己拥有的 staging。
-- [ ] 权重身份绑定 manifest；读取令牌文件；拒绝包外路径与符号链接逃逸；实际磁盘不足返回可读错误。
-- [ ] 执行 `pytest tests/unit/test_prepare.py tests/unit/test_manifest.py -q` 并提交。
+- [x] 实现锁、staging、hash、原子发布与 bounded retry；staging/final 在同一文件系统；中断只清理自己拥有的 staging。
+- [x] 权重身份绑定 manifest；读取令牌文件；拒绝包外路径与符号链接逃逸；实际磁盘不足返回可读错误。
+- [x] 执行 `pytest tests/unit/test_prepare.py tests/unit/test_manifest.py -q` 并提交。
 
 **验收：** 准备与首次 serve 复用同一路径；半成品不能 ready，离线无隐式网络。
 

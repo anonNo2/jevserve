@@ -1,0 +1,7 @@
+# Author reference environment only; deliberately separate from vLLM runtime.
+# Open-Jev bd4118882f733574a3250a4b65fe4d884130c08b declares torch>=2.8.
+torch==2.12.0
+transformers==5.10.2
+peft==0.19.1
+accelerate==1.13.0
+safetensors==0.7.0

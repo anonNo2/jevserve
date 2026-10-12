@@ -1,0 +1,25 @@
+{
+  "observed_at_utc": "2026-10-12T01:53:43Z",
+  "status": "partial",
+  "gpu": {
+    "model": "NVIDIA RTX A6000",
+    "memory_mib": 49140,
+    "driver": "580.95.05",
+    "initial_used_memory_mib": 11,
+    "initial_utilization_percent": 0
+  },
+  "python": "3.12.15 project-local",
+  "docker": "29.6.2",
+  "compose": "5.3.1",
+  "nvidia_runtime_registered": true,
+  "gpu_container_probe": "failed before container start",
+  "cpu_container_probe": "failed before container start",
+  "container_error": "failed to create TTRPC connection: unsupported protocol",
+  "shared_daemon_modified": false,
+  "checkpoint_bytes_verified": true,
+  "base_weights_verified": false,
+  "author_gpu_reference": "not_run",
+  "vllm_gpu_parity": "not_run",
+  "docker_run_inference": "not_run",
+  "compose_inference": "not_run"
+}

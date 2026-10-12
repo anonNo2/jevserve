@@ -6,7 +6,7 @@
 
 JevServe is a planned open-source inference server for Jev-style / System One decision models. Its goal is to make typed decisions as easy to serve as an LLM: one container image, one command, a documented API, and reproducible model validation.
 
-> **Status: repository bootstrap and design complete; inference is not implemented.** There is no published image, installable package, certified model, or benchmark result yet. Commands below describe the target interface and cannot run from this bootstrap checkout.
+> **Status: implementation started; CPU contracts, verified artifact preparation and an Open-Jev adapter are implemented. Its encoding matches 110 author/real-tokenizer cases; GPU inference remains unverified.** The Python development package is installable; inference, CLI and containers are not implemented. No model is certified or image published. The quickstart commands below remain targets. See [development setup](docs/development/IMPLEMENTATION.md) and [current evidence](docs/development/STATUS.md).
 
 ## What we are building
 
@@ -54,7 +54,7 @@ No example response is presented as a measured model result. Authentication and 
 
 | Model | Role | Current status |
 |---|---|---|
-| `ZefanCai/Open-Jev-2B` | First adapter target | Unverified; validate availability, license, revision, and reference implementation in T00 |
+| `ZefanCai/Open-Jev-2B` | First adapter target | Sources, licenses and revisions verified; reference/GPU/container certification pending |
 | `convaiinnovations/laya` | Optional second adapter | Planned; not required for alpha |
 | TypeSafe's official Jev | Not distributed by this project | No official weights included |
 
@@ -75,7 +75,7 @@ A normalized probability is not automatically calibrated accuracy. The initial s
 ## Start development here
 
 1. Read [AGENTS.md](AGENTS.md), the [handoff](docs/development/HANDOFF.md), the [design](docs/plans/JevServe-design.md), and the [task plan](docs/plans/JevServe-task-plan.md).
-2. Use [STATUS.md](docs/development/STATUS.md) to locate the next task: **T00 — verify and freeze the real baseline**.
+2. Use [STATUS.md](docs/development/STATUS.md) to locate the next task: **T00 — complete the real reference and container baseline**, alongside the CPU work recorded there.
 3. Keep CPU tests and GPU certification separate. A mock, successful image build, or upstream README is not GPU validation.
 4. Record commands, versions, and evidence before marking a task complete.
 

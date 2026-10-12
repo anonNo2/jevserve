@@ -1,0 +1,12 @@
+{
+  "status": "predeclared_unmeasured",
+  "dtype": "bfloat16",
+  "head_dtype": "float32",
+  "probability_atol": 0.001,
+  "probability_rtol": 0.01,
+  "near_tie_margin": 0.01,
+  "report_all_label_flips": true,
+  "prefix_cache": false,
+  "calibration_id": null,
+  "notes": "Preserve checkpoint temperature; thresholds frozen before first reference/parity run. No accuracy or calibration claim."
+}

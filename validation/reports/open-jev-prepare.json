@@ -1,0 +1,9 @@
+{
+  "model_revision": "0c7aa498b1627be8da4acf34c863ff0ee0a92785",
+  "files": 19,
+  "bytes": 12219048,
+  "manifest_identity": "9eebdbeeac78c16a2caa151587324d4c8808b35cb377f07ddfb68f6f49083f93",
+  "https_prepare": "passed",
+  "offline_cache_reverification": "passed",
+  "inference": "not_run"
+}

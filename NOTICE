@@ -5,3 +5,10 @@ This project is independent of TypeSafe AI and JevServe-Bench and is not endorse
 The repository license does not grant rights to third-party model weights or components. Each retains its own license. Before introducing third-party code, retain its copyright notices and record its source and license here or in a dedicated third-party notice file.
 
 This bootstrap contains planning and documentation, not copied model implementations or model weights.
+
+Open-Jev adapter prompt/readout semantics derive from Zefan-Cai/Open-Jev
+https://github.com/Zefan-Cai/Open-Jev
+Pinned source: bd4118882f733574a3250a4b65fe4d884130c08b
+Copyright (c) 2026 Open-Jev contributors
+MIT license preserved in licenses/Open-Jev-MIT.txt.
+Model/base weights are not included; their Apache-2.0 licenses remain separate.

@@ -10,7 +10,7 @@ Read `docs/development/HANDOFF.md`, `docs/development/STATUS.md`, `docs/plans/Je
 - Target: single Linux NVIDIA host; one image, one model per container, one GPU; `docker run` and Docker Compose are both first-class paths.
 - vLLM first, bounded adapters. No Kubernetes, training platform, web UI, multimodal, multi-node, automatic fallback, or empty Triton implementation in the alpha scope.
 - At least one real Jev-style checkpoint must pass GPU and container checks. Default candidate: `ZefanCai/Open-Jev-2B`; availability, license and revision must be verified. Do not invent a substitute model or silently substitute ordinary JSON generation.
-- Current repository is documentation/bootstrap only. Do not claim commands work until implemented and verified.
+- CPU contracts and artifact preparation are implemented; consult STATUS for current evidence. Inference, CLI and container paths remain unimplemented. Do not claim commands work until implemented and verified.
 
 ## Execution
 
