@@ -1,0 +1,32 @@
+# Local/private development context
+.local/
+.env
+.env.*
+!.env.example
+secrets/
+# Python/tooling
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+*.egg-info/
+build/
+dist/
+# Runtime artifacts; committed model manifests belong in models/locks/
+.cache/
+cache/
+weights/
+artifacts/local/
+work/
+*.safetensors
+*.pt
+*.pth
+*.onnx
+*.engine
+*.log
+.DS_Store

@@ -1,0 +1,7 @@
+JevServe
+
+This project is independent of TypeSafe AI and JevServe-Bench and is not endorsed by either project or organization.
+
+The repository license does not grant rights to third-party model weights or components. Each retains its own license. Before introducing third-party code, retain its copyright notices and record its source and license here or in a dedicated third-party notice file.
+
+This bootstrap contains planning and documentation, not copied model implementations or model weights.
