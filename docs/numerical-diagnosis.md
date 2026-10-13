@@ -65,3 +65,60 @@ Retain `atol=0.001`, `rtol=0.01` relative to the reference. Any proposed fix nee
 all affected cases plus real container/SDK regression and a newly tested image.
 An isolated counterfactual, synthetic label agreement or a relaxed threshold does
 not pass that gate. This experiment and the full numerical root cause remain open.
+
+## 2026-10-13: real JPT-0.8B logits and fixed-hidden experiments
+
+The [public diagnostic tools](jpt-diagnostic.md) ran against the pinned local
+checkpoint and author code. Reports are under
+[`validation/reports/jpt-diagnostic`](../validation/reports/jpt-diagnostic).
+All 10 requests / 13 questions matched the author input token IDs and candidate
+order. Captured HF logits reconstructed the author answers; the author rerun
+matched the prior reference.
+
+- Both sequential and within-request batched vLLM runs differ from HF; maximum
+  probability error is 0.027319495161551854 and centered-logit error is 0.28125.
+- Batched versus sequential execution itself changes one request beyond tolerance
+  (maximum probability difference 0.0065495271359604645). Scheduling contributes
+  to observed variation but cannot explain all HF/vLLM differences.
+- For the same HF hidden state, original full-sequence BF16 projection,
+  last-token/full-vocabulary BF16 and last-token/candidate-only BF16 are identical
+  for all 13 questions. Candidate-only FP32 rounded back to BF16 is also identical.
+  The tested HF head shapes therefore do not account for the discrepancy.
+- Keeping FP32 projection outputs changes six questions beyond tolerance, with
+  maximum probability change 0.009566225941695261 versus the original BF16 output.
+  This is a diagnostic counterfactual, not a compatible production fix.
+
+Diagnostic comparisons include both Noul outcomes and find seven failed request
+cases versus HF; the public HTTP validator retains its original true-probability
+rule and reports six. The thresholds and the public validator were not changed.
+All recorded argmax comparisons in these probes remain unchanged.
+
+All diagnostic requests completed and the process exited zero with GPU memory
+released. vLLM logged an `EngineDeadError` during explicit shutdown; it was not a
+failed request, but shutdown logging/behavior still needs separate investigation.
+The HF fast-path-unavailable message identifies different implementations, not a
+proven numerical cause. The next isolating experiment is to capture vLLM's final
+hidden states and project both engines' hidden states with the same candidate
+weights and arithmetic. The backbone/kernel contribution remains unresolved.
+
+### Unified hidden-state projection result
+
+The follow-up named-worker-RPC probe completed all 13 questions, without enabling
+insecure function serialization or changing the original vLLM logits return value.
+Ordered candidate BF16 weights matched byte-for-byte between engines (SHA-256,
+shape and dtype checked per question). The captured vLLM head outputs also matched
+the values actually returned by its processed-logit inference path.
+
+All 13 final hidden vectors differ between HF and vLLM; maximum elementwise
+absolute difference is **0.330078125**. Projecting both engines' hidden vectors
+using matching candidate weights in FP32 with TF32/autocast disabled still fails
+probability tolerance for **7/13 questions**, with maximum probability difference
+**0.012281190571394651**.
+
+This establishes a measurable **pre-head contribution** to the discrepancy in
+this model/environment/sample set. It does not establish which backbone layer,
+normalization, attention/recurrent kernel or accumulation path caused it, and it
+does not rule out additional head arithmetic effects. Production precision,
+backend and tolerances remain unchanged. Next work should compare corresponding
+layer boundaries with the same token inputs and verified weights, rather than
+replace BF16 outputs or relax the public parity gate.

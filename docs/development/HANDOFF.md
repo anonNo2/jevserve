@@ -9,7 +9,7 @@
 1. 阅读根目录 [AGENTS.md](../../AGENTS.md)、本文件和 [STATUS.md](STATUS.md)。STATUS 顶部汇总及最新会话记录反映当前进展；较早会话保留当时的失败和未执行状态。
 2. 如存在，读取 `.local/SERVER.md`，并在重工作前重新检查资源占用。该文件仅用于本机观察，不提交到 Git。
 3. 阅读历史 [设计](../plans/JevServe-design.md)、[T00–T12 计划](../plans/JevServe-task-plan.md) 和 [DECISIONS.md](DECISIONS.md) 理解约束与变更；不要重新从初始化或 T00 开始。
-4. 按 [开源完善计划 O01–O08](../plans/open-source-hardening.md) 和 STATUS 最新未完成项接续。当前优先项是公开验证编排、Open-Jev/JPT 数值偏差诊断及可追溯发布流程；以实际完成证据更新任务状态。
+4. 按 [开源完善计划 O01–O08](../plans/open-source-hardening.md) 和 STATUS 最新未完成项接续。公开编排和三层 JPT 诊断已实测；当前先查看运行中的 24 小时 NeoHorse 长稳报告，再接续层级数值诊断及发布流程验收；以实际完成证据更新任务状态。
 
 开始时运行 `git status --short --branch`，保留已有工作。CPU 安装、CLI 和检查命令见 [CONTRIBUTING.md](../../CONTRIBUTING.md)；源码运行时开发见 [IMPLEMENTATION.md](IMPLEMENTATION.md)。不要把已有缓存或某次宿主观察当成新环境验证。部署命令以 Quick Start 为准。
 
@@ -23,7 +23,7 @@
 
 ## 验证与交付
 
-CPU 通过、容器执行通过和真实 GPU 数值认证分别记录。回滚演练、独立干净主机安装、24/72 小时长稳仍需实际完成；现有小型对照不构成完整发布验收。数值偏差应按编码、读出、温度、精度和批处理逐层调查，没有证据不归因于 BF16，也不放宽容差。
+CPU 通过、容器执行通过和真实 GPU 数值认证分别记录。dev0 → dev1 → dev0 回滚实测已通过；24 小时 NeoHorse 长稳正在后台运行，先检查本机 .local/soak/control.json 和 live.json，勿重复占用 GPU。独立干净主机安装、完成的 24/72 小时长稳仍待验收；现有小型对照不构成完整发布验收。数值偏差应按编码、读出、温度、精度和批处理逐层调查，没有证据不归因于 BF16，也不放宽容差。
 
 按当前会话授权执行；默认顺序工作，只有明确允许时委派，GPU 重工作保持串行。不得重启共享 Docker daemon、改驱动或清理他人资源。离线模式不访问网络，下载到 staging、校验后原子发布；不得提交权重、凭据或 `.local/`。
 

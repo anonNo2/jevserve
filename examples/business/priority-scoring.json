@@ -1,0 +1,16 @@
+{
+  "state": "Incident: All customers are unable to complete checkout. The payment service has returned errors for 20 minutes. There is no workaround and the on-call team has been notified.",
+  "questions": {
+    "priority": {
+      "type": "score",
+      "instructions": "Rate the operational response priority of this incident using the ordered levels.",
+      "criteria": [
+        "Routine: cosmetic issue or request with no disruption",
+        "Soon: limited disruption with a working alternative",
+        "Urgent: major disruption affecting many customers",
+        "Immediate: critical service unavailable with no workaround"
+      ]
+    }
+  },
+  "deadline_ms": 30000
+}

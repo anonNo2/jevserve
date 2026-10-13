@@ -1,0 +1,22 @@
+{
+  "scenario": "ticket-routing",
+  "response": {
+    "answers": {
+      "team": {
+        "probabilities": {
+          "billing": 0.9803935728017895,
+          "technical": 0.005985080342365547,
+          "account": 0.013621346855845047
+        },
+        "type": "choice",
+        "choice": "billing"
+      }
+    },
+    "request_id": "333fa61523ce46038a0068fab7717993",
+    "model_revision": "1431c0509bbc10772cd59964cc7af5835c8720d6",
+    "adapter_revision": "jpt-llm2jev-2b252d5",
+    "execution_profile": "qwen35-token-bf16-v1",
+    "probability_kind": "candidate_softmax",
+    "calibration_id": null
+  }
+}

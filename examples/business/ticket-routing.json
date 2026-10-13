@@ -1,0 +1,15 @@
+{
+  "state": "Our monthly subscription was charged twice yesterday. Please refund the duplicate charge. We can still use the product.",
+  "questions": {
+    "team": {
+      "type": "choice",
+      "instructions": "Choose the support team responsible for resolving this ticket.",
+      "criteria": {
+        "billing": "Payments, invoices, duplicate charges and refunds",
+        "technical": "Broken functionality, errors and integration problems",
+        "account": "Sign-in, account ownership and access permissions"
+      }
+    }
+  },
+  "deadline_ms": 30000
+}

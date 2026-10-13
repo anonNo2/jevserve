@@ -1,0 +1,36 @@
+{
+  "answers": {
+    "team": {
+      "probabilities": {
+        "technical": 0.05111454959774747,
+        "billing": 0.9488854504022526
+      },
+      "type": "choice",
+      "choice": "billing"
+    },
+    "urgent": {
+      "type": "noul",
+      "noul": 0.007778955789257355
+    },
+    "priority": {
+      "probabilities": {
+        "0": 0.9452256284059215,
+        "1": 0.027756138280156314,
+        "2": 0.027018233313922307
+      },
+      "type": "score",
+      "score": 0.08179260490800093,
+      "legend": {
+        "0": "Routine",
+        "1": "Soon",
+        "2": "Immediate"
+      }
+    }
+  },
+  "request_id": "707138cafdcb4372a91b6f0a1698c51b",
+  "model_revision": "0c7aa498b1627be8da4acf34c863ff0ee0a92785",
+  "adapter_revision": "open-jev-v1",
+  "execution_profile": "qwen35-unmerged-v1",
+  "probability_kind": "candidate_softmax",
+  "calibration_id": null
+}

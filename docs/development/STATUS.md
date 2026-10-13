@@ -17,8 +17,10 @@ and JPT still have numerical differences. No Python package is published.
 
 The first hardening wave adds public validation and reviewed preview-promotion tools;
 see the [hardening plan](../plans/open-source-hardening.md) and latest session below.
-The new orchestration has CPU coverage and a real busy-GPU preflight refusal; full
-end-to-end execution and remote promotion remain unrun.
+The public orchestration has now completed real JPT and NeoHorse end-to-end
+execution. Numerical diagnosis, performance, recovery, examples and SBOM evidence
+are recorded in the latest session. Version rollback passed; a 24-hour NeoHorse
+soak is running (start snapshot below), not yet passed. Remote promotion remains unrun.
 
 ## Task tracking
 
@@ -32,11 +34,11 @@ end-to-end execution and remote promotion remain unrun.
 | T05 API/lifecycle | Native and SDK subset implemented | Broader release/fault/soak coverage remains |
 | T06 CLI/SDK | CLI/SDK and one-command cold container quickstart passed | Separate clean-host installation not run |
 | T07 Docker | Image build, cold online and offline GPU inference passed | Docker Hub development preview published and verified; numerical certification failed |
-| T08 Compose/offline/rollback | Compose real GPU and container offline inference passed | Image-version rollback drill not run |
+| T08 Compose/offline/rollback | Compose real GPU and container offline inference passed | dev0 → dev1 → dev0 real inference and cleanup passed |
 | T09 Multi-model extension | Seven pinned profiles completed real GPU/container checks | NeoHorse/Kev small-suite parity passed; Open-Jev/JPT probability parity fails |
-| T10 Observability/benchmark | Metrics and short sequential benchmark measured | Capacity study and 24/72-hour soak not run |
+| T10 Observability/benchmark | Metrics and short sequential benchmark measured | 24-hour low-rate soak running; capacity study and 72-hour soak unrun |
 | T11 CI/release | CPU workflow written; local checks pass | Remote CPU CI passed; certified image promotion/release absent |
-| T12 Open-source acceptance | Incomplete | Parity, rollback, clean-host and soak acceptance |
+| T12 Open-source acceptance | Incomplete | Parity, clean-host and completed soak acceptance |
 
 ## Session evidence — 2026-10-12
 
@@ -754,3 +756,143 @@ consistency gap; that gap was fixed and independently re-reviewed. The 61 releas
 contract tests include real historical report-format checks, missing SDK refusal
 and content contradictions even after hashes are recomputed. No historical
 report acquired release eligibility from those format checks.
+
+## 2026-10-13 — Resume hardening after GPU became idle
+
+Initial worktree was clean at `fea51b2`; GPU had no compute process. The existing
+project Docker socket was healthy. All GPU reference, container and diagnostic
+stages remained sequential; no shared daemon/driver changes or foreign process
+termination occurred. Three context-limited agents implemented diagnostics,
+community/SBOM work, and examples/workload/rollback tools, with cross-review.
+
+### Public verification and numerical investigation
+
+- `validation.run` completed JPT-0.8B reference → fixed dev1 container → readiness
+  → native/official SDK → cleanup. Execution and cleanup passed, exit **1** solely
+  because probability parity failed **6/10**. Report source was clean `fea51b2`.
+  Evidence: `validation/reports/hardening-jpt-0.8b/{summary,reference,http}.json`.
+- The same public runner completed NeoHorse-Jev-4B with the pinned reference wheel;
+  execution, **10/10 synthetic probability comparisons**, SDK and cleanup passed,
+  exit **0**. It truthfully records a dirty tree while independent tools/docs were
+  being added. Evidence: `validation/reports/hardening-neohorse-4b/`. These are
+  runtime reproductions, not retrospective image-build/source certification.
+- `validation.jpt_diagnostic`, `validation.jpt_head_probe` and
+  `validation.jpt_hidden_probe` all executed real GPU stages for JPT-0.8B. Token IDs
+  and candidate order matched author semantics. Sequential versus within-request
+  batch probability differences exceeded tolerance on one question; both modes
+  still differed from HF. Same-HF-hidden BF16 full/last/candidate projections were
+  identical on all 13 questions; changing only output precision is not a fix.
+- Hidden probe used named worker RPCs, preserved returned logits and did not enable
+  insecure function serialization. Candidate weight bytes matched in both engines.
+  **13/13 hidden vectors differ** (maximum elementwise error **0.330078125**).
+  Common FP32 projection still fails on **7/13 questions, 5/10 requests** (maximum
+  probability error **0.012281190571394651**). This proves a pre-head contribution;
+  the exact layer/operator and a semantics-preserving correction remain unresolved.
+- Each diagnostic process completed all cases and exited zero; vLLM emitted an
+  `EngineDeadError` during explicit shutdown after completion, with GPU resources
+  released. This log is recorded as an outstanding shutdown diagnostic, not hidden
+  as a request failure or used to discard completed evidence. All raw reports are
+  in `validation/reports/jpt-diagnostic/`; see `docs/jpt-diagnostic.md` for exact
+  two-process commands and `docs/numerical-diagnosis.md` for interpretation.
+
+### Examples, workload, faults and inventory
+
+- All three `examples/business_examples.py` scenarios executed against the real
+  pinned dev1 JPT-0.8B service. Synthetic responses retained under
+  `validation/reports/hardening-workload/`; no correctness/accuracy labels invented.
+- Four `validation.workload` cells, Choice candidates **2/255** × concurrency **1/4**,
+  each completed **100 requests with zero observed failures**. P95 latency was
+  **87.8 / 156.1 / 138.1 / 441.2 ms** respectively. Requests encoded to 105 and
+  3,946 tokens. The recorded throughput includes sampling overhead; sampled device
+  memory includes runtime reservation. See `docs/performance-and-soak.md` for
+  P50/P95/P99 and scope. Fresh runtime-cache startup through check/inference took
+  **248.997 s** with already-present weights/layers, not a clean-host installation.
+- Real local reflink-copy corruption was rejected before engine startup; original
+  files were unchanged. An empty-cache `prepare --offline` in a network-disabled
+  dev1 container exited **1 / ArtifactMissing**. This is expected rejection, not
+  a network interruption test. Evidence: `artifact-corruption-drill.json`.
+- Intentional SIGKILL of the dedicated JPT container yielded expected exit **137**,
+  no automatic restart, unavailable readiness and GPU release. Explicit restart
+  reused the cache, became ready with inference in **81.036 s**, and executed the
+  ticket example. Final graceful shutdown exited **0**, no OOM.
+  Evidence: `hardening-workload/crash-recovery.json` and `docs/fault-validation.md`.
+- O07 delivered the model adapter guide, issue/PR templates and honest security
+  contact policy. Private GitHub vulnerability reporting was observed disabled;
+  no private channel or vulnerability scan is claimed.
+- Syft **1.54.1**, archive SHA-256 checked against its official release, scanned the
+  immutable dev1 image in **427.21 s**, finding **1,868 package records** (SPDX adds
+  the image-source package). Public `artifacts/sbom/dev1.spdx.json.gz` is 2,995,089
+  bytes, SHA-256 `7317e2198137a947735cad880fb037d8ffe67e8d62fe3fcb2b6713f27be858e1`.
+  Private-path/identity checks passed; no image mutation or GPU action by scanner.
+  Scope and reproducible scan commands: `docs/sbom.md`.
+
+Reproduction entry points (source checkout, project Python 3.12):
+
+```bash
+.venv/bin/python -m validation.run --help
+.venv/bin/python -m validation.jpt_diagnostic --help
+.venv/bin/python -m validation.jpt_head_probe --help
+.venv/bin/python -m validation.jpt_hidden_probe --help
+.venv/bin/python -m validation.workload --help
+.venv/bin/python -m validation.rollback --help
+.venv/bin/python examples/business_examples.py --help
+```
+
+Full argument lists, explicit paths/digests, model/license constraints and report
+interpretation are in the linked validation, diagnostic, examples, fault,
+performance and rollback documents. Private invocation logs remain under `.local/`.
+Runtime code, weights, production precision and public image tags were unchanged.
+Remote release dispatch/promotion, independent clean-host install, real upstream
+transfer interruption and a completed 72-hour soak remain unrun.
+
+### Completed rollback and final local checks
+
+- Public `validation.rollback` executed **dev0 → dev1 → dev0** using the fixed
+  published registry digests and the existing project default-model cache. All
+  stages passed real Open-Jev-2B inference, image/model identity checks, idle-GPU
+  preflight and cleanup, with exit **0** for all three containers. Readiness/check
+  times were **130.699 / 108.293 / 98.579 s**. The synthetic sample had identical
+  probabilities across these three runs. Cache was preserved. Evidence:
+  `validation/reports/rollback-dev0-dev1/`; this is not full author parity or a
+  clean-host/cache-format migration test.
+- Final CPU suite: **352 passed**; Ruff and mypy (33 production source files)
+  passed, sdist/wheel build passed, and `git diff --check` passed. Cross-review
+  findings were fixed: request-limit false soak passes, URL/exception credential
+  exposure, incomplete response validation/preflight reports, changing model
+  revision during a workload, equal-image rollback, and stale diagnostic output
+  reuse. New output paths are mandatory for the diagnostic probes.
+- README links remain bilingual; real example/performance/numerical reports are
+  linked, public report hashes checked, and host paths/identity excluded. Full
+  rollback and new diagnostics did not alter production inference or published
+  dev1. No remote release workflow dispatch or new image promotion was attempted.
+
+
+### 24-hour soak started; next action
+
+- At 2026-10-13 02:49:40 UTC the detached project supervisor started a pinned
+  dev1 NeoHorse-Jev-4B container. Startup/readiness/one inference took **58.542 s**.
+  The workload is actually running: concurrency 1, Choice with 2 candidates,
+  10-second interval, duration 86,400 seconds, request cap 1,000,000.
+  [Public start snapshot](../../validation/reports/soak-24h-start.json) records
+  successful requests and zero observed failures at capture; it is not a final
+  result. **The duration gate has not passed.**
+- The bounded supervisor stops on workload failure and cleans up only its own
+  container on completion/interruption. It retains the cache and local reports;
+  it does not automatically publish a result. No other GPU run should be started
+  while this soak owns the device.
+- Exact next action on this host: inspect the live files below. After the workload
+  finishes (approximately 2026-10-14 02:51 UTC), verify successful cleanup, zero
+  failures, elapsed time >= 86,400 and `duration_gate_passed=true`; review/redact
+  and publish the final report, or diagnose the recorded failure. Do not restart
+  the test merely because a new session begins.
+
+```bash
+cat .local/soak/control.json
+cat .local/soak/live.json
+tail -40 .local/soak-supervisor.log
+```
+
+Remaining work: layer-level Open-Jev/JPT numerical diagnosis and correction,
+independent clean-host install, real transfer interruption, remaining model
+performance cells, remote release-flow rehearsal and 72-hour soak. The ongoing
+NeoHorse low-rate test alone cannot certify other models or fix failed parity.

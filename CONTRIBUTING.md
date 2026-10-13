@@ -4,6 +4,8 @@ JevServe is a working development preview with a public [source repository](http
 
 Read [AGENTS.md](AGENTS.md), the [handoff](docs/development/HANDOFF.md), and [current status](docs/development/STATUS.md). Choose work from the [open-source hardening plan](docs/plans/open-source-hardening.md). The original [design](docs/plans/JevServe-design.md) and [T00–T12 plan](docs/plans/JevServe-task-plan.md) preserve historical intent; their checkboxes and example commands are not current status or deployment instructions.
 
+For a new checkpoint, follow the [model integration guide and acceptance checklist](docs/contributing-models.md). Use the [bug report](https://github.com/anonNo2/jevserve/issues/new?template=bug_report.md) or [model request](https://github.com/anonNo2/jevserve/issues/new?template=model_request.md) template for public issues. For a possible vulnerability, read [SECURITY.md](SECURITY.md) before posting any details.
+
 Use Python 3.12 in a project-local environment. From the repository root, with `uv` installed:
 
 ```bash

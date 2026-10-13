@@ -1,0 +1,14 @@
+{
+  "scope": "intentional SIGKILL of dedicated JPT container; explicit restart from preserved cache",
+  "image_digest": "sha256:4b758ad1000f4d38501fd83f0a9c2b32f0cb91968d427b170a2c2b0d9a613aff",
+  "intentional_crash_exit_code": 137,
+  "automatic_restart_count": 0,
+  "readiness_unavailable_after_crash": true,
+  "gpu_released_seconds": 0.08198466710746288,
+  "status": "passed",
+  "graceful_stop": {
+    "exit_code": 0,
+    "oom_killed": false
+  },
+  "explicit_restart_inference": "passed"
+}

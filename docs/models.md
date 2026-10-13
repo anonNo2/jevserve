@@ -157,3 +157,8 @@ setting both outer and text-config dtype to FP32. Transformers 5.10.4 otherwise
 ignored the outer argument and loaded BF16. All loaded backbone parameter dtypes
 are checked. Initial BF16 reports are retained but invalidated for this FP32
 profile; see [D028](development/DECISIONS.md).
+
+Further JPT-0.8B raw-logit/head/hidden diagnosis and public-runner JPT/NeoHorse
+reproduction are documented in [numerical diagnosis](numerical-diagnosis.md) and
+[validation](validation.md). These new execution reports do not change certification
+status, precision, licenses or the supported text-only scope.

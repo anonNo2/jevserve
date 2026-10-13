@@ -134,6 +134,8 @@ CPU 测试无需 GPU 或模型下载。欢迎提交问题和改进；报告问�
 
 [复现验证](docs/validation.md) · [数值偏差诊断](docs/numerical-diagnosis.md) · [发布流程](docs/releasing.md) · [开源完善计划](docs/plans/open-source-hardening.md)
 
+[业务示例](docs/examples.md) · [模型适配指南](docs/contributing-models.md) · [性能与长稳验证](docs/performance-and-soak.md) · [安全报告](SECURITY.md) · [镜像 SBOM](docs/sbom.md)
+
 ## 许可证
 
 Apache-2.0。上游代码与模型的许可证见 [NOTICE](NOTICE) 和[模型详情](docs/models.md)。

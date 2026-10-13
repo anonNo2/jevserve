@@ -1,0 +1,14 @@
+{
+  "state": "Forum post: Your proposal ignores the test results. I disagree with the conclusion and think we should rerun the experiment.",
+  "questions": {
+    "policy_violation": {
+      "type": "noul",
+      "instructions": "Does this post violate the forum rule against targeted personal insults or threats? Criticism of ideas and respectful disagreement are allowed.",
+      "criteria": {
+        "false": "Allowed criticism or discussion without targeted personal insults or threats",
+        "true": "Contains targeted personal insults or threats toward a person"
+      }
+    }
+  },
+  "deadline_ms": 30000
+}

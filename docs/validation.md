@@ -153,3 +153,20 @@ CPU orchestration checks:
 ```bash
 .venv/bin/pytest tests/unit/test_validation_run.py -q
 ```
+
+## Observed end-to-end runs
+
+The public coordinator completed on an idle development RTX A6000 on 2026-10-13:
+
+| Profile | Reference/container/SDK/cleanup | Strict HTTP parity |
+|---|---|---|
+| JPT-0.8B | Passed | Failed, 6/10 cases |
+| NeoHorse-Jev-4B | Passed | Passed, 10/10 synthetic cases |
+
+Reports: [JPT](../validation/reports/hardening-jpt-0.8b) and
+[NeoHorse](../validation/reports/hardening-neohorse-4b). The JPT run began at clean
+source commit `fea51b2`; the NeoHorse run records a dirty tree while independent
+documentation/diagnostic tools were being added. Neither retroactively certifies
+the old image build/source binding. The original busy-GPU refusal is retained
+separately; it is not replaced with a success claim. Other profiles were tested
+historically, but not rerun through this new coordinator in this session.

@@ -1,0 +1,15 @@
+{
+  "model_id": "kirp/jpt-0.8b",
+  "revision": "1431c0509bbc10772cd59964cc7af5835c8720d6",
+  "scope": "real local prepared inventory corruption drill; not network interruption",
+  "fault": "one byte appended to config.json in separate filesystem reflink copy",
+  "result": "rejected_before_engine_start",
+  "original_weights_modified": false,
+  "offline_empty_cache_container": {
+    "image_digest": "sha256:4b758ad1000f4d38501fd83f0a9c2b32f0cb91968d427b170a2c2b0d9a613aff",
+    "network": "none",
+    "exit_code": 1,
+    "error": "ArtifactMissing",
+    "unexpected_download": false
+  }
+}

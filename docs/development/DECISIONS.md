@@ -157,3 +157,21 @@ Add material changes with evidence, compatibility consequences and affected task
   analysis. Public validation defaults to an idle physical GPU 0, uses its UUID
   for the author reference, and refuses occupied hardware rather than evicting
   another workload.
+
+- **D031 — Preserve production arithmetic while locating pre-head differences.**
+  JPT-0.8B GPU probes verified identical input/candidate IDs and candidate BF16
+  weight bytes. HF full-sequence/last-token/candidate-only BF16 head outputs were
+  identical on the 13-question suite; substituting FP32 outputs changed semantics.
+  Final hidden states differ between engines, and a common FP32 projection still
+  exceeds frozen probability tolerance on 7/13 questions. Record a pre-head
+  contribution, without guessing a particular kernel or changing production dtype.
+  Diagnostic worker methods use named string RPCs, never insecure function
+  serialization, and preserve the original inference return values.
+
+- **D032 — Duration and request-count checks are different gates.** A workload
+  completing its request cap early cannot pass a 24/72-hour gate, including when
+  an interval would otherwise pad elapsed time. Reports distinguish completed
+  requests, errors, actual duration and termination reason. Short synthetic
+  performance, cached crash recovery, image rollback, clean-host install and
+  sustained stability remain separate evidence. Long runs must have a fixed
+  duration and explicit owner/cleanup; no automatic retry or restart hides failures.

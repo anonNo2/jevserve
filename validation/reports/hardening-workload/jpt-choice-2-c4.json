@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "scope": "bounded synthetic HTTP execution; no accuracy/parity certification",
+  "model": {
+    "id": "kirp/jpt-0.8b",
+    "revision": "1431c0509bbc10772cd59964cc7af5835c8720d6",
+    "capabilities": {
+      "question_types": [
+        "choice",
+        "noul",
+        "score"
+      ],
+      "max_choice_candidates": 255,
+      "max_score_levels": 255,
+      "max_tokens_per_candidate": 4095,
+      "max_candidate_sequences": 256,
+      "max_total_input_tokens": 65536,
+      "max_padded_input_tokens": null,
+      "min_choice_candidates": 2,
+      "noul_candidate_cost": 2
+    }
+  },
+  "image_digest": "sha256:4b758ad1000f4d38501fd83f0a9c2b32f0cb91968d427b170a2c2b0d9a613aff",
+  "request_sha256": "bc97e0167a7ce1c9bd8eb473ab5456f1d7f71920ca4704d1fb6642ecd0d17b0a",
+  "question_type": "choice",
+  "candidates": 2,
+  "concurrency": 4,
+  "interval_seconds": 0,
+  "requested_duration_seconds": 300.0,
+  "request_limit": 100,
+  "warmup_seconds": 0.05930007062852383,
+  "status": "passed",
+  "termination_reason": "request_limit",
+  "stage": "workload",
+  "error_code": null,
+  "duration_gate_passed": false,
+  "elapsed_seconds": 4.180289123207331,
+  "completed_requests": 100,
+  "successful_requests": 100,
+  "failures": {},
+  "throughput_requests_per_second": 23.9217903481458,
+  "gpu_memory_note": "sampled GPU 0 device total incl runtime reservation; not minimum model VRAM",
+  "latency_seconds": {
+    "p50": 0.13983903266489506,
+    "p95": 0.15606955252587795,
+    "p99": 0.1613191571086645,
+    "max": 0.16156786493957043
+  },
+  "sampled_gpu_baseline_mib": 24222,
+  "sampled_gpu_peak_mib": 24222,
+  "post_run_encoding_observation": {
+    "model_revision": "1431c0509bbc10772cd59964cc7af5835c8720d6",
+    "input_tokens_per_request": 105,
+    "question_count": 1,
+    "note": "offline encoding of same public request body after timed run; not included in latency"
+  }
+}

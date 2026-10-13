@@ -1,0 +1,66 @@
+{
+  "scope": "start snapshot only; not a completed duration gate",
+  "observed_utc": "2026-10-13T02:54:14.459777+00:00",
+  "supervisor_started_utc": "2026-10-13T02:49:40.610978+00:00",
+  "image": "anonwx/jevserve@sha256:4b758ad1000f4d38501fd83f0a9c2b32f0cb91968d427b170a2c2b0d9a613aff",
+  "startup": {
+    "image": "anonwx/jevserve@sha256:4b758ad1000f4d38501fd83f0a9c2b32f0cb91968d427b170a2c2b0d9a613aff",
+    "model_id": "TokenRhythm/NeoHorse-Jev-4B",
+    "cold_cache": true,
+    "start_to_ready_and_one_inference_seconds": 58.54214523732662,
+    "read_only_weights": true,
+    "offline_model_loading": true,
+    "scope": "same-host container lifecycle; not clean-host installation"
+  },
+  "workload": {
+    "schema_version": 1,
+    "scope": "bounded synthetic HTTP execution; no accuracy/parity certification",
+    "model": {
+      "id": "TokenRhythm/NeoHorse-Jev-4B",
+      "revision": "434cb21d3a994a953d3ae5788405fcb2c4970554",
+      "capabilities": {
+        "question_types": [
+          "choice",
+          "noul",
+          "score"
+        ],
+        "max_choice_candidates": 255,
+        "max_score_levels": 255,
+        "max_tokens_per_candidate": 4096,
+        "max_candidate_sequences": 256,
+        "max_total_input_tokens": 8192,
+        "max_padded_input_tokens": 8192,
+        "min_choice_candidates": 1,
+        "noul_candidate_cost": 2
+      }
+    },
+    "image_digest": "sha256:4b758ad1000f4d38501fd83f0a9c2b32f0cb91968d427b170a2c2b0d9a613aff",
+    "request_sha256": "bc97e0167a7ce1c9bd8eb473ab5456f1d7f71920ca4704d1fb6642ecd0d17b0a",
+    "question_type": "choice",
+    "candidates": 2,
+    "concurrency": 1,
+    "interval_seconds": 10.0,
+    "requested_duration_seconds": 86400.0,
+    "request_limit": 1000000,
+    "warmup_seconds": 0.22721093147993088,
+    "status": "running",
+    "termination_reason": null,
+    "stage": "workload",
+    "error_code": null,
+    "duration_gate_passed": false,
+    "elapsed_seconds": 205.7512983251363,
+    "completed_requests": 21,
+    "successful_requests": 21,
+    "failures": {},
+    "throughput_requests_per_second": 0.10206496955764027,
+    "gpu_memory_note": "sampled GPU 0 device total incl runtime reservation; not minimum model VRAM",
+    "latency_seconds": {
+      "p50": 0.2054819706827402,
+      "p95": 0.31894135661423206,
+      "p99": 0.5067479889839888,
+      "max": 0.5067479889839888
+    },
+    "sampled_gpu_baseline_mib": 9216,
+    "sampled_gpu_peak_mib": 9216
+  }
+}

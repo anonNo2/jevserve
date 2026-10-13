@@ -1,0 +1,9 @@
+{
+  "image": "anonwx/jevserve@sha256:4b758ad1000f4d38501fd83f0a9c2b32f0cb91968d427b170a2c2b0d9a613aff",
+  "model_id": "kirp/jpt-0.8b",
+  "cold_cache": true,
+  "start_to_ready_and_one_inference_seconds": 248.99655524268746,
+  "read_only_weights": true,
+  "offline_model_loading": true,
+  "scope": "same-host container lifecycle; not clean-host installation"
+}

@@ -5,6 +5,13 @@ JevServe-Bench and TypeSafe AI. No alpha, RC or stable certification is claimed.
 
 ## Unreleased
 
+- Real public-runner coverage for JPT and NeoHorse, JPT raw/head/hidden numerical
+  diagnostics, bounded performance/soak and image rollback tools.
+- Three executed business examples, model-contribution and issue/PR templates,
+  security reporting policy, and a digest-bound SPDX inventory of dev1.
+- Synthetic four-cell performance matrix and isolated corruption/offline/crash
+  recovery evidence; probability certification remains incomplete.
+
 - Public validation orchestration and evidence-bound release review tooling.
 - Manually initiated, protected promotion of the already-tested registry digest.
   New policy has local CPU tests; remote promotion remains unexecuted.

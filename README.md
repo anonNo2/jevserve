@@ -134,6 +134,8 @@ CPU tests need no GPU or model downloads. Bug reports and contributions are welc
 
 [Reproduce validation](docs/validation.md) · [Numerical diagnosis](docs/numerical-diagnosis.md) · [Release process](docs/releasing.md) · [Open-source hardening plan](docs/plans/open-source-hardening.md)
 
+[Business examples](docs/examples.md) · [Model contribution guide](docs/contributing-models.md) · [Performance and soak](docs/performance-and-soak.md) · [Security reporting](SECURITY.md) · [Image SBOM](docs/sbom.md)
+
 ## License
 
 Apache-2.0. Upstream code and model licenses are documented in [NOTICE](NOTICE) and [model details](docs/models.md).

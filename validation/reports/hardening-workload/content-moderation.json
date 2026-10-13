@@ -1,0 +1,17 @@
+{
+  "scenario": "content-moderation",
+  "response": {
+    "answers": {
+      "policy_violation": {
+        "type": "noul",
+        "noul": 0.04435439322756855
+      }
+    },
+    "request_id": "446504fe4fac4115900e780901546393",
+    "model_revision": "1431c0509bbc10772cd59964cc7af5835c8720d6",
+    "adapter_revision": "jpt-llm2jev-2b252d5",
+    "execution_profile": "qwen35-token-bf16-v1",
+    "probability_kind": "candidate_softmax",
+    "calibration_id": null
+  }
+}
