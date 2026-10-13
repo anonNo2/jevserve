@@ -37,8 +37,10 @@ different dependency layers. Model inventories are in
 or a vulnerability-scan result. The separate [dev1 image inventory](docs/sbom.md)
 provides a Syft-generated SPDX report covering discoverable packages in the final
 image filesystem, including base-image OS packages. Its scope, tool version,
-hashes and detection limits are documented; no vulnerability scan or independent
-completeness audit is claimed. See [release documentation](docs/releasing.md) for
+hashes and detection limits are documented. A subsequent
+[Grype advisory assessment](docs/security-maintenance.md) recorded package matches
+and initial triage; it is not a clean scan, completed remediation, or independent
+completeness audit. See [release documentation](docs/releasing.md) for
 the actual evidence required by the release process.
 
 Use the [deployment guide](docs/quickstart.md) for the current loopback-bound

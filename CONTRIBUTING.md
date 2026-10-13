@@ -1,29 +1,66 @@
 # Contributing to JevServe
 
-JevServe is a working development preview with a public [source repository](https://github.com/anonNo2/jevserve) and generic image `anonwx/jevserve:0.1.0-dev1`. Seven pinned model profiles have real GPU/container execution evidence. Open-Jev/JPT probability comparisons still fail; NeoHorse/Kev pass only a small synthetic suite. No model is certified and there is no alpha or stable release. See the [model matrix](docs/models.md) for text support, licenses and limitations; vision input is not implemented.
+Start with a small, reproducible change. JevServe is a development preview for
+self-hosted text Choice/Noul/Score inference; there is no certified model or
+alpha/stable release. See [current status](docs/current-status.md) and the
+[model matrix](docs/models.md) for the evidence and limitations.
 
-Read [AGENTS.md](AGENTS.md), the [handoff](docs/development/HANDOFF.md), and [current status](docs/development/STATUS.md). Choose work from the [open-source hardening plan](docs/plans/open-source-hardening.md). The original [design](docs/plans/JevServe-design.md) and [T00–T12 plan](docs/plans/JevServe-task-plan.md) preserve historical intent; their checkboxes and example commands are not current status or deployment instructions.
+## Set up and check a source checkout
 
-For a new checkpoint, follow the [model integration guide and acceptance checklist](docs/contributing-models.md). Use the [bug report](https://github.com/anonNo2/jevserve/issues/new?template=bug_report.md) or [model request](https://github.com/anonNo2/jevserve/issues/new?template=model_request.md) template for public issues. For a possible vulnerability, read [SECURITY.md](SECURITY.md) before posting any details.
-
-Use Python 3.12 in a project-local environment. From the repository root, with `uv` installed:
+Use project-local Python 3.12 and `uv`. No GPU, model download, Docker daemon or
+system CUDA changes are needed for these checks:
 
 ```bash
-uv sync --locked
-uv run jevserve --help
-uv run jevserve models list
-uv run pytest -q
-uv run ruff check .
-uv run mypy
-uv run python -m build --no-isolation
+uv sync --locked --extra server
+.venv/bin/jevserve --help
+.venv/bin/pytest -q
+.venv/bin/ruff check .
+.venv/bin/mypy
+.venv/bin/python -m validation.api_schema --check
+.venv/bin/python -m build --no-isolation
 ```
 
-CPU checks need neither GPU packages nor model downloads. Use the [deployment guide](docs/quickstart.md) for the tested image digest, Docker and Compose commands; a source GPU runtime requires the separate pinned dependencies described in the [implementation workflow](docs/development/IMPLEMENTATION.md).
+The `server` extra installs the CPU HTTP stack; it does not install a GPU runtime.
+The base package contains the client and contracts. Use `uv run --extra server`
+if you prefer `uv run` to direct `.venv/bin` commands, so dependency synchronization
+retains the server extra. For real deployment use [Quick Start](docs/quickstart.md).
+For runtime development see [IMPLEMENTATION.md](docs/development/IMPLEMENTATION.md).
 
-Preserve existing edits and keep changes focused. Add behavior tests for changed contracts or failure paths. In a pull request, explain the problem, resulting behavior and exact checks performed, including failures and unrun gates. Record task evidence and the next action in [STATUS.md](docs/development/STATUS.md); record material design changes in [DECISIONS.md](docs/development/DECISIONS.md).
+## Pick work and navigate
 
-Numerical validation must retain the frozen tolerances, tokenizer/template semantics, candidate order and precision. Real GPU results, CPU tests and container execution are separate gates; label agreement alone does not establish probability parity. Inspect shared GPU/Docker use before heavy work and clean up only resources created for your task.
+The [contributor guide](docs/contributing.md) maps directories to tasks and checks.
+Documentation/examples, focused CPU failure-path tests, API contract improvements,
+and reproductions of an existing bug are useful starting points. Read
+[API reference](docs/api.md) for protocol changes, or the
+[model integration checklist](docs/contributing-models.md) before proposing a checkpoint.
+The [hardening plan](docs/plans/open-source-hardening.md) tracks broader work; ask in
+an issue before starting a large architecture change.
 
-Do not commit weights, private data, credentials, caches or local server details. Keep English and Chinese README capability/status statements aligned. Retain attribution and licenses for reused code; model licenses are separate from the repository license.
+Use the [bug report](https://github.com/anonNo2/jevserve/issues/new?template=bug_report.md)
+or [model request](https://github.com/anonNo2/jevserve/issues/new?template=model_request.md)
+template. For security concerns, follow [SECURITY.md](SECURITY.md).
 
-A release must identify the exact tested source revision, image digest and model revisions. Preserve reproducible evidence for performance claims. No Python package has been published. Pushing or publishing requires authorization and a real destination.
+## Submit a pull request
+
+Explain the problem, resulting behavior, and checks you actually ran. Include
+failures and unrun checks. Keep the change focused, preserve unrelated edits, and
+add meaningful behavior tests for changed contracts or failure paths. Keep English
+and Chinese README capability statements aligned. A small contribution does not
+require reading the historical plans or updating the maintainer's session log.
+
+Preserve tokenizer/template semantics, candidate order, probability meaning and
+precision. CPU tests, Docker builds, actual inference and numerical parity are
+separate checks; label agreement is not probability parity. Never use test doubles
+as production fallback. Inspect shared resources before GPU/Docker work and clean
+up only resources belonging to your task.
+
+Do not commit weights, caches, credentials, private data or host details. Keep
+reused-code attribution/licenses; model licenses are separate from this project's
+license. Publishing needs an authorized destination and reproducible release
+evidence. JevServe is independent of TypeSafe AI and JevServe-Bench.
+
+Maintainers and coding agents resuming an implementation session should additionally
+follow [AGENTS.md](AGENTS.md), [HANDOFF.md](docs/development/HANDOFF.md), and
+[STATUS.md](docs/development/STATUS.md). Session evidence and next actions belong in
+STATUS; material architecture decisions belong in DECISIONS. These are continuation
+records, not prerequisites for a typo fix or a focused first contribution.

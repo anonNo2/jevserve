@@ -24,7 +24,8 @@ RUN python3 -c "import sys; assert sys.version_info[:2] == (3, 12)" && \
     python3 -m pip check && \
     mkdir -p /cache && chown 10001:10001 /cache
 COPY --from=wheel /build/dist/*.whl /app/
-RUN python3 -m pip install --no-cache-dir --no-deps /app/*.whl && \
+RUN for wheel in /app/*.whl; do python3 -m pip install --no-cache-dir --no-deps "${wheel}[server]"; done && \
+    python3 -m pip check && \
     useradd --uid 10001 --user-group --home-dir /cache --no-create-home \
     --shell /usr/sbin/nologin jevserve
 ENV JEVSERVE_CACHE_DIR=/cache JEVSERVE_HOST=0.0.0.0 \
@@ -35,4 +36,4 @@ EXPOSE 8000
 HEALTHCHECK --interval=15s --timeout=5s --start-period=20m --retries=4 \
     CMD python3 -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/readyz', timeout=3)"
 ENTRYPOINT ["jevserve"]
-CMD ["serve", "--allow-uncertified"]
+CMD ["serve"]

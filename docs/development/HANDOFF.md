@@ -4,6 +4,14 @@
 
 源码已公开于 [GitHub](https://github.com/anonNo2/jevserve)。通用镜像 `anonwx/jevserve:0.1.0-dev1` 已发布，其固定 digest 为 `sha256:4b758ad1000f4d38501fd83f0a9c2b32f0cb91968d427b170a2c2b0d9a613aff`；匿名拉取已通过，但复用了缓存层，不能视为干净主机安装。部署步骤见 [Quick Start](../quickstart.md)，模型许可证、能力与逐项证据见 [models.md](../models.md)。尚未发布 Python 包。
 
+## 本轮审查改进（2026-10-13）
+
+源码已加入有界异步编码、脱敏诊断、客户端/server 依赖拆分、静态 API 契约及安装/Compose CI。
+已发布 dev1 镜像不包含这些改动；新的源码构建默认需要显式 `serve --allow-uncertified`。
+Grype 已扫描 dev1 SPDX，包与公告匹配尚未完成分诊，见 [安全维护](../security-maintenance.md)。
+私密漏洞报告仍关闭，当前会话没有 GitHub API 管理凭据。当前简版状态见
+[Current status](../current-status.md)，完整审查与未完成项见 STATUS 最新会话。
+
 ## 接续工作
 
 1. 阅读根目录 [AGENTS.md](../../AGENTS.md)、本文件和 [STATUS.md](STATUS.md)。STATUS 顶部汇总及最新会话记录反映当前进展；较早会话保留当时的失败和未执行状态。

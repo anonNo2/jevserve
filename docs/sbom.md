@@ -31,7 +31,9 @@ gzip round-trip and checks for known local paths, usernames and Docker socket
 identifiers. Its source name/digest were already public; no report fields were
 rewritten. The larger native Syft report contains scanner-local configuration and
 is kept private. No vulnerability scanner or independent completeness audit was
-run, and this inventory does not add a model or release certification.
+run at inventory creation, and this inventory does not add a model or release
+certification. A subsequent [Grype advisory assessment](security-maintenance.md)
+scanned this exact SPDX input; its findings and incomplete triage are recorded separately.
 
 ## Scanner and scope
 

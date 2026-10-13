@@ -5,6 +5,15 @@ JevServe-Bench and TypeSafe AI. No alpha, RC or stable certification is claimed.
 
 ## Unreleased
 
+- Bounded off-loop request encoding with cancellation accounting, shared shutdown
+  deadline, sanitized error diagnostics and fail-closed abort cleanup.
+- Lightweight client installation with optional server dependencies; isolated wheel,
+  Compose and static API contract checks in CPU CI. Separate manual runtime-image job.
+- Versioned OpenAPI exports and API reference; simplified contributor entry and
+  current-status page. New source image requires explicit uncertified opt-in.
+- Digest-bound dev1 advisory scan with initial triage and unresolved security actions.
+  These source changes are not included in the published dev1 image.
+
 - Real public-runner coverage for JPT and NeoHorse, JPT raw/head/hidden numerical
   diagnostics, bounded performance/soak and image rollback tools.
 - Three executed business examples, model-contribution and issue/PR templates,

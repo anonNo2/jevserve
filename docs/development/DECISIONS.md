@@ -175,3 +175,38 @@ Add material changes with evidence, compatibility consequences and affected task
   performance, cached crash recovery, image rollback, clean-host install and
   sustained stability remain separate evidence. Long runs must have a fixed
   duration and explicit owner/cleanup; no automatic retry or restart hides failures.
+
+
+- **D033 — Bound real encoding work beyond the caller lifetime.** One daemon-owned
+  encoder serializes synchronous tokenizer calls outside the HTTP event loop.
+  Cancellation/deadline does not release the real worker slot; readiness is false
+  while orphaned encoding is still running and recovers after completion. No
+  replacement worker or unbounded executor queue is created. Python cannot
+  preempt native tokenizer code; permanently stuck code requires process exit.
+  Request draining and encoder draining share one absolute shutdown deadline.
+  Unexpected abort cleanup errors fail readiness closed rather than leaking raw
+  framework tracebacks. Internal diagnostics use fixed stages/codes and an
+  allowlisted exception category, without request IDs, private data or messages.
+
+- **D034 — Separate client dependencies without inventing compatibility.** Core
+  installation requires Pydantic and HTTPX; the `server` extra retains the pinned
+  HTTP/metrics packages. Keep Python >=3.12,<3.13 until another interpreter is
+  actually tested. The production runtime requirements/base image are unchanged.
+  New source image defaults no longer silently add `--allow-uncertified`; the
+  explicit development helper/Compose paths still supply it. Published dev1
+  remains immutable and does not contain these changes.
+
+- **D035 — Export contracts without weakening bounded raw-body handling.** Static
+  OpenAPI documents combine the real Pydantic contracts with explicit endpoint
+  definitions. Keep live Swagger/OpenAPI disabled; schema drift and actual HTTP
+  response tests validate the exported contract. Cross-field ordering, probability
+  normalization and model work limits remain runtime semantics, not promises that
+  generic JSON Schema validation proves a request executable.
+
+- **D036 — Keep container capacity and advisory evidence honest.** Every CPU CI
+  run installs the built wheel outside the checkout and validates Compose/schema.
+  Full vLLM builds use a separate trusted manual default-branch job with a dedicated
+  large-disk CPU runner, never an untrusted PR on a shared GPU host. Its absence is
+  unrun, not passed. Grype advisory matches against dev1's SBOM are published with
+  scanner/database identity and no suppression; package matches do not establish
+  exploitability. Runtime upgrades/removals require a newly validated candidate.

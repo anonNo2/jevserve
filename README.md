@@ -16,7 +16,7 @@ JevServe runs open-weight Jev-style decision models on your NVIDIA GPU. Send tex
 
 **One reusable image, separately mounted weights.** Adapters cover Open-Jev, JPT, NeoHorse and Kev, using vLLM or a named Torch backend. Includes a Python client, bounded request queues, cancellation, health checks and offline mode. See [model-specific test status and licenses](docs/models.md).
 
-> **Developer preview.** Real GPU inference works; numerical alignment with the author's implementation is not yet certified. See [known limitations](#status-and-limitations) before relying on the results.
+> **Developer preview.** The default Open-Jev model currently **fails strict probability parity** with the author implementation. `--allow-uncertified` explicitly accepts development execution; it does not certify results. See [known limitations](#status-and-limitations) before relying on probabilities or decision thresholds.
 
 ## Quick Start
 
@@ -28,7 +28,8 @@ Run the [Docker Hub image](https://hub.docker.com/r/anonwx/jevserve) without a l
 docker run -d --name jevserve --gpus device=0 --shm-size=1g \
   -p 127.0.0.1:8000:8000 \
   --mount type=volume,source=jevserve-cache,target=/cache \
-  anonwx/jevserve:0.1.0-dev1
+  anonwx/jevserve@sha256:4b758ad1000f4d38501fd83f0a9c2b32f0cb91968d427b170a2c2b0d9a613aff \
+  serve --allow-uncertified
 docker exec jevserve jevserve check --wait-seconds 1800
 ```
 
@@ -110,24 +111,24 @@ with Client("http://127.0.0.1:8000") as client:
     print(result.answers["urgent"].noul)
 ```
 
-Install the client from this checkout with `pip install .` in a Python 3.12 virtual environment. The client does not install GPU dependencies or retry requests. A tested text-question subset of `typesafe-sdk==0.7.4` is available at `/v1/systemone`; see [compatibility](compat/README.md).
+Install the client from this checkout with `pip install .` in a Python 3.12 virtual environment. The source client installs Pydantic and HTTPX without server or GPU dependencies, and does not retry requests. Source server development uses `pip install ".[server]"`; GPU execution still requires the separate pinned runtime. These source improvements are not included in the published dev1 image. A tested text-question subset of `typesafe-sdk==0.7.4` is available at `/v1/systemone`; see [compatibility](compat/README.md).
 
 ## Status and limitations
 
 - **Models:** 7 pinned profiles tested with real GPU inference and containers on RTX A6000; text only, one model and one GPU per container. [Individual test results](docs/models.md).
 - **Numerics:** Open-Jev and JPT have failed strict probability comparisons. NeoHorse and Kev pass the small synthetic comparison suite. Execution success does not imply numerical certification or measured accuracy. [Per-model reports](docs/models.md).
 - **Inputs:** up to 16 questions and 255 Choice candidates. Score limits, minimum candidates and token/work budgets vary by model; inspect `/v1/models`. No silent truncation, precision change, model fallback or retry.
-- **Release:** development preview, not an alpha-certified or production release. [Current container and release evidence](docs/development/STATUS.md).
+- **Release:** development preview, not an alpha-certified or production release. [Current status](docs/current-status.md) · [Detailed evidence](docs/development/STATUS.md).
 
 ## Documentation and contributing
 
-[Deployment](docs/quickstart.md) · [Development setup](docs/development/IMPLEMENTATION.md) · [Architecture](docs/plans/JevServe-design.md) · [Model details](docs/models.md) · [Contributing](CONTRIBUTING.md)
+[API reference](docs/api.md) · [Deployment](docs/quickstart.md) · [Development setup](docs/development/IMPLEMENTATION.md) · [Architecture](docs/plans/JevServe-design.md) · [Model details](docs/models.md) · [Contributing](CONTRIBUTING.md)
 
 ```bash
-uv sync --locked
-uv run pytest -q
-uv run ruff check .
-uv run mypy
+uv sync --locked --extra server
+uv run --extra server pytest -q
+uv run --extra server ruff check .
+uv run --extra server mypy
 ```
 
 CPU tests need no GPU or model downloads. Bug reports and contributions are welcome; please include your runtime version and a minimal reproducible example.

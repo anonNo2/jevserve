@@ -22,6 +22,12 @@ execution. Numerical diagnosis, performance, recovery, examples and SBOM evidenc
 are recorded in the latest session. Version rollback passed; a 24-hour NeoHorse
 soak is running (start snapshot below), not yet passed. Remote promotion remains unrun.
 
+The latest source audit adds bounded off-loop encoding, sanitized diagnostics,
+lightweight client/server extras, static API contracts and installation/Compose CI.
+It has **374 passing CPU tests**, reviewed wheel installation checks and no new
+GPU/container execution. Published dev1 is unchanged. Its SPDX advisory scan
+completed with unresolved matches; see [security maintenance](../security-maintenance.md).
+
 ## Task tracking
 
 | Task | Status | Remaining evidence |
@@ -896,3 +902,121 @@ Remaining work: layer-level Open-Jev/JPT numerical diagnosis and correction,
 independent clean-host install, real transfer interruption, remaining model
 performance cells, remote release-flow rehearsal and 72-hour soak. The ongoing
 NeoHorse low-rate test alone cannot certify other models or fix failed parity.
+
+## 2026-10-13 — Open-source audit implementation with requested subagents
+
+The user approved the preceding ten-point audit and explicitly requested parallel
+subagents. Started from clean `b80d4e1`; three workers owned runtime, packaging/CI,
+and API/contributor documentation, followed by cross-review and a fresh independent
+final reviewer. The original 24-hour NeoHorse soak was inspected and preserved;
+no new GPU job, Docker build/run, published image/tag, or shared daemon change.
+
+### Completed source improvements
+
+- One bounded daemon-owned encoder moves synchronous tokenization off the event
+  loop. Deadline/disconnect preserves real work occupancy; orphaned work disables
+  readiness until completion, with no replacement threads/unbounded queue. The
+  real work gauge is separate from HTTP admission. Request/encoder drain phases
+  share one deadline; a hung worker cannot keep interpreter exit waiting on an
+  executor atexit join. Native code remains nonpreemptible.
+- HTTP diagnostics use fixed stage/code plus allowlisted exception categories,
+  with no raw exception text, request content, identifiers or private paths.
+  Unexpected engine-abort cleanup failure is also sanitized and fails readiness
+  and admission closed. Regression tests cover deadline, cancellation, overload,
+  recovery, late exceptions, process exit and cleanup failure.
+- Base wheel now depends only on Pydantic/HTTPX. `.[server]` installs HTTP/metrics
+  packages; Python 3.12 remains the only supported interpreter. Production engine
+  requirements/base digest remain unchanged. Source Docker default is `serve`,
+  requiring explicit `--allow-uncertified`; helper/Compose retain explicit preview
+  execution. README plain Docker commands bind dev1 digest and show the flag.
+- Every CPU CI run checks fresh client/server wheel installs outside source,
+  both Compose configurations and schema drift. A separate trusted manual
+  default-branch job can build/smoke the actual large runtime image on a dedicated
+  large-disk CPU runner. It is **not configured/executed evidence**; automatic
+  production-image PR coverage remains incomplete. Skipped image gates are
+  explicitly reported as unrun, including non-default branch dispatches.
+- Added versioned static native/SystemOne OpenAPI exports, parser/response schema
+  tests and `docs/api.md`. Live Swagger/OpenAPI stay disabled. CONTRIBUTING now
+  starts with install/test and a directory map; ordinary contributors need not
+  reconstruct historical agent sessions. Maintainer evidence duties remain.
+  `docs/current-status.md` provides a concise entry and both README files are synced.
+
+### Security and numerical evidence
+
+- Installed checksum-verified Grype 0.120.1 project-locally and scanned the existing
+  immutable dev1 SPDX. Scan exit **0** means completed, not vulnerability-free.
+  Database schema v6.1.10, built 2026-10-12T06:45:22Z, valid. **2,123 package/advisory
+  matches**: Critical 3, High 56, Medium 1,816, Low 225, Negligible 19, Unknown 4.
+  The Go module-level matching warning is preserved. Allowlisted public inventory:
+  `artifacts/security/dev1-grype-matches.json.gz`; exact hashes, commands, initial
+  triage and limitations are in `docs/security-maintenance.md`.
+- Critical matches identify Go modules embedded in the image's Mooncake library.
+  One describes a Windows-only trigger; HTTP/2 reachability remains unverified.
+  No full triage, suppression, package upgrade or clean security result is claimed.
+- Public GitHub private-reporting status was rechecked and remained `enabled:false`.
+  No authenticated GitHub API administration route was available. SECURITY retains
+  its honest contact policy and documents the exact administrator action needed.
+- `.venv/bin/python -m validation.numerics --output .local/audit-numerical-diagnosis.json`
+  completed. This reanalysis still reports 38/113 Open-Jev failures and exact
+  reconstruction of recorded probabilities; it is not new GPU evidence.
+  Pinned HF/vLLM source inspection clarified that layer return values differ in
+  residual representation. Numerical docs now specify matching layer-boundary
+  capture, rather than repeating the already completed hidden-state experiment.
+  No causal attribution, tolerance change, precision change or parity fix.
+
+### Verification and review
+
+```bash
+.venv/bin/pytest -q
+.venv/bin/ruff check .
+.venv/bin/mypy
+.venv/bin/python -m validation.api_schema --check
+.venv/bin/python -m build --no-isolation
+# Install the built wheel and wheel[server] into separate fresh Python 3.12 envs.
+# Run from outside the checkout, using each environment's interpreter:
+python -I /path/to/checkout/scripts/smoke_installed.py
+python -I /path/to/checkout/scripts/smoke_installed.py --server
+docker compose -f compose.yaml config --quiet
+JEVSERVE_MODEL_DIR="$PWD/.local" docker compose -f compose.yaml -f compose.mount.yaml config --quiet
+git diff --check
+```
+
+Full suite **374 passed**; Ruff and mypy (34 production source files) passed;
+static schema drift passed. Final sdist/wheel builds passed. Fresh isolated client/server wheel installations
+passed `uv pip check` and installed-package smoke from outside source (12 and 18
+distributions respectively, no GPU packages); both Compose config checks passed. Relative Markdown file-link validation:
+**220 resolved, zero missing**. Security artifact counts, input/raw hashes and
+private-identifier checks passed. The final reviewer independently ran 29 HTTP/
+schema tests and checked security report integrity/redaction, finding no Critical
+or Important issue. Its one minor CI unrun-summary issue was fixed and re-reviewed.
+Cross-review also fixed duplicated shutdown grace and added authenticated-route
+schema tests; empirical uv run behavior was checked and README examples explicitly
+retain `--extra server` for reproducibility.
+
+### Exact outstanding gates and next action
+
+At the latest check, the original soak container remained healthy: **1,523/1,523
+successful requests, 15,585.67 elapsed seconds, no failures, duration gate false**.
+This is an intermediate observation, not a completed 24-hour result. Do not
+interrupt/restart it for numerical experiments or count it as new-source validation:
+it runs the previously published dev1 image.
+
+1. After the existing soak finishes, inspect `.local/soak/control.json`, `live.json`
+   and supervisor log; require completed duration, zero failures and owned-container
+   cleanup before publishing a reviewed final report.
+2. Build a new source candidate and run both Docker paths/GPU regression after
+   the GPU is available. The changed request lifecycle has only CPU verification
+   so far; published dev1 is unchanged. Then investigate matching JPT backbone
+   boundaries at frozen tolerances; Open-Jev/JPT certification is still unresolved.
+3. Provision/verify the dedicated container CI runner; rehearse the reviewed remote
+   release flow only with a clean source-bound candidate and actual gate evidence.
+   No eligible release manifest or remote promotion was manufactured in this session.
+4. A repository administrator must enable and verify private vulnerability reporting.
+   Complete advisory triage and test any dependency-remediation candidate before
+   publication. Clean-host installation needs a separate host; broader model/load
+   capacity data and a completed 72-hour soak remain unrun.
+
+These are partial closures of audit items 1/4/5/6/9, not a claim that all ten
+release/operational concerns are solved. Local runtime/client/API/contributor
+improvements are implemented and reviewed; no push or publication was requested
+or performed in this session.

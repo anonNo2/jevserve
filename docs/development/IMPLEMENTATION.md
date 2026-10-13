@@ -4,11 +4,11 @@ Use Python 3.12 and a project-local environment. The protocol and artifact code
 has no Torch, Transformers or vLLM dependency:
 
 ```bash
-uv sync --locked
-uv run pytest -q
-uv run ruff check .
-uv run mypy
-uv run python -m build
+uv sync --locked --extra server
+uv run --extra server pytest -q
+uv run --extra server ruff check .
+uv run --extra server mypy
+uv run --extra server python -m build
 ```
 
 ## Real development service
@@ -20,7 +20,7 @@ and the separate, completed container execution checks. To install a separate so
 ```bash
 uv venv --python 3.12 .venv-runtime
 uv pip sync --python .venv-runtime/bin/python --require-hashes compat/runtime-requirements.txt
-uv pip install --python .venv-runtime/bin/python --no-deps .
+uv pip install --python .venv-runtime/bin/python --no-deps '.[server]'
 .venv-runtime/bin/jevserve serve --allow-uncertified --cache-dir .cache/jevserve
 ```
 
@@ -116,3 +116,26 @@ pipeline. Use STATUS for actual evidence and unrun checks.
 Public serial validation is documented in [validation.md](../validation.md).
 The reviewed development-image promotion process is in [releasing.md](../releasing.md);
 certified channels remain blocked pending their evidence gates.
+
+## Package and image CI
+
+The base wheel installs the native client, contracts and CPU CLI dependencies
+(`pydantic` and `httpx`). Install `.[server]` for the HTTP service dependencies;
+GPU dependencies still come from the separate hash-pinned runtime lock. Python
+3.12 remains the supported interpreter. CI installs the built wheel into two
+fresh environments outside the checkout and runs
+`scripts/smoke_installed.py` with isolated Python, separately checking the client
+and server extra, offline preparation failure, packaged catalog and GPU import
+isolation. Both Compose configurations are also validated on every PR.
+
+The full production image exceeds the reliable disk budget of the default
+GitHub-hosted runner. Its separate `runtime-image` job is manually dispatched
+with `runtime_image=true` on the default branch, after CPU checks, on a dedicated
+trusted Linux x64 runner labeled `jevserve-container-cpu`. Provision that runner
+with Docker, at least 100 GiB free Docker storage, and no shared workloads; the
+job has a 90-minute limit. It builds the actual Dockerfile and runs installed
+package/CLI checks without GPU access or network. It removes only its own image
+tag. Fork PRs never execute on this runner. Until runner provisioning and a
+successful dispatch, production image CI remains **unrun**; automatic full-image
+PR coverage is still incomplete. CPU CI success does not imply this image gate
+or GPU certification passed.

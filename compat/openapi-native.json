@@ -1,0 +1,1738 @@
+{
+  "components": {
+    "schemas": {
+      "Capabilities": {
+        "additionalProperties": false,
+        "properties": {
+          "max_candidate_sequences": {
+            "minimum": 1,
+            "title": "Max Candidate Sequences",
+            "type": "integer"
+          },
+          "max_choice_candidates": {
+            "minimum": 1,
+            "title": "Max Choice Candidates",
+            "type": "integer"
+          },
+          "max_padded_input_tokens": {
+            "anyOf": [
+              {
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Max Padded Input Tokens"
+          },
+          "max_score_levels": {
+            "minimum": 2,
+            "title": "Max Score Levels",
+            "type": "integer"
+          },
+          "max_tokens_per_candidate": {
+            "minimum": 1,
+            "title": "Max Tokens Per Candidate",
+            "type": "integer"
+          },
+          "max_total_input_tokens": {
+            "minimum": 1,
+            "title": "Max Total Input Tokens",
+            "type": "integer"
+          },
+          "min_choice_candidates": {
+            "default": 1,
+            "minimum": 1,
+            "title": "Min Choice Candidates",
+            "type": "integer"
+          },
+          "noul_candidate_cost": {
+            "default": 1,
+            "maximum": 2,
+            "minimum": 1,
+            "title": "Noul Candidate Cost",
+            "type": "integer"
+          },
+          "question_types": {
+            "items": {
+              "enum": [
+                "choice",
+                "noul",
+                "score"
+              ],
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Question Types",
+            "type": "array"
+          }
+        },
+        "required": [
+          "question_types",
+          "max_choice_candidates",
+          "max_score_levels",
+          "max_tokens_per_candidate",
+          "max_candidate_sequences",
+          "max_total_input_tokens"
+        ],
+        "title": "Capabilities",
+        "type": "object"
+      },
+      "ChoiceAnswer": {
+        "additionalProperties": false,
+        "properties": {
+          "choice": {
+            "minLength": 1,
+            "pattern": "\\S",
+            "title": "Choice",
+            "type": "string"
+          },
+          "probabilities": {
+            "minProperties": 1,
+            "patternProperties": {
+              "\\S": {
+                "maximum": 1,
+                "minimum": 0,
+                "type": "number"
+              }
+            },
+            "propertyNames": {
+              "minLength": 1
+            },
+            "title": "Probabilities",
+            "type": "object"
+          },
+          "type": {
+            "const": "choice",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "probabilities",
+          "type",
+          "choice"
+        ],
+        "title": "ChoiceAnswer",
+        "type": "object"
+      },
+      "ChoiceQuestion": {
+        "additionalProperties": false,
+        "properties": {
+          "criteria": {
+            "minProperties": 1,
+            "patternProperties": {
+              "\\S": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "pattern": "\\S",
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "propertyNames": {
+              "minLength": 1
+            },
+            "title": "Criteria",
+            "type": "object"
+          },
+          "instructions": {
+            "minLength": 1,
+            "pattern": "\\S",
+            "title": "Instructions",
+            "type": "string"
+          },
+          "type": {
+            "const": "choice",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "instructions",
+          "criteria"
+        ],
+        "title": "ChoiceQuestion",
+        "type": "object"
+      },
+      "DecisionRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "deadline_ms": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0,
+                "maximum": 30000,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Deadline Ms"
+          },
+          "questions": {
+            "maxProperties": 16,
+            "minProperties": 1,
+            "patternProperties": {
+              "\\S": {
+                "discriminator": {
+                  "mapping": {
+                    "choice": "#/components/schemas/ChoiceQuestion",
+                    "noul": "#/components/schemas/NoulQuestion",
+                    "score": "#/components/schemas/ScoreQuestion"
+                  },
+                  "propertyName": "type"
+                },
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/ChoiceQuestion"
+                  },
+                  {
+                    "$ref": "#/components/schemas/NoulQuestion"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ScoreQuestion"
+                  }
+                ]
+              }
+            },
+            "propertyNames": {
+              "minLength": 1
+            },
+            "title": "Questions",
+            "type": "object"
+          },
+          "state": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "pattern": "\\S",
+                "type": "string"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/JsonValue"
+                },
+                "minProperties": 1,
+                "type": "object"
+              }
+            ],
+            "title": "State"
+          }
+        },
+        "required": [
+          "state",
+          "questions"
+        ],
+        "title": "DecisionRequest",
+        "type": "object"
+      },
+      "DecisionResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "adapter_revision": {
+            "minLength": 1,
+            "pattern": "\\S",
+            "title": "Adapter Revision",
+            "type": "string"
+          },
+          "answers": {
+            "maxProperties": 16,
+            "minProperties": 1,
+            "patternProperties": {
+              "\\S": {
+                "discriminator": {
+                  "mapping": {
+                    "choice": "#/components/schemas/ChoiceAnswer",
+                    "noul": "#/components/schemas/NoulAnswer",
+                    "score": "#/components/schemas/ScoreAnswer"
+                  },
+                  "propertyName": "type"
+                },
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/ChoiceAnswer"
+                  },
+                  {
+                    "$ref": "#/components/schemas/NoulAnswer"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ScoreAnswer"
+                  }
+                ]
+              }
+            },
+            "propertyNames": {
+              "minLength": 1
+            },
+            "title": "Answers",
+            "type": "object"
+          },
+          "calibration_id": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "pattern": "\\S",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Calibration Id"
+          },
+          "execution_profile": {
+            "minLength": 1,
+            "pattern": "\\S",
+            "title": "Execution Profile",
+            "type": "string"
+          },
+          "model_revision": {
+            "pattern": "^[0-9a-f]{40}$",
+            "title": "Model Revision",
+            "type": "string"
+          },
+          "probability_kind": {
+            "const": "candidate_softmax",
+            "title": "Probability Kind",
+            "type": "string"
+          },
+          "request_id": {
+            "minLength": 1,
+            "pattern": "\\S",
+            "title": "Request Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "answers",
+          "request_id",
+          "model_revision",
+          "adapter_revision",
+          "execution_profile",
+          "probability_kind"
+        ],
+        "title": "DecisionResponse",
+        "type": "object"
+      },
+      "ErrorCode": {
+        "enum": [
+          "invalid_request",
+          "body_too_large",
+          "unsupported_capability",
+          "context_too_long",
+          "overloaded",
+          "not_ready",
+          "engine_failed",
+          "deadline_exceeded",
+          "unauthorized",
+          "invalid_model_output"
+        ],
+        "title": "ErrorCode",
+        "type": "string"
+      },
+      "ErrorDetail": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "$ref": "#/components/schemas/ErrorCode"
+          },
+          "message": {
+            "minLength": 1,
+            "pattern": "\\S",
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "ErrorDetail",
+        "type": "object"
+      },
+      "ErrorResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/ErrorDetail"
+          },
+          "request_id": {
+            "minLength": 1,
+            "pattern": "\\S",
+            "title": "Request Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "error",
+          "request_id"
+        ],
+        "title": "ErrorResponse",
+        "type": "object"
+      },
+      "JsonValue": {},
+      "LiveResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "const": "live",
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "LiveResponse",
+        "type": "object"
+      },
+      "ModelsResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "models": {
+            "items": {
+              "$ref": "#/components/schemas/ServedModel"
+            },
+            "maxItems": 1,
+            "minItems": 1,
+            "title": "Models",
+            "type": "array"
+          }
+        },
+        "required": [
+          "models"
+        ],
+        "title": "ModelsResponse",
+        "type": "object"
+      },
+      "NotReadyResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "const": "not_ready",
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "NotReadyResponse",
+        "type": "object"
+      },
+      "NoulAnswer": {
+        "additionalProperties": false,
+        "properties": {
+          "noul": {
+            "maximum": 1,
+            "minimum": 0,
+            "title": "Noul",
+            "type": "number"
+          },
+          "type": {
+            "const": "noul",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "noul"
+        ],
+        "title": "NoulAnswer",
+        "type": "object"
+      },
+      "NoulQuestion": {
+        "additionalProperties": false,
+        "properties": {
+          "criteria": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "minLength": 1,
+                  "pattern": "\\S",
+                  "type": "string"
+                },
+                "propertyNames": {
+                  "enum": [
+                    "true",
+                    "false"
+                  ]
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Criteria"
+          },
+          "instructions": {
+            "minLength": 1,
+            "pattern": "\\S",
+            "title": "Instructions",
+            "type": "string"
+          },
+          "type": {
+            "const": "noul",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "instructions"
+        ],
+        "title": "NoulQuestion",
+        "type": "object"
+      },
+      "ReadyResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "const": "ready",
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "ReadyResponse",
+        "type": "object"
+      },
+      "ScoreAnswer": {
+        "additionalProperties": false,
+        "properties": {
+          "legend": {
+            "patternProperties": {
+              "\\S": {
+                "minLength": 1,
+                "pattern": "\\S",
+                "type": "string"
+              }
+            },
+            "propertyNames": {
+              "minLength": 1
+            },
+            "title": "Legend",
+            "type": "object"
+          },
+          "probabilities": {
+            "minProperties": 1,
+            "patternProperties": {
+              "\\S": {
+                "maximum": 1,
+                "minimum": 0,
+                "type": "number"
+              }
+            },
+            "propertyNames": {
+              "minLength": 1
+            },
+            "title": "Probabilities",
+            "type": "object"
+          },
+          "score": {
+            "minimum": 0,
+            "title": "Score",
+            "type": "number"
+          },
+          "type": {
+            "const": "score",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "probabilities",
+          "type",
+          "score",
+          "legend"
+        ],
+        "title": "ScoreAnswer",
+        "type": "object"
+      },
+      "ScoreQuestion": {
+        "additionalProperties": false,
+        "properties": {
+          "criteria": {
+            "items": {
+              "minLength": 1,
+              "pattern": "\\S",
+              "type": "string"
+            },
+            "minItems": 2,
+            "title": "Criteria",
+            "type": "array"
+          },
+          "instructions": {
+            "minLength": 1,
+            "pattern": "\\S",
+            "title": "Instructions",
+            "type": "string"
+          },
+          "type": {
+            "const": "score",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "instructions",
+          "criteria"
+        ],
+        "title": "ScoreQuestion",
+        "type": "object"
+      },
+      "ServedModel": {
+        "additionalProperties": false,
+        "properties": {
+          "capabilities": {
+            "$ref": "#/components/schemas/Capabilities"
+          },
+          "id": {
+            "minLength": 1,
+            "pattern": "\\S",
+            "title": "Id",
+            "type": "string"
+          },
+          "revision": {
+            "pattern": "^[0-9a-f]{40}$",
+            "title": "Revision",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "revision",
+          "capabilities"
+        ],
+        "title": "ServedModel",
+        "type": "object"
+      },
+      "SystemOneChoiceAnswer": {
+        "additionalProperties": false,
+        "properties": {
+          "choice": {
+            "minLength": 1,
+            "pattern": "\\S",
+            "title": "Choice",
+            "type": "string"
+          },
+          "confidence": {
+            "maximum": 1,
+            "minimum": 0,
+            "title": "Confidence",
+            "type": "number"
+          },
+          "probabilities": {
+            "minProperties": 1,
+            "patternProperties": {
+              "\\S": {
+                "maximum": 1,
+                "minimum": 0,
+                "type": "number"
+              }
+            },
+            "propertyNames": {
+              "minLength": 1
+            },
+            "title": "Probabilities",
+            "type": "object"
+          },
+          "type": {
+            "const": "choice",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "probabilities",
+          "type",
+          "choice",
+          "confidence"
+        ],
+        "title": "SystemOneChoiceAnswer",
+        "type": "object"
+      },
+      "SystemOneRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "deadline_ms": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0,
+                "maximum": 30000,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Deadline Ms"
+          },
+          "model": {
+            "minLength": 1,
+            "pattern": "\\S",
+            "title": "Model",
+            "type": "string"
+          },
+          "questions": {
+            "maxProperties": 16,
+            "minProperties": 1,
+            "patternProperties": {
+              "\\S": {
+                "discriminator": {
+                  "mapping": {
+                    "choice": "#/components/schemas/ChoiceQuestion",
+                    "noul": "#/components/schemas/NoulQuestion",
+                    "score": "#/components/schemas/ScoreQuestion"
+                  },
+                  "propertyName": "type"
+                },
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/ChoiceQuestion"
+                  },
+                  {
+                    "$ref": "#/components/schemas/NoulQuestion"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ScoreQuestion"
+                  }
+                ]
+              }
+            },
+            "propertyNames": {
+              "minLength": 1
+            },
+            "title": "Questions",
+            "type": "object"
+          },
+          "state": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "pattern": "\\S",
+                "type": "string"
+              },
+              {
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/JsonValue"
+                },
+                "minProperties": 1,
+                "type": "object"
+              }
+            ],
+            "title": "State"
+          }
+        },
+        "required": [
+          "state",
+          "questions",
+          "model"
+        ],
+        "title": "SystemOneRequest",
+        "type": "object"
+      },
+      "SystemOneResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "answers": {
+            "maxProperties": 16,
+            "minProperties": 1,
+            "patternProperties": {
+              "\\S": {
+                "discriminator": {
+                  "mapping": {
+                    "choice": "#/components/schemas/SystemOneChoiceAnswer",
+                    "noul": "#/components/schemas/NoulAnswer",
+                    "score": "#/components/schemas/SystemOneScoreAnswer"
+                  },
+                  "propertyName": "type"
+                },
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/SystemOneChoiceAnswer"
+                  },
+                  {
+                    "$ref": "#/components/schemas/NoulAnswer"
+                  },
+                  {
+                    "$ref": "#/components/schemas/SystemOneScoreAnswer"
+                  }
+                ]
+              }
+            },
+            "propertyNames": {
+              "minLength": 1
+            },
+            "title": "Answers",
+            "type": "object"
+          },
+          "model": {
+            "minLength": 1,
+            "pattern": "\\S",
+            "title": "Model",
+            "type": "string"
+          },
+          "usage": {
+            "$ref": "#/components/schemas/Usage"
+          }
+        },
+        "required": [
+          "model",
+          "answers",
+          "usage"
+        ],
+        "title": "SystemOneResponse",
+        "type": "object"
+      },
+      "SystemOneScoreAnswer": {
+        "additionalProperties": false,
+        "properties": {
+          "confidence": {
+            "maximum": 1,
+            "minimum": 0,
+            "title": "Confidence",
+            "type": "number"
+          },
+          "legend": {
+            "patternProperties": {
+              "\\S": {
+                "minLength": 1,
+                "pattern": "\\S",
+                "type": "string"
+              }
+            },
+            "propertyNames": {
+              "minLength": 1
+            },
+            "title": "Legend",
+            "type": "object"
+          },
+          "probabilities": {
+            "minProperties": 1,
+            "patternProperties": {
+              "\\S": {
+                "maximum": 1,
+                "minimum": 0,
+                "type": "number"
+              }
+            },
+            "propertyNames": {
+              "minLength": 1
+            },
+            "title": "Probabilities",
+            "type": "object"
+          },
+          "score": {
+            "minimum": 0,
+            "title": "Score",
+            "type": "number"
+          },
+          "type": {
+            "const": "score",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "probabilities",
+          "type",
+          "score",
+          "legend",
+          "confidence"
+        ],
+        "title": "SystemOneScoreAnswer",
+        "type": "object"
+      },
+      "Usage": {
+        "additionalProperties": false,
+        "properties": {
+          "input_tokens": {
+            "minimum": 0,
+            "title": "Input Tokens",
+            "type": "integer"
+          },
+          "output_tokens": {
+            "minimum": 0,
+            "title": "Output Tokens",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "input_tokens",
+          "output_tokens"
+        ],
+        "title": "Usage",
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "description": "Required on protected routes only when api_key_file is configured. Health routes stay public. Use TLS at a trusted reverse proxy outside localhost.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Development preview: native API and bounded SystemOne compatibility. Text only; no streaming, image inputs, batch jobs or general OpenAI compatibility. Static source contract; live /openapi.json, /docs and /redoc are disabled. JSON Schema cannot express duplicate-key rejection, finite recursive state values, candidate insertion order, probability normalization or ordinal score equations. See docs/api.md and runtime parsers for these additional invariants.",
+    "title": "JevServe HTTP API",
+    "version": "0.1.0.dev1"
+  },
+  "jsonSchemaDialect": "https://json-schema.org/draft/2020-12/schema",
+  "openapi": "3.1.0",
+  "paths": {
+    "/livez": {
+      "get": {
+        "operationId": "liveness",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LiveResponse"
+                }
+              }
+            },
+            "description": "Live; not an inference readiness check",
+            "headers": {
+              "x-request-id": {
+                "description": "Server-generated correlation ID; also present in native/error bodies.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [],
+        "summary": "API process liveness"
+      }
+    },
+    "/metrics": {
+      "get": {
+        "operationId": "metrics",
+        "responses": {
+          "200": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Prometheus text exposition",
+            "headers": {
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "unauthorized",
+            "headers": {
+              "x-request-id": {
+                "description": "Server-generated correlation ID; also present in native/error bodies.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {}
+        ],
+        "summary": "Prometheus metrics"
+      }
+    },
+    "/readyz": {
+      "get": {
+        "operationId": "readiness",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadyResponse"
+                }
+              }
+            },
+            "description": "Ready",
+            "headers": {
+              "x-request-id": {
+                "description": "Server-generated correlation ID; also present in native/error bodies.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotReadyResponse"
+                }
+              }
+            },
+            "description": "Not ready; health body, not ErrorResponse",
+            "headers": {
+              "x-request-id": {
+                "description": "Server-generated correlation ID; also present in native/error bodies.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [],
+        "summary": "Runtime readiness"
+      }
+    },
+    "/v1/decisions": {
+      "post": {
+        "description": "One configured model; no routing or fallback. Strict JSON rejects duplicate keys and nonfinite values, and forbids undeclared request/question fields. Candidate and question insertion order is significant. Runtime model/token/work budgets are checked beyond this schema. deadline_ms only shortens the administrator deadline, measured from request entry, including body upload, queueing, encoding and inference. Requests above the administrator maximum are invalid. Disconnect/deadline aborts inference; Python encoding already running in a worker thread cannot be forcibly stopped.",
+        "operationId": "decide",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DecisionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecisionResponse"
+                }
+              }
+            },
+            "description": "Text Choice/Noul/Score answers. Probabilities/confidence are not calibrated accuracy.",
+            "headers": {
+              "x-request-id": {
+                "description": "Server-generated correlation ID; also present in native/error bodies.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "properties": {
+                            "code": {
+                              "enum": [
+                                "invalid_request"
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "invalid_request",
+            "headers": {
+              "x-request-id": {
+                "description": "Server-generated correlation ID; also present in native/error bodies.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "x-error-codes": [
+              "invalid_request"
+            ]
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "properties": {
+                            "code": {
+                              "enum": [
+                                "unauthorized"
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "unauthorized",
+            "headers": {
+              "x-request-id": {
+                "description": "Server-generated correlation ID; also present in native/error bodies.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "x-error-codes": [
+              "unauthorized"
+            ]
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "properties": {
+                            "code": {
+                              "enum": [
+                                "body_too_large"
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "body_too_large",
+            "headers": {
+              "x-request-id": {
+                "description": "Server-generated correlation ID; also present in native/error bodies.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "x-error-codes": [
+              "body_too_large"
+            ]
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "properties": {
+                            "code": {
+                              "enum": [
+                                "unsupported_capability",
+                                "context_too_long"
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "unsupported_capability, context_too_long",
+            "headers": {
+              "x-request-id": {
+                "description": "Server-generated correlation ID; also present in native/error bodies.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "x-error-codes": [
+              "unsupported_capability",
+              "context_too_long"
+            ]
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "properties": {
+                            "code": {
+                              "enum": [
+                                "overloaded"
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "overloaded",
+            "headers": {
+              "x-request-id": {
+                "description": "Server-generated correlation ID; also present in native/error bodies.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "x-error-codes": [
+              "overloaded"
+            ]
+          },
+          "499": {
+            "description": "Client disconnect observed after body parsing; engine work is aborted. Empty body; disconnected callers generally cannot receive this response.",
+            "headers": {
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "properties": {
+                            "code": {
+                              "enum": [
+                                "not_ready",
+                                "engine_failed",
+                                "invalid_model_output"
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "not_ready, engine_failed, invalid_model_output",
+            "headers": {
+              "x-request-id": {
+                "description": "Server-generated correlation ID; also present in native/error bodies.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "x-error-codes": [
+              "not_ready",
+              "engine_failed",
+              "invalid_model_output"
+            ]
+          },
+          "504": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "properties": {
+                            "code": {
+                              "enum": [
+                                "deadline_exceeded"
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "deadline_exceeded",
+            "headers": {
+              "x-request-id": {
+                "description": "Server-generated correlation ID; also present in native/error bodies.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "x-error-codes": [
+              "deadline_exceeded"
+            ]
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {}
+        ],
+        "summary": "Native text decisions"
+      }
+    },
+    "/v1/models": {
+      "get": {
+        "description": "Metadata is not a readiness or numerical certification claim.",
+        "operationId": "models",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelsResponse"
+                }
+              }
+            },
+            "description": "Configured model",
+            "headers": {
+              "x-request-id": {
+                "description": "Server-generated correlation ID; also present in native/error bodies.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "unauthorized",
+            "headers": {
+              "x-request-id": {
+                "description": "Server-generated correlation ID; also present in native/error bodies.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {}
+        ],
+        "summary": "Single configured model and request budgets"
+      }
+    },
+    "/v1/systemone": {
+      "post": {
+        "description": "One configured model; no routing or fallback. Strict JSON rejects duplicate keys and nonfinite values, and forbids undeclared request/question fields. Candidate and question insertion order is significant. Runtime model/token/work budgets are checked beyond this schema. deadline_ms only shortens the administrator deadline, measured from request entry, including body upload, queueing, encoding and inference. Requests above the administrator maximum are invalid. Disconnect/deadline aborts inference; Python encoding already running in a worker thread cannot be forcibly stopped. model must exactly equal the single served /v1/models ID.",
+        "operationId": "systemone",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SystemOneRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemOneResponse"
+                }
+              }
+            },
+            "description": "Text Choice/Noul/Score answers. Probabilities/confidence are not calibrated accuracy.",
+            "headers": {
+              "x-execution-profile": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "x-model-revision": {
+                "schema": {
+                  "pattern": "^[0-9a-f]{40}$",
+                  "type": "string"
+                }
+              },
+              "x-request-id": {
+                "description": "Server-generated correlation ID; also present in native/error bodies.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "properties": {
+                            "code": {
+                              "enum": [
+                                "invalid_request"
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "invalid_request",
+            "headers": {
+              "x-request-id": {
+                "description": "Server-generated correlation ID; also present in native/error bodies.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "x-error-codes": [
+              "invalid_request"
+            ]
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "properties": {
+                            "code": {
+                              "enum": [
+                                "unauthorized"
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "unauthorized",
+            "headers": {
+              "x-request-id": {
+                "description": "Server-generated correlation ID; also present in native/error bodies.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "x-error-codes": [
+              "unauthorized"
+            ]
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "properties": {
+                            "code": {
+                              "enum": [
+                                "body_too_large"
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "body_too_large",
+            "headers": {
+              "x-request-id": {
+                "description": "Server-generated correlation ID; also present in native/error bodies.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "x-error-codes": [
+              "body_too_large"
+            ]
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "properties": {
+                            "code": {
+                              "enum": [
+                                "unsupported_capability",
+                                "context_too_long"
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "unsupported_capability, context_too_long",
+            "headers": {
+              "x-request-id": {
+                "description": "Server-generated correlation ID; also present in native/error bodies.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "x-error-codes": [
+              "unsupported_capability",
+              "context_too_long"
+            ]
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "properties": {
+                            "code": {
+                              "enum": [
+                                "overloaded"
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "overloaded",
+            "headers": {
+              "x-request-id": {
+                "description": "Server-generated correlation ID; also present in native/error bodies.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "x-error-codes": [
+              "overloaded"
+            ]
+          },
+          "499": {
+            "description": "Client disconnect observed after body parsing; engine work is aborted. Empty body; disconnected callers generally cannot receive this response.",
+            "headers": {
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "properties": {
+                            "code": {
+                              "enum": [
+                                "not_ready",
+                                "engine_failed",
+                                "invalid_model_output"
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "not_ready, engine_failed, invalid_model_output",
+            "headers": {
+              "x-request-id": {
+                "description": "Server-generated correlation ID; also present in native/error bodies.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "x-error-codes": [
+              "not_ready",
+              "engine_failed",
+              "invalid_model_output"
+            ]
+          },
+          "504": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    },
+                    {
+                      "properties": {
+                        "error": {
+                          "properties": {
+                            "code": {
+                              "enum": [
+                                "deadline_exceeded"
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "deadline_exceeded",
+            "headers": {
+              "x-request-id": {
+                "description": "Server-generated correlation ID; also present in native/error bodies.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "x-error-codes": [
+              "deadline_exceeded"
+            ]
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          },
+          {}
+        ],
+        "summary": "typesafe-sdk 0.7.4 text-question subset"
+      }
+    }
+  }
+}

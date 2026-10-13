@@ -16,7 +16,7 @@ JevServe 将开放权重的 Jev 类决策模型封装成 HTTP 服务。发送文
 
 **一个通用镜像，模型权重独立挂载。** 已接入 Open-Jev、JPT、NeoHorse、Kev 模型家族，使用 vLLM 或指定的 Torch 后端。提供 Python 客户端、有界请求队列、取消、健康检查和离线模式。各模型的实测状态和许可见[支持模型与测试结果](docs/models.md)。
 
-> **开发预览版。** 真实 GPU 推理已跑通，与作者实现的数值一致性尚未认证。依赖模型结果之前，请阅读[当前状态与限制](#当前状态与限制)。
+> **开发预览版。** 默认 Open-Jev 模型目前**未通过与作者实现的严格概率对照**。`--allow-uncertified` 表示显式接受开发运行，不代表结果已认证。依赖概率或决策阈值前，请先阅读[当前限制](#当前状态与限制)。
 
 ## 快速开始
 
@@ -28,7 +28,8 @@ JevServe 将开放权重的 Jev 类决策模型封装成 HTTP 服务。发送文
 docker run -d --name jevserve --gpus device=0 --shm-size=1g \
   -p 127.0.0.1:8000:8000 \
   --mount type=volume,source=jevserve-cache,target=/cache \
-  anonwx/jevserve:0.1.0-dev1
+  anonwx/jevserve@sha256:4b758ad1000f4d38501fd83f0a9c2b32f0cb91968d427b170a2c2b0d9a613aff \
+  serve --allow-uncertified
 docker exec jevserve jevserve check --wait-seconds 1800
 ```
 
@@ -110,24 +111,24 @@ with Client("http://127.0.0.1:8000") as client:
     print(result.answers["urgent"].noul)
 ```
 
-在 Python 3.12 虚拟环境中，从本仓库运行 `pip install .` 安装客户端。客户端不安装 GPU 依赖，也不自动重试。`/v1/systemone` 支持经过测试的 `typesafe-sdk==0.7.4` 文本问题子集，详见[兼容范围](compat/README.md)。
+在 Python 3.12 虚拟环境中，从本仓库运行 `pip install .` 安装客户端。源码客户端只安装 Pydantic 和 HTTPX，不安装服务端或 GPU 依赖，也不自动重试。源码服务端开发使用 `pip install ".[server]"`；GPU 执行仍需单独锁定的运行环境。这些源码改进尚未包含在已发布的 dev1 镜像中。`/v1/systemone` 支持经过测试的 `typesafe-sdk==0.7.4` 文本问题子集，详见[兼容范围](compat/README.md)。
 
 ## 当前状态与限制
 
 - **模型：** 7 个固定版本模型已在 RTX A6000 完成真实 GPU 与容器测试；当前 API 仅支持文本，一个容器对应一个模型和一张 GPU。[逐模型测试结果](docs/models.md)。
 - **数值：** Open-Jev 和 JPT 未通过严格概率对照；NeoHorse 与 Kev 通过了小型合成对照用例。推理成功不代表数值认证或准确率保证。[逐模型报告](docs/models.md)。
 - **输入：** 最多 16 个问题；Choice 上限 255。Score 等级数、最少候选数和 token/计算量限制因模型而异，见 `/v1/models`。不静默截断、改变精度、切换模型或重试。
-- **发布：** 当前是开发预览版，尚非通过 alpha 认证的版本或生产版。[容器与发布进度](docs/development/STATUS.md)。
+- **发布：** 当前是开发预览版，尚非通过 alpha 认证的版本或生产版。[当前状态](docs/current-status.md) · [详细验证记录](docs/development/STATUS.md)。
 
 ## 文档与贡献
 
-[部署指南](docs/quickstart.md) · [开发环境](docs/development/IMPLEMENTATION.md) · [架构](docs/plans/JevServe-design.md) · [模型详情](docs/models.md) · [贡献指南](CONTRIBUTING.md)
+[API 参考](docs/api.md) · [部署指南](docs/quickstart.md) · [开发环境](docs/development/IMPLEMENTATION.md) · [架构](docs/plans/JevServe-design.md) · [模型详情](docs/models.md) · [贡献指南](CONTRIBUTING.md)
 
 ```bash
-uv sync --locked
-uv run pytest -q
-uv run ruff check .
-uv run mypy
+uv sync --locked --extra server
+uv run --extra server pytest -q
+uv run --extra server ruff check .
+uv run --extra server mypy
 ```
 
 CPU 测试无需 GPU 或模型下载。欢迎提交问题和改进；报告问题时请附上运行版本和最小复现示例。

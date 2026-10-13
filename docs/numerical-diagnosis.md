@@ -53,13 +53,28 @@ still need measurement; this identity does not prove implementation equivalence.
 
 ## Next experiment and acceptance
 
-On an available GPU, start with pinned JPT-0.8B and identical synthetic token IDs.
-Capture author and runtime candidate IDs, raw logits, centered logits and final
-probabilities. Compare single-question and batched execution under the same dtype,
-then separately measure a diagnostic FP32 readout while preserving the production
-profile. Record actual parameter/output dtypes, package versions, checkpoint
-revision, device use and the immutable image. Free the reference engine before
-starting the runtime. Do not change several factors in one experiment.
+The raw-logit and common-hidden-projection stages below are already complete.
+The next GPU experiment is **corresponding backbone layer boundaries** for pinned
+JPT-0.8B with the same synthetic token IDs and verified weight bytes. The active
+24-hour NeoHorse soak owns the development GPU; wait for its completion and cleanup.
+No layer-boundary experiment or numerical correction is claimed in this audit.
+
+CPU source inspection of the pinned Transformers 5.10.4 / vLLM 0.29.0 code found
+an important capture constraint: HF's `Qwen3_5DecoderLayer.forward` returns the
+post-residual hidden tensor, while vLLM's inherited `Qwen3NextDecoderLayer.forward`
+retains separate hidden and residual tensors and fuses addition into later norms.
+Comparing those raw return objects as if they represented the same activation
+would produce a misleading diagnosis. This structural difference is **not proof
+of the numerical root cause**.
+
+Capture matching normalized inputs to the token mixer and MLP first, plus
+embedding and final-norm outputs. Record exact layer index/type, tensor shape,
+dtype, token position and original residual components; never mutate production
+activations to make the captures match. Start with one unpadded question at a time,
+release HF before starting vLLM, and preserve the existing original-logit capture
+consistency checks. Locate the first divergent matching boundary before testing
+one kernel/arithmetic hypothesis at a time. A final-token-only comparison cannot
+rule out earlier-token differences in causal attention/recurrent state.
 
 Retain `atol=0.001`, `rtol=0.01` relative to the reference. Any proposed fix needs
 all affected cases plus real container/SDK regression and a newly tested image.
@@ -97,9 +112,9 @@ All diagnostic requests completed and the process exited zero with GPU memory
 released. vLLM logged an `EngineDeadError` during explicit shutdown; it was not a
 failed request, but shutdown logging/behavior still needs separate investigation.
 The HF fast-path-unavailable message identifies different implementations, not a
-proven numerical cause. The next isolating experiment is to capture vLLM's final
-hidden states and project both engines' hidden states with the same candidate
-weights and arithmetic. The backbone/kernel contribution remains unresolved.
+proven numerical cause. The subsequent experiment captured vLLM's final hidden states and projected
+both engines' hidden states with the same candidate weights and arithmetic; its
+result is below. The exact backbone/kernel cause remains unresolved.
 
 ### Unified hidden-state projection result
 

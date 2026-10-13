@@ -2,7 +2,10 @@
 
 JevServe serves pinned Open-Jev, JPT, NeoHorse and Kev models as a text decision API. This is a **development
 preview**: GPU inference works, but numerical certification is incomplete.
-The development image explicitly enables this uncertified execution profile.
+The published dev1 image enables this uncertified execution profile by default.
+New source builds require `serve --allow-uncertified`; the development helper and
+Compose configuration supply that flag explicitly. The default Open-Jev model
+fails strict probability parity, so readiness is not a correctness certificate.
 See [current verification results](development/STATUS.md).
 
 ## Requirements
@@ -71,7 +74,8 @@ These are the commands wrapped by the helper, with the readiness check separated
 docker run -d --name jevserve --gpus device=0 --shm-size=1g \
   -p 127.0.0.1:8000:8000 \
   --mount type=volume,source=jevserve-cache,target=/cache \
-  anonwx/jevserve:0.1.0-dev1
+  anonwx/jevserve@sha256:4b758ad1000f4d38501fd83f0a9c2b32f0cb91968d427b170a2c2b0d9a613aff \
+  serve --allow-uncertified
 docker exec jevserve jevserve check --wait-seconds 1800
 ```
 

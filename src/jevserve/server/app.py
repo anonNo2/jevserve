@@ -2,6 +2,8 @@
 
 import asyncio
 import hmac
+import json
+import logging
 import time
 import uuid
 from collections.abc import AsyncIterator, Callable
@@ -31,6 +33,22 @@ from jevserve.contracts.responses import DecisionResponse
 from jevserve.contracts.systemone import SystemOneRequest, systemone_response
 from jevserve.runtime.base import Runtime
 from jevserve.server.admission import Admission, Draining, Overloaded
+from jevserve.server.encoding import Encoder
+
+
+def exception_category(exc: Exception) -> str:
+    """Classify with a fixed vocabulary; custom exception names may contain input."""
+    for kind, category in (
+        (MemoryError, "memory"),
+        (TimeoutError, "timeout"),
+        (ValueError, "value"),
+        (TypeError, "type"),
+        (OSError, "os"),
+        (RuntimeError, "runtime"),
+    ):
+        if isinstance(exc, kind):
+            return category
+    return "other"
 
 
 def error(code: ErrorCode, request_id: str) -> JSONResponse:
@@ -85,12 +103,41 @@ def create_app(
 ) -> FastAPI:
     model_id = prepared_model.manifest.model_id if prepared_model else DEFAULT_MODEL
     model_revision = prepared_model.manifest.revision if prepared_model else baseline()["revision"]
+    encoder = Encoder(adapter)
     admission = Admission(config.max_active, config.max_waiting)
     body_admission = Admission(config.max_active + config.max_waiting, 0)
     registry = CollectorRegistry()
     responses = Counter(
         "jevserve_decisions_total", "Decision responses", ["status"], registry=registry
     )
+    errors = Counter(
+        "jevserve_errors_total",
+        "Decision errors by fixed stage and code",
+        ["stage", "code"],
+        registry=registry,
+    )
+
+    def failure(
+        code: ErrorCode, request_id: str, stage: str = "request", exc: Exception | None = None
+    ) -> JSONResponse:
+        errors.labels(stage, code.value).inc()
+        if code in (ErrorCode.ENGINE_FAILED, ErrorCode.INVALID_MODEL_OUTPUT):
+            logging.getLogger("jevserve.server").error(
+                json.dumps(
+                    {
+                        "event": "decision_error",
+                        "stage": stage,
+                        "code": code.value,
+                        "category": "invalid_output"
+                        if code == ErrorCode.INVALID_MODEL_OUTPUT
+                        else exception_category(exc)
+                        if exc is not None
+                        else "other",
+                    }
+                )
+            )
+        return error(code, request_id)
+
     active: set[asyncio.Task[Any]] = set()
     ready = False
     key: str | None = None
@@ -104,8 +151,22 @@ def create_app(
         lambda: admission.waiting
     )
     Gauge("jevserve_ready", "Runtime ready", registry=registry).set_function(
-        lambda: int(ready and runtime.healthy())
+        lambda: int(ready and runtime.healthy() and encoder.healthy())
     )
+
+    Gauge(
+        "jevserve_encoding_active", "Actual in-flight encoder work", registry=registry
+    ).set_function(lambda: encoder.active)
+
+    async def abort(request_id: str) -> None:
+        nonlocal ready
+        try:
+            await runtime.abort(request_id)
+        except Exception as exc:
+            # Cleanup failure must not escape into framework traceback logging.
+            ready = False
+            await admission.close()
+            failure(ErrorCode.ENGINE_FAILED, request_id, "abort", exc)
 
     async def monitor() -> None:
         nonlocal ready
@@ -135,7 +196,7 @@ def create_app(
                 deadline = time.monotonic() + config.max_deadline_ms / 1000
                 async with asyncio.timeout_at(deadline):
                     adapter.decode(
-                        await runtime.infer(adapter.encode(warm_request), "warmup", deadline)
+                        await runtime.infer(await encoder.encode(warm_request), "warmup", deadline)
                     )
             ready = runtime.healthy()
             monitor_task = asyncio.create_task(monitor())
@@ -145,14 +206,16 @@ def create_app(
                 monitor_task.cancel()
                 await asyncio.gather(monitor_task, return_exceptions=True)
             ready = False
+            drain_deadline = time.monotonic() + config.drain_seconds
             await body_admission.close()
             await admission.close()
             try:
-                await admission.wait_empty(time.monotonic() + config.drain_seconds)
+                await admission.wait_empty(drain_deadline)
             except TimeoutError:
                 for task in tuple(active):
                     task.cancel()
                 await asyncio.gather(*tuple(active), return_exceptions=True)
+            await encoder.close(drain_deadline)
             await runtime.close()
 
     app = FastAPI(lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)
@@ -170,7 +233,7 @@ def create_app(
 
     @app.get("/readyz")
     async def readiness() -> JSONResponse:
-        healthy = ready and runtime.healthy()
+        healthy = ready and runtime.healthy() and encoder.healthy()
         return JSONResponse(
             {"status": "ready" if healthy else "not_ready"}, status_code=200 if healthy else 503
         )
@@ -178,13 +241,13 @@ def create_app(
     @app.get("/metrics")
     async def metrics(request: Request) -> Response:
         if not authorized(request):
-            return error(ErrorCode.UNAUTHORIZED, request.state.request_id)
+            return failure(ErrorCode.UNAUTHORIZED, request.state.request_id)
         return Response(generate_latest(registry), headers={"Content-Type": CONTENT_TYPE_LATEST})
 
     @app.get("/v1/models")
     async def models(request: Request) -> Response:
         if not authorized(request):
-            return error(ErrorCode.UNAUTHORIZED, request.state.request_id)
+            return failure(ErrorCode.UNAUTHORIZED, request.state.request_id)
         return JSONResponse(
             {
                 "models": [
@@ -201,10 +264,11 @@ def create_app(
     @app.post("/v1/decisions")
     async def decisions(request: Request) -> Response:
         request_id = request.state.request_id
+        request.state.stage = "request"
         if not authorized(request):
-            return error(ErrorCode.UNAUTHORIZED, request_id)
-        if not ready or not runtime.healthy():
-            return error(ErrorCode.NOT_READY, request_id)
+            return failure(ErrorCode.UNAUTHORIZED, request_id)
+        if not ready or not runtime.healthy() or not encoder.healthy():
+            return failure(ErrorCode.NOT_READY, request_id)
         task = asyncio.current_task()
         assert task is not None
         active.add(task)
@@ -212,19 +276,22 @@ def create_app(
             result = await execute(request)
             return result
         except TimeoutError:
-            await runtime.abort(request_id)
-            return error(ErrorCode.DEADLINE_EXCEEDED, request_id)
+            await abort(request_id)
+            return failure(ErrorCode.DEADLINE_EXCEEDED, request_id, request.state.stage)
         except (Overloaded, Draining) as exc:
-            return error(
+            return failure(
                 ErrorCode.OVERLOADED if isinstance(exc, Overloaded) else ErrorCode.NOT_READY,
                 request_id,
+                request.state.stage,
             )
         except asyncio.CancelledError:
-            await runtime.abort(request_id)
+            errors.labels(request.state.stage, "cancelled").inc()
+            await abort(request_id)
             raise
-        except Exception:
-            await runtime.abort(request_id)
-            return error(ErrorCode.ENGINE_FAILED, request_id)
+        except Exception as exc:
+            response = failure(ErrorCode.ENGINE_FAILED, request_id, request.state.stage, exc)
+            await abort(request_id)
+            return response
         finally:
             active.discard(task)
 
@@ -236,37 +303,40 @@ def create_app(
     async def execute(request: Request) -> Response:
         request_id = request.state.request_id
         deadline = request.state.started + config.deadline_ms / 1000
+        request.state.stage = "body"
         async with body_admission.lease(deadline), asyncio.timeout_at(deadline):
             body = bytearray()
             async for chunk in request.stream():
                 if len(body) + len(chunk) > config.body_limit_bytes:
-                    return error(ErrorCode.BODY_TOO_LARGE, request_id)
+                    return failure(ErrorCode.BODY_TOO_LARGE, request_id, "body")
                 body.extend(chunk)
             try:
+                request.state.stage = "parse"
                 parsed = (
                     SystemOneRequest.from_json(bytes(body))
                     if request.url.path == "/v1/systemone"
                     else parse_request(bytes(body))
                 )
             except (ValueError, RecursionError):
-                return error(ErrorCode.INVALID_REQUEST, request_id)
+                return failure(ErrorCode.INVALID_REQUEST, request_id, "parse")
         if isinstance(parsed, SystemOneRequest) and parsed.model != model_id:
-            return error(ErrorCode.UNSUPPORTED_CAPABILITY, request_id)
+            return failure(ErrorCode.UNSUPPORTED_CAPABILITY, request_id, "validate")
         if parsed.deadline_ms is not None:
             if parsed.deadline_ms > config.max_deadline_ms:
-                return error(ErrorCode.INVALID_REQUEST, request_id)
+                return failure(ErrorCode.INVALID_REQUEST, request_id, "parse")
             deadline = min(deadline, request.state.started + parsed.deadline_ms / 1000)
         if len(parsed.questions) > config.max_questions:
-            return error(ErrorCode.UNSUPPORTED_CAPABILITY, request_id)
-        operation = asyncio.create_task(infer(parsed, request_id, deadline))
+            return failure(ErrorCode.UNSUPPORTED_CAPABILITY, request_id, "validate")
+        operation = asyncio.create_task(infer(parsed, request_id, deadline, request))
         disconnected = asyncio.create_task(watch_disconnect(request))
         try:
             done, _ = await asyncio.wait(
                 (operation, disconnected), return_when=asyncio.FIRST_COMPLETED
             )
             if disconnected in done:
+                errors.labels(request.state.stage, "client_disconnected").inc()
                 operation.cancel()
-                await runtime.abort(request_id)
+                await abort(request_id)
                 return Response(status_code=499)
             return await operation
         finally:
@@ -274,21 +344,29 @@ def create_app(
             disconnected.cancel()
             await asyncio.gather(operation, disconnected, return_exceptions=True)
 
-    async def infer(parsed: DecisionRequest, request_id: str, deadline: float) -> Response:
+    async def infer(
+        parsed: DecisionRequest, request_id: str, deadline: float, request: Request
+    ) -> Response:
+        request.state.stage = "admission"
         async with admission.lease(deadline), asyncio.timeout_at(deadline):
             try:
+                request.state.stage = "validate"
                 adapter.capabilities().validate_request(parsed)
             except ValueError:
-                return error(ErrorCode.UNSUPPORTED_CAPABILITY, request_id)
+                return failure(ErrorCode.UNSUPPORTED_CAPABILITY, request_id, "validate")
             try:
-                encoded = adapter.encode(parsed)
+                request.state.stage = "encode"
+                encoded = await encoder.encode(parsed)
             except ValueError:
-                return error(ErrorCode.CONTEXT_TOO_LONG, request_id)
+                return failure(ErrorCode.CONTEXT_TOO_LONG, request_id, "encode")
+            request.state.stage = "infer"
             raw = await runtime.infer(encoded, request_id, deadline)
             try:
+                request.state.stage = "decode"
                 answers = adapter.decode(raw)
             except InvalidModelOutput:
-                return error(ErrorCode.INVALID_MODEL_OUTPUT, request_id)
+                return failure(ErrorCode.INVALID_MODEL_OUTPUT, request_id, "decode")
+            request.state.stage = "response"
             response = DecisionResponse(
                 answers=answers,
                 request_id=request_id,

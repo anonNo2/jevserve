@@ -2,21 +2,86 @@ name: CPU contracts and packaging
 on:
   push:
   pull_request:
+  workflow_dispatch:
+    inputs:
+      runtime_image:
+        description: Build the full pinned runtime on the dedicated trusted runner
+        type: boolean
+        default: false
 permissions:
   contents: read
 jobs:
   cpu:
     runs-on: ubuntu-24.04
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4, verified during implementation
       - name: Create project Python environment
         run: |
           python3.12 -m venv .venv
           .venv/bin/pip install uv==0.13.0
-          .venv/bin/uv sync --locked --python .venv/bin/python
+          .venv/bin/uv sync --locked --extra server --python .venv/bin/python
       - name: CPU checks only
         run: |
           .venv/bin/pytest -q
           .venv/bin/ruff check .
           .venv/bin/mypy
+          .venv/bin/python -m validation.api_schema --check
           .venv/bin/python -m build --no-isolation
+      - name: Fresh wheel installs outside the checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          wheel=$(realpath dist/*.whl)
+          smoke="$GITHUB_WORKSPACE/scripts/smoke_installed.py"
+          uv="$GITHUB_WORKSPACE/.venv/bin/uv"
+          "$uv" venv --python "$GITHUB_WORKSPACE/.venv/bin/python" "$RUNNER_TEMP/jevserve-client"
+          "$uv" venv --python "$GITHUB_WORKSPACE/.venv/bin/python" "$RUNNER_TEMP/jevserve-server"
+          "$uv" pip install --python "$RUNNER_TEMP/jevserve-client/bin/python" "$wheel"
+          "$uv" pip install --python "$RUNNER_TEMP/jevserve-server/bin/python" "${wheel}[server]"
+          cd "$RUNNER_TEMP"
+          "$RUNNER_TEMP/jevserve-client/bin/python" -I "$smoke"
+          "$RUNNER_TEMP/jevserve-server/bin/python" -I "$smoke" --server
+          "$uv" pip check --python "$RUNNER_TEMP/jevserve-client/bin/python"
+          "$uv" pip check --python "$RUNNER_TEMP/jevserve-server/bin/python"
+      - name: Validate both Compose configurations
+        run: |
+          docker compose -f compose.yaml config --quiet
+          JEVSERVE_MODEL_DIR="$RUNNER_TEMP" docker compose -f compose.yaml -f compose.mount.yaml config --quiet
+      - name: Report separate image gate
+        if: ${{ github.event_name != 'workflow_dispatch' || !inputs.runtime_image || github.ref != format('refs/heads/{0}', github.event.repository.default_branch) }}
+        run: |
+          echo 'Production Docker build and image smoke: NOT RUN. The pinned vLLM image needs a dedicated large-disk runner; dispatch runtime_image on the default branch. CPU success is not container certification.' >> "$GITHUB_STEP_SUMMARY"
+
+  # Never run unreviewed PR code on a privileged persistent Docker runner.
+  # Stock hosted runners cannot reliably hold the vLLM base plus build layers.
+  runtime-image:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.runtime_image && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+    needs: cpu
+    runs-on: [self-hosted, linux, x64, jevserve-container-cpu]
+    timeout-minutes: 90
+    concurrency:
+      group: jevserve-runtime-image
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Check build disk budget
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker_root=$(docker info --format '{{.DockerRootDir}}')
+          available=$(df --output=avail -B1 "$docker_root" | tail -1)
+          test "$available" -ge 107374182400 || { echo 'At least 100 GiB free Docker storage required'; exit 1; }
+      - name: Build actual production Dockerfile
+        run: docker build --tag "jevserve:ci-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" .
+      - name: No-GPU no-network installed image smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          image="jevserve:ci-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          docker run --rm --runtime runc --env NVIDIA_VISIBLE_DEVICES=void --network none --read-only --tmpfs /tmp --cap-drop ALL --security-opt no-new-privileges "$image" --help
+          docker run --rm --runtime runc --env NVIDIA_VISIBLE_DEVICES=void --network none --read-only --tmpfs /tmp --cap-drop ALL --security-opt no-new-privileges "$image" models list
+          docker run --rm --runtime runc --env NVIDIA_VISIBLE_DEVICES=void --network none --read-only --tmpfs /tmp --cap-drop ALL --security-opt no-new-privileges --workdir /tmp --mount "type=bind,src=$GITHUB_WORKSPACE/scripts/smoke_installed.py,dst=/smoke_installed.py,readonly" --entrypoint python3 "$image" -I /smoke_installed.py --runtime
+      - name: Remove only this run's image tag
+        if: always()
+        run: docker image rm "jevserve:ci-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" || true
