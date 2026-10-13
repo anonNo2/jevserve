@@ -117,6 +117,8 @@ Install the client from this checkout with `pip install .` in a Python 3.12 virt
 
 - **Models:** 7 pinned profiles tested with real GPU inference and containers on RTX A6000; text only, one model and one GPU per container. [Individual test results](docs/models.md).
 - **Numerics:** Open-Jev and JPT have failed strict probability comparisons. NeoHorse and Kev pass the small synthetic comparison suite. Execution success does not imply numerical certification or measured accuracy. [Per-model reports](docs/models.md).
+- **Source image:** the unpublished `13eed9b` candidate passed real inference/SDK checks for all 7 profiles and offline, read-only Compose checks for Open-Jev-2B and NeoHorse. Its immutable local Docker ID is not a published registry digest; published dev1 is unchanged. [CPU/source binding](validation/reports/source-13eed9b-image-cpu.json) · [GPU/Compose evidence](validation/reports/source-13eed9b-image-gpu.json).
+- **Lifecycle and soak:** the new image passed concurrent requests, health, deadline and recovery checks. Client cancellation was exercised; server disconnect propagation was not independently verified. The old dev1 24-hour soak failed after 16,271.64 seconds; 1,589 of 1,590 requests succeeded. No completed 24/72-hour gate or clean-host acceptance. [Soak failure](validation/reports/soak-24h-failed.json).
 - **Inputs:** up to 16 questions and 255 Choice candidates. Score limits, minimum candidates and token/work budgets vary by model; inspect `/v1/models`. No silent truncation, precision change, model fallback or retry.
 - **Release:** development preview, not an alpha-certified or production release. [Current status](docs/current-status.md) · [Detailed evidence](docs/development/STATUS.md).
 

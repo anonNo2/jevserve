@@ -1,8 +1,9 @@
 # Numerical parity investigation
 
 Status: **unresolved; no tolerance, production precision or backend changed**.
-This analysis reuses historical real-GPU evidence. It is not a new GPU run or
-certification. Inputs are SHA-256 bound in
+The initial analysis below reuses historical real-GPU evidence; subsequent
+sections record new diagnostic GPU runs, none of which certify a model.
+Historical inputs are SHA-256 bound in
 [`numerical-diagnosis.json`](../validation/reports/numerical-diagnosis.json).
 
 ## Reproduce without a GPU
@@ -53,11 +54,12 @@ still need measurement; this identity does not prove implementation equivalence.
 
 ## Next experiment and acceptance
 
-The raw-logit and common-hidden-projection stages below are already complete.
-The next GPU experiment is **corresponding backbone layer boundaries** for pinned
-JPT-0.8B with the same synthetic token IDs and verified weight bytes. The active
-24-hour NeoHorse soak owns the development GPU; wait for its completion and cleanup.
-No layer-boundary experiment or numerical correction is claimed in this audit.
+Raw-logit, common-hidden-projection, normalized-layer, first-GDN and actual
+full-attention captures below are complete. The next experiment replays
+projection and rotary operations with fixed observed inputs. The previous 24-hour NeoHorse
+soak failed after losing its project Docker daemon; its duration gate did not
+pass. New source-image GPU checks completed separately. No production numerical
+correction is claimed.
 
 CPU source inspection of the pinned Transformers 5.10.4 / vLLM 0.29.0 code found
 an important capture constraint: HF's `Qwen3_5DecoderLayer.forward` returns the
@@ -79,7 +81,7 @@ rule out earlier-token differences in causal attention/recurrent state.
 Retain `atol=0.001`, `rtol=0.01` relative to the reference. Any proposed fix needs
 all affected cases plus real container/SDK regression and a newly tested image.
 An isolated counterfactual, synthetic label agreement or a relaxed threshold does
-not pass that gate. This experiment and the full numerical root cause remain open.
+not pass that gate. The full numerical root cause remains open.
 
 ## 2026-10-13: real JPT-0.8B logits and fixed-hidden experiments
 
@@ -137,3 +139,83 @@ does not rule out additional head arithmetic effects. Production precision,
 backend and tolerances remain unchanged. Next work should compare corresponding
 layer boundaries with the same token inputs and verified weights, rather than
 replace BF16 outputs or relax the public parity gate.
+
+### Layer and arithmetic evidence from the source-image acceptance session
+
+The [layer probe](jpt-layer-diagnostic.md) captured all token positions for one
+unpadded JPT-0.8B fixture. Embedding and layer-0 input normalization are exactly
+equal; the first differing normalized boundary is layer-0 post-attention norm.
+The [internal GDN probe](jpt-gdn-diagnostic.md) then found exact projected QKV,
+A and B, but 95 unequal projected-Z elements. Post-convolution Q/K/V also differ.
+The observed runtime dispatch is the Triton prefill backend with
+`ChunkGatedDeltaRule.forward_native`. HF capture reproduced the frozen original
+candidate logits exactly. Full activation dumps stay local; the reviewed
+[aggregate evidence](../validation/reports/numerical-arithmetic-diagnosis.json)
+contains comparisons and raw-report hashes.
+
+[Controlled arithmetic trials](jpt-arithmetic-diagnostic.md) use a matched
+unpatched baseline and verify execution/restoration. On the 13 questions, the
+baseline has seven original-probability failures. Isolated residual rounding,
+gated normalization, Q/K normalization, beta sigmoid and chunk-recurrence trials
+have respectively four, seven, ten, seven and seven failures. Combining those
+five factors still has nine failures. These counts compare all candidate
+probabilities, including both Noul outcomes; they are not the public HTTP
+request-level counts. They do not establish monotonic contributions: rounding
+errors can reinforce or cancel one another.
+
+The earlier residual-only report retained aggregate coverage but lacked
+per-forward records. A fresh run under the current coverage contract confirmed
+the same 4/13 original and 6/13 common-FP32-projection failures, with 48 residual
+replacements per question and successful restoration. The legacy report remains
+explicitly marked as having weaker coverage evidence.
+
+The initial gated-normalization attempt was invalid because a packed path
+bypassed the replacement. Its captures exactly matched the baseline; it is
+excluded from valid arithmetic evidence. The repaired trial covers the packed
+path and verifies calls for every question. The combined trial emitted an
+`EngineDeadError` after explicit engine shutdown, after inference and restoration
+had completed; the process exited zero and GPU memory was released. This remains
+a separate teardown observation, not a passed production lifecycle assertion.
+
+An eight-factor trial adds HF-style full convolution, standalone Z projection
+and log-decay arithmetic. The first run was invalid: its diagnostic convolution
+returned the wrong memory layout for the downstream Triton kernel. A real CPU
+Torch regression reproduced the addressing error. The corrected implementation
+preserves native output storage and rejects an incompatible feature stride;
+independent review confirmed that contract. The invalid run is excluded.
+
+The corrected eight-factor run has **5/13 original-probability failures** and
+**2/13 common-FP32-projection failures** (maximum probability difference
+0.008104384865228242). Maximum final-hidden error is 0.375. Every factor executed
+for each question and was restored. This remains a failed numerical trial.
+
+For the single layer fixture, the corrected combination makes every captured
+normalized boundary from embedding through layer-3 input norm exactly equal
+across all 97 tokens. The first remaining observed difference is layer-3
+post-attention norm (42,968 unequal elements, maximum absolute error 0.0625).
+That narrows the next investigation to the first full-attention block and its
+residual/normalization interval. Equality of normalized boundaries does not
+prove equality of every intermediate GDN or MLP tensor.
+
+The subsequent [actual attention capture](jpt-attention-diagnostic.md) matched
+HF's frozen logits exactly and retained full eight-factor runtime coverage.
+Attention input, projected Q and gate are equal; projected K and V differ
+(19,115 and 18,835 elements respectively). Post-RoPE Q also differs despite equal
+projected Q, so K/V projection differences alone cannot explain all observed
+boundaries. HF selected the SDPA interface, while vLLM used FlashAttention with
+fused Q/K normalization and RoPE. This records dispatch, not a controlled
+comparison of attention kernels with equal operands. See the
+[redacted attention evidence](../validation/reports/jpt-attention-diagnosis.json).
+
+The [fixed-input projection replay](jpt-attention-replay.md) used verified
+checkpoint weights and the exactly shared observed input. Separate projections
+reproduced HF's Q/K/V/gate byte-for-byte; a packed projection reproduced the
+runtime's outputs byte-for-byte. This supports projection arithmetic as a source
+of this fixture's K/V differences, while actual runtime weight storage equality
+has not been captured. The observed cosine/sine operands also match after layout
+alignment, leaving Q normalization/application arithmetic to isolate.
+
+No production arithmetic or threshold was changed. The eight-factor combination
+is insufficient for this suite. Loaded-weight verification, Q norm/RoPE isolation,
+remaining attention differences and the unchanged default Open-Jev probability
+gate are still required before a production correction can be certified.

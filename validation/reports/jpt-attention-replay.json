@@ -1,0 +1,385 @@
+{
+  "schema_version": 1,
+  "mode": "attention_projection_replay",
+  "certified": false,
+  "production_changed": false,
+  "device": "cuda",
+  "model_id": "kirp/jpt-0.8b",
+  "source_identity": "d93caa82e824899cff2a780cac5ccb33f23a3e0463be36f8a35f2d9665e26c59",
+  "hf_sha256": "ee4e3880de5008544ad41b1198256471020accc3c3711cceea4eac28a1002a1e",
+  "runtime_sha256": "ef1b3f027a0eaf72c65a8e6e960ef0ca14ad44162b984151eb71e57c7b7108d3",
+  "probe_sha256": "ca0ee0c98c8877d331aec816b5be058e62d4aa2ecea46118e24aa23d268b9e42",
+  "torch": "2.13.0+cu130",
+  "weights": {
+    "q_proj": {
+      "key": "model.language_model.layers.3.self_attn.q_proj.weight",
+      "shape": [
+        4096,
+        1024
+      ],
+      "source_dtype": "torch.bfloat16",
+      "effective_dtype": "torch.bfloat16",
+      "effective_sha256": "88edcf611c7f0e1b41b15b9bb3d60446d75e450b7e6a865ddd17cd9ab0cb7a67"
+    },
+    "k_proj": {
+      "key": "model.language_model.layers.3.self_attn.k_proj.weight",
+      "shape": [
+        512,
+        1024
+      ],
+      "source_dtype": "torch.bfloat16",
+      "effective_dtype": "torch.bfloat16",
+      "effective_sha256": "ae767097c8d776dcc86e3e1b1a6220238522566b13e35900f1af77dca7c19d53"
+    },
+    "v_proj": {
+      "key": "model.language_model.layers.3.self_attn.v_proj.weight",
+      "shape": [
+        512,
+        1024
+      ],
+      "source_dtype": "torch.bfloat16",
+      "effective_dtype": "torch.bfloat16",
+      "effective_sha256": "8849868dc1c59a4bf2ad056c0438efc19bee2cfe73570f3db3dff1e160a8c567"
+    }
+  },
+  "actual_runtime_weights_captured": false,
+  "scope": "Reconstructed checkpoint weights and fixed observed input; replay is not an observed engine invocation.",
+  "comparison": {
+    "separate": {
+      "hf": {
+        "first_unequal_boundary": null,
+        "boundaries": [
+          {
+            "boundary": "projected_q",
+            "actual_dtype": "torch.bfloat16",
+            "expected_dtype": "torch.bfloat16",
+            "all_tokens": {
+              "elements": 198656,
+              "unequal_elements": 0,
+              "max_abs_error": 0.0,
+              "l2_error": 0.0,
+              "relative_l2_error": 0.0
+            },
+            "last_token": {
+              "elements": 2048,
+              "unequal_elements": 0,
+              "max_abs_error": 0.0,
+              "l2_error": 0.0,
+              "relative_l2_error": 0.0
+            }
+          },
+          {
+            "boundary": "gate",
+            "actual_dtype": "torch.bfloat16",
+            "expected_dtype": "torch.bfloat16",
+            "all_tokens": {
+              "elements": 198656,
+              "unequal_elements": 0,
+              "max_abs_error": 0.0,
+              "l2_error": 0.0,
+              "relative_l2_error": 0.0
+            },
+            "last_token": {
+              "elements": 2048,
+              "unequal_elements": 0,
+              "max_abs_error": 0.0,
+              "l2_error": 0.0,
+              "relative_l2_error": 0.0
+            }
+          },
+          {
+            "boundary": "projected_k",
+            "actual_dtype": "torch.bfloat16",
+            "expected_dtype": "torch.bfloat16",
+            "all_tokens": {
+              "elements": 49664,
+              "unequal_elements": 0,
+              "max_abs_error": 0.0,
+              "l2_error": 0.0,
+              "relative_l2_error": 0.0
+            },
+            "last_token": {
+              "elements": 512,
+              "unequal_elements": 0,
+              "max_abs_error": 0.0,
+              "l2_error": 0.0,
+              "relative_l2_error": 0.0
+            }
+          },
+          {
+            "boundary": "projected_v",
+            "actual_dtype": "torch.bfloat16",
+            "expected_dtype": "torch.bfloat16",
+            "all_tokens": {
+              "elements": 49664,
+              "unequal_elements": 0,
+              "max_abs_error": 0.0,
+              "l2_error": 0.0,
+              "relative_l2_error": 0.0
+            },
+            "last_token": {
+              "elements": 512,
+              "unequal_elements": 0,
+              "max_abs_error": 0.0,
+              "l2_error": 0.0,
+              "relative_l2_error": 0.0
+            }
+          }
+        ]
+      },
+      "runtime": {
+        "first_unequal_boundary": "projected_k",
+        "boundaries": [
+          {
+            "boundary": "projected_q",
+            "actual_dtype": "torch.bfloat16",
+            "expected_dtype": "torch.bfloat16",
+            "all_tokens": {
+              "elements": 198656,
+              "unequal_elements": 0,
+              "max_abs_error": 0.0,
+              "l2_error": 0.0,
+              "relative_l2_error": 0.0
+            },
+            "last_token": {
+              "elements": 2048,
+              "unequal_elements": 0,
+              "max_abs_error": 0.0,
+              "l2_error": 0.0,
+              "relative_l2_error": 0.0
+            }
+          },
+          {
+            "boundary": "gate",
+            "actual_dtype": "torch.bfloat16",
+            "expected_dtype": "torch.bfloat16",
+            "all_tokens": {
+              "elements": 198656,
+              "unequal_elements": 0,
+              "max_abs_error": 0.0,
+              "l2_error": 0.0,
+              "relative_l2_error": 0.0
+            },
+            "last_token": {
+              "elements": 2048,
+              "unequal_elements": 0,
+              "max_abs_error": 0.0,
+              "l2_error": 0.0,
+              "relative_l2_error": 0.0
+            }
+          },
+          {
+            "boundary": "projected_k",
+            "actual_dtype": "torch.bfloat16",
+            "expected_dtype": "torch.bfloat16",
+            "all_tokens": {
+              "elements": 49664,
+              "unequal_elements": 19115,
+              "max_abs_error": 0.03125,
+              "l2_error": 0.394685091872479,
+              "relative_l2_error": 0.002432463498199863
+            },
+            "last_token": {
+              "elements": 512,
+              "unequal_elements": 204,
+              "max_abs_error": 0.0078125,
+              "l2_error": 0.031219706215247448,
+              "relative_l2_error": 0.0018861304271251456
+            }
+          },
+          {
+            "boundary": "projected_v",
+            "actual_dtype": "torch.bfloat16",
+            "expected_dtype": "torch.bfloat16",
+            "all_tokens": {
+              "elements": 49664,
+              "unequal_elements": 18835,
+              "max_abs_error": 0.015625,
+              "l2_error": 0.35035207918245204,
+              "relative_l2_error": 0.0024415832342460928
+            },
+            "last_token": {
+              "elements": 512,
+              "unequal_elements": 218,
+              "max_abs_error": 0.0078125,
+              "l2_error": 0.04079737669151601,
+              "relative_l2_error": 0.0028667957737771375
+            }
+          }
+        ]
+      }
+    },
+    "packed": {
+      "hf": {
+        "first_unequal_boundary": "projected_k",
+        "boundaries": [
+          {
+            "boundary": "projected_q",
+            "actual_dtype": "torch.bfloat16",
+            "expected_dtype": "torch.bfloat16",
+            "all_tokens": {
+              "elements": 198656,
+              "unequal_elements": 0,
+              "max_abs_error": 0.0,
+              "l2_error": 0.0,
+              "relative_l2_error": 0.0
+            },
+            "last_token": {
+              "elements": 2048,
+              "unequal_elements": 0,
+              "max_abs_error": 0.0,
+              "l2_error": 0.0,
+              "relative_l2_error": 0.0
+            }
+          },
+          {
+            "boundary": "gate",
+            "actual_dtype": "torch.bfloat16",
+            "expected_dtype": "torch.bfloat16",
+            "all_tokens": {
+              "elements": 198656,
+              "unequal_elements": 0,
+              "max_abs_error": 0.0,
+              "l2_error": 0.0,
+              "relative_l2_error": 0.0
+            },
+            "last_token": {
+              "elements": 2048,
+              "unequal_elements": 0,
+              "max_abs_error": 0.0,
+              "l2_error": 0.0,
+              "relative_l2_error": 0.0
+            }
+          },
+          {
+            "boundary": "projected_k",
+            "actual_dtype": "torch.bfloat16",
+            "expected_dtype": "torch.bfloat16",
+            "all_tokens": {
+              "elements": 49664,
+              "unequal_elements": 19115,
+              "max_abs_error": 0.03125,
+              "l2_error": 0.394685091872479,
+              "relative_l2_error": 0.002432460628494263
+            },
+            "last_token": {
+              "elements": 512,
+              "unequal_elements": 204,
+              "max_abs_error": 0.0078125,
+              "l2_error": 0.031219706215247448,
+              "relative_l2_error": 0.0018861512283210393
+            }
+          },
+          {
+            "boundary": "projected_v",
+            "actual_dtype": "torch.bfloat16",
+            "expected_dtype": "torch.bfloat16",
+            "all_tokens": {
+              "elements": 49664,
+              "unequal_elements": 18835,
+              "max_abs_error": 0.015625,
+              "l2_error": 0.35035207918245204,
+              "relative_l2_error": 0.0024415428285205947
+            },
+            "last_token": {
+              "elements": 512,
+              "unequal_elements": 218,
+              "max_abs_error": 0.0078125,
+              "l2_error": 0.04079737669151601,
+              "relative_l2_error": 0.0028654275839822413
+            }
+          }
+        ]
+      },
+      "runtime": {
+        "first_unequal_boundary": null,
+        "boundaries": [
+          {
+            "boundary": "projected_q",
+            "actual_dtype": "torch.bfloat16",
+            "expected_dtype": "torch.bfloat16",
+            "all_tokens": {
+              "elements": 198656,
+              "unequal_elements": 0,
+              "max_abs_error": 0.0,
+              "l2_error": 0.0,
+              "relative_l2_error": 0.0
+            },
+            "last_token": {
+              "elements": 2048,
+              "unequal_elements": 0,
+              "max_abs_error": 0.0,
+              "l2_error": 0.0,
+              "relative_l2_error": 0.0
+            }
+          },
+          {
+            "boundary": "gate",
+            "actual_dtype": "torch.bfloat16",
+            "expected_dtype": "torch.bfloat16",
+            "all_tokens": {
+              "elements": 198656,
+              "unequal_elements": 0,
+              "max_abs_error": 0.0,
+              "l2_error": 0.0,
+              "relative_l2_error": 0.0
+            },
+            "last_token": {
+              "elements": 2048,
+              "unequal_elements": 0,
+              "max_abs_error": 0.0,
+              "l2_error": 0.0,
+              "relative_l2_error": 0.0
+            }
+          },
+          {
+            "boundary": "projected_k",
+            "actual_dtype": "torch.bfloat16",
+            "expected_dtype": "torch.bfloat16",
+            "all_tokens": {
+              "elements": 49664,
+              "unequal_elements": 0,
+              "max_abs_error": 0.0,
+              "l2_error": 0.0,
+              "relative_l2_error": 0.0
+            },
+            "last_token": {
+              "elements": 512,
+              "unequal_elements": 0,
+              "max_abs_error": 0.0,
+              "l2_error": 0.0,
+              "relative_l2_error": 0.0
+            }
+          },
+          {
+            "boundary": "projected_v",
+            "actual_dtype": "torch.bfloat16",
+            "expected_dtype": "torch.bfloat16",
+            "all_tokens": {
+              "elements": 49664,
+              "unequal_elements": 0,
+              "max_abs_error": 0.0,
+              "l2_error": 0.0,
+              "relative_l2_error": 0.0
+            },
+            "last_token": {
+              "elements": 512,
+              "unequal_elements": 0,
+              "max_abs_error": 0.0,
+              "l2_error": 0.0,
+              "relative_l2_error": 0.0
+            }
+          }
+        ]
+      }
+    }
+  },
+  "observed_rotary_alignment": {
+    "hf_cos_dtype": "torch.bfloat16",
+    "runtime_cache_dtype": "torch.bfloat16",
+    "cos_exact": true,
+    "sin_exact": true
+  },
+  "both_observed_projection_paths_reproduced_exactly": true,
+  "interpretation": "Supports packed versus separate projection arithmetic for this fixture; actual runtime weight equality remains unverified."
+}

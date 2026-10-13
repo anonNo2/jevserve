@@ -33,7 +33,7 @@ def main() -> None:
     from jevserve.contracts.requests import DecisionRequest
 
     package_path = Path(jevserve.__file__).resolve()
-    assert "site-packages" in package_path.parts, package_path
+    assert {"site-packages", "dist-packages"} & set(package_path.parts), package_path
     assert not Path.cwd().joinpath("src/jevserve").exists()
     DecisionRequest.model_validate(sample_request())
     with Client("http://127.0.0.1:1"):

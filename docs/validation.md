@@ -115,6 +115,27 @@ or output files. This plan includes your local paths; do not publish it unredact
   --port 18792 --timeout 1800 --plan
 ```
 
+For a newly built local candidate that has not been published, use
+`--local-image-id` instead of `--image`:
+
+```bash
+VALIDATION_LOCAL_ID=$(docker --host "$VALIDATION_DOCKER_HOST" image inspect \
+  --format '{{.Id}}' jevserve:your-candidate)
+# In the invocation above, replace --image "$VALIDATION_IMAGE" with:
+# --local-image-id "$VALIDATION_LOCAL_ID"
+```
+
+The options are mutually exclusive. Local mode accepts only a complete lowercase
+`sha256:` image ID and verifies that Docker inspection returns exactly that ID;
+mutable tags and shortened IDs are rejected. Containers run by that immutable ID,
+and their actual image identity is checked again. Depending on Docker's image
+store, `.Id` may identify an OCI index rather than an image configuration, so the
+report labels it `image_identity_kind: docker-local-id`, records `image_id`, and
+**omits `image_digest`**. These local candidate reports cannot satisfy the release
+validator's registry-digest binding. They do not claim publication, certification,
+or that a local build matches a source commit merely because the commit is
+recorded. Registry mode retains its existing digest-bound behavior.
+
 Remove `--plan` to execute. The timeout applies to each inference/readiness stage,
 not the entire run; accepted values are 1–1800 seconds (the readiness CLI limit).
 SIGTERM becomes a controlled interruption; subsequent SIGTERM/SIGINT signals are
@@ -132,7 +153,7 @@ exposing paths: for example `gpu_busy`, `upstream_unpinned_or_dirty`,
 `subprocess_failed`, `timeout`, or `validation_locked`.
 Invalid arguments or an existing output directory fail before creating a run.
 The summary binds model revision, verified source-manifest identity, upstream
-revision, image repository digest and local image ID, source Git commit/dirty flag,
+revision, registry digest (registry mode only) and local image ID, source Git commit/dirty flag,
 source-file hashes, wheel metadata when applicable, and raw JSON report hashes.
 `real_gpu=true` is set only after reference and container HTTP/SDK completion.
 

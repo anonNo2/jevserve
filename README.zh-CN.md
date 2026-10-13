@@ -117,6 +117,8 @@ with Client("http://127.0.0.1:8000") as client:
 
 - **模型：** 7 个固定版本模型已在 RTX A6000 完成真实 GPU 与容器测试；当前 API 仅支持文本，一个容器对应一个模型和一张 GPU。[逐模型测试结果](docs/models.md)。
 - **数值：** Open-Jev 和 JPT 未通过严格概率对照；NeoHorse 与 Kev 通过了小型合成对照用例。推理成功不代表数值认证或准确率保证。[逐模型报告](docs/models.md)。
+- **源码镜像：** 未发布的 `13eed9b` 候选镜像已通过全部 7 个配置的真实推理/SDK 检查，以及 Open-Jev-2B、NeoHorse 的离线、只读 Compose 检查。其不可变 Docker 本地 ID 不是已发布的 registry digest；已发布 dev1 不变。[CPU/源码绑定](validation/reports/source-13eed9b-image-cpu.json) · [GPU/Compose 证据](validation/reports/source-13eed9b-image-gpu.json)。
+- **生命周期与长稳：** 新镜像通过并发请求、健康、截止时间与恢复检查；已执行客户端取消，但未独立验证服务端断连传播。旧 dev1 的 24 小时长稳在 16,271.64 秒后失败，1,590 次请求中 1,589 次成功；尚无完成的 24/72 小时门禁或干净主机验收。[长稳失败记录](validation/reports/soak-24h-failed.json)。
 - **输入：** 最多 16 个问题；Choice 上限 255。Score 等级数、最少候选数和 token/计算量限制因模型而异，见 `/v1/models`。不静默截断、改变精度、切换模型或重试。
 - **发布：** 当前是开发预览版，尚非通过 alpha 认证的版本或生产版。[当前状态](docs/current-status.md) · [详细验证记录](docs/development/STATUS.md)。
 

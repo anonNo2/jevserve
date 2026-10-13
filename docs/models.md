@@ -12,6 +12,15 @@ JevServe 使用一个通用镜像，模型权重独立挂载。每个容器运�
 
 ## Integration and test matrix
 
+The table retains the original integration results. A new unpublished source
+image (`13eed9b`) subsequently passed real inference/HTTP/SDK execution for all
+seven profiles and offline, read-only Compose for Open-Jev-2B and NeoHorse.
+Its frozen HTTP probability comparisons still failed: Open-Jev-2B **31/110**,
+Open-Jev-9B **29/110**, and each JPT profile **5/10**; NeoHorse and Kev each passed
+their 10-case synthetic suite. These are separately bound runs, not evidence that
+changed failure counts establish a numerical improvement. See the
+[source-image report](../validation/reports/source-13eed9b-image-gpu.json).
+
 | Model | Backend / precision | Real GPU / container test | Probability comparison | Weight license |
 |---|---|---|---|---|
 | [Open-Jev-2B](https://huggingface.co/ZefanCai/Open-Jev-2B) | vLLM pooling, BF16 backbone + FP32 scalar head | Passed Docker, Compose, cold download and offline; common-image regression passed | **Failed:** 36/110 HTTP cases in the original suite | Apache-2.0 |

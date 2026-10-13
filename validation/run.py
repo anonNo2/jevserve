@@ -36,7 +36,12 @@ def parser():
     p.add_argument("--model", choices=model_ids(), required=True)
     for key in ("model-dir", "upstream", "reference-python", "output-dir"):
         p.add_argument("--" + key, type=Path, required=True)
-    p.add_argument("--image", required=True, help="Locally available repository@sha256:digest")
+    images = p.add_mutually_exclusive_group(required=True)
+    images.add_argument("--image", help="Locally available repository@sha256:digest")
+    images.add_argument(
+        "--local-image-id",
+        help="Local immutable sha256 Docker image ID; not release evidence",
+    )
     p.add_argument("--docker-host", required=True, help="Explicit local unix:// Docker socket")
     p.add_argument("--reference-wheel", type=Path)
     p.add_argument("--reference-wheel-sha256")
@@ -49,7 +54,11 @@ def parser():
 
 
 def validate(args):
-    if not re.fullmatch(r"[^\s]+@sha256:[a-f0-9]{64}", args.image):
+    if bool(args.image) == bool(args.local_image_id):
+        raise ValueError("select exactly one registry image or local image ID")
+    if args.local_image_id and not re.fullmatch(r"sha256:[a-f0-9]{64}", args.local_image_id):
+        raise ValueError("local image must be a full immutable Docker image ID")
+    if args.image and not re.fullmatch(r"[^\s]+@sha256:[a-f0-9]{64}", args.image):
         raise ValueError("image must be pinned by repository digest")
     if not args.docker_host.startswith("unix:///"):
         raise ValueError("only a local unix:/// Docker host is supported")
@@ -124,7 +133,7 @@ def commands(args, name):
         f"type=bind,src={args.model_dir},dst=/model,readonly",
         "--mount",
         f"type=volume,src={name},dst=/cache",
-        args.image,
+        args.image or args.local_image_id,
         "serve",
         "--allow-uncertified",
         "--model",
@@ -211,8 +220,7 @@ def execute(args):
         "real_gpu": False,
         "model_id": args.model,
         "model_revision": profile(args.model)["revision"],
-        "image": args.image,
-        "image_digest": args.image.rsplit("@", 1)[1],
+        "image": args.image or args.local_image_id,
         "models": [{"model_id": args.model, "revision": profile(args.model)["revision"]}],
         "source_manifest_identity": source_manifest(args.model).identity,
         "scope": "synthetic text execution/parity only; no certification or vision gate",
@@ -221,6 +229,10 @@ def execute(args):
         "cleanup": "not_needed",
         "stage": "preflight",
     }
+    if args.local_image_id:
+        summary["image_identity_kind"] = "docker-local-id"
+    else:
+        summary["image_digest"] = args.image.rsplit("@", 1)[1]
     docker = ["docker", "--host", args.docker_host]
     env = os.environ | {
         "PYTHONPATH": str(ROOT / "src") + os.pathsep + str(ROOT),
@@ -275,8 +287,12 @@ def execute(args):
                 raise ValueError("reference wheel SHA-256 mismatch")
             summary["reference_wheel"] = {"filename": args.reference_wheel.name, "sha256": digest}
         summary["image_id"] = checked(
-            docker + ["image", "inspect", "--format", "{{.Id}}", args.image]
+            docker + ["image", "inspect", "--format", "{{.Id}}", args.image or args.local_image_id]
         )
+        if not re.fullmatch(r"sha256:[a-f0-9]{64}", summary["image_id"]):
+            raise ValidationFailure("image_identity_invalid")
+        if args.local_image_id and summary["image_id"] != args.local_image_id:
+            raise ValidationFailure("image_identity_mismatch")
         assert_idle()
         gpu_uuid = checked(["nvidia-smi", "--id=0", "--query-gpu=uuid", "--format=csv,noheader"])
         if not re.fullmatch(r"GPU-[a-fA-F0-9-]+", gpu_uuid):

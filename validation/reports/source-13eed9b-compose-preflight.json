@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "report_type": "jevserve-local-compose-startup-failure",
+  "observed_date": "2026-10-13",
+  "image_identity_kind": "docker-local-id",
+  "image_id": "sha256:369538a76f4dd2fb7b0e00bd02b580196ceba3d9659ed0dadaeee6e948ae0193",
+  "model_id": "ZefanCai/Open-Jev-2B",
+  "initial_execution": "failed",
+  "initial_cleanup": "passed",
+  "error_type": "PermissionError",
+  "cause": "The mounted prepared source directory had mode0700 owned by the host user. Container UID10001 could not traverse it.",
+  "cpu_diagnosis": {
+    "uid": 10001,
+    "gid": 10001,
+    "model_directory_mode": "0700",
+    "model_read": "PermissionError",
+    "fresh_named_cache_writable": true
+  },
+  "correction": "Created a separate project-scoped public-artifact copy using reflink where available; verified the full source manifest and all file hashes, made only that copy readable, and atomically published it. Original prepared-cache directory mode0700 retained.",
+  "orchestration_change": "Use the verified readable artifact copy and test selected bind-mount readability with the exact image, runc and no visible GPUs before starting references or GPU containers.",
+  "gpu_retry": "not_run_at_this_report",
+  "scope": "Startup failure and CPU permission diagnosis only; not successful GPU or Compose certification",
+  "cpu_readability_after_correction": {
+    "ZefanCai/Open-Jev-2B": {
+      "status": "passed",
+      "uid": 10001,
+      "readable_files": 34,
+      "directory_mode": "0755"
+    },
+    "TokenRhythm/NeoHorse-Jev-4B": {
+      "status": "passed",
+      "uid": 10001,
+      "readable_files": 47,
+      "directory_mode": "0755"
+    }
+  }
+}

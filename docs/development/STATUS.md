@@ -20,13 +20,24 @@ see the [hardening plan](../plans/open-source-hardening.md) and latest session b
 The public orchestration has now completed real JPT and NeoHorse end-to-end
 execution. Numerical diagnosis, performance, recovery, examples and SBOM evidence
 are recorded in the latest session. Version rollback passed; a 24-hour NeoHorse
-soak is running (start snapshot below), not yet passed. Remote promotion remains unrun.
+soak failed after 16,271.64 seconds when the project Docker daemon became unavailable;
+1,589 of 1,590 requests succeeded. It did not pass the duration gate.
+See `validation/reports/soak-24h-failed.json`. Remote promotion remains unrun.
 
 The latest source audit adds bounded off-loop encoding, sanitized diagnostics,
 lightweight client/server extras, static API contracts and installation/Compose CI.
-It has **374 passing CPU tests**, reviewed wheel installation checks and no new
-GPU/container execution. Published dev1 is unchanged. Its SPDX advisory scan
-completed with unresolved matches; see [security maintenance](../security-maintenance.md).
+The latest full CPU run has **424 passing tests and 1 optional-Torch skip**; Ruff and mypy passed. A new,
+unpublished image built from production source `13eed9b` passed real reference,
+Docker HTTP/SDK and cleanup checks for all seven profiles, plus network-disabled,
+read-only Compose checks for Open-Jev-2B and NeoHorse. Its local Docker identity
+is not a published registry digest. Strict probability parity still fails:
+Open-Jev-2B 31/110, Open-Jev-9B 29/110, each JPT profile 5/10; NeoHorse/Kev pass
+only the 10-case synthetic comparison. Published dev1 is unchanged. Numerical
+diagnostics continue without changing production arithmetic or frozen tolerances.
+See the latest image-acceptance session and
+[bound evidence](../../validation/reports/source-13eed9b-image-gpu.json).
+The dev1 SPDX advisory scan still has unresolved matches; see
+[security maintenance](../security-maintenance.md).
 
 ## Task tracking
 
@@ -36,13 +47,13 @@ completed with unresolved matches; see [security maintenance](../security-mainte
 | T01 Contracts | CPU complete | See latest session for current CPU test count |
 | T02 Artifacts | Cold online preparation and real container offline inference passed | Broader release/fault matrix remains |
 | T03 Adapter | Encoding/readout and fixed FP32 LoRA implemented | Numerical alignment still fails; not certified |
-| T04 Runtime | Real GPU/HTTP inference works | Resolve 38/113 latest pretokenized and 36/110 HTTP parity failures |
+| T04 Runtime | Real GPU/HTTP inference works | Resolve new-image HTTP parity failures: Open-Jev 31/110 and 29/110; JPT 5/10 each |
 | T05 API/lifecycle | Native and SDK subset implemented | Broader release/fault/soak coverage remains |
 | T06 CLI/SDK | CLI/SDK and one-command cold container quickstart passed | Separate clean-host installation not run |
-| T07 Docker | Image build, cold online and offline GPU inference passed | Docker Hub development preview published and verified; numerical certification failed |
-| T08 Compose/offline/rollback | Compose real GPU and container offline inference passed | dev0 → dev1 → dev0 real inference and cleanup passed |
+| T07 Docker | Published dev1 plus source13eed9b local image execution verified | New candidate remains unpublished; numerical certification failed |
+| T08 Compose/offline/rollback | New-image Open-Jev/NeoHorse offline read-only Compose passed | Historical dev0 → dev1 → dev0 rollback passed; new-source rollback unrun |
 | T09 Multi-model extension | Seven pinned profiles completed real GPU/container checks | NeoHorse/Kev small-suite parity passed; Open-Jev/JPT probability parity fails |
-| T10 Observability/benchmark | Metrics and short sequential benchmark measured | 24-hour low-rate soak running; capacity study and 72-hour soak unrun |
+| T10 Observability/benchmark | Metrics and short sequential benchmark measured | 24-hour attempt failed before duration gate; capacity study and 72-hour soak unrun |
 | T11 CI/release | CPU workflow written; local checks pass | Remote CPU CI passed; certified image promotion/release absent |
 | T12 Open-source acceptance | Incomplete | Parity, clean-host and completed soak acceptance |
 
@@ -1020,3 +1031,267 @@ These are partial closures of audit items 1/4/5/6/9, not a claim that all ten
 release/operational concerns are solved. Local runtime/client/API/contributor
 improvements are implemented and reviewed; no push or publication was requested
 or performed in this session.
+
+## Session evidence — 2026-10-13: source image acceptance; numerical gate still blocked
+
+This session supersedes the earlier instruction to wait for the old soak and the
+statement that audited source had only CPU verification. Production package bytes
+remain those of `13eed9bc8cb0aff0edcfd1e27f30df06570efd6d`; diagnostic tools do not
+constitute a serving-arithmetic correction. This session completed layer, GDN,
+arithmetic, attention and projection-replay diagnostics. The remaining numerical
+causes are unresolved; no certification or production correction is claimed.
+
+### New image, source binding and observed results
+
+The actual Dockerfile built `jevserve:audit-13eed9b`. Its immutable **local Docker
+image ID** is `sha256:369538a76f4dd2fb7b0e00bd02b580196ceba3d9659ed0dadaeee6e948ae0193`.
+On this daemon that ID identifies an OCI index. The
+[CPU/provenance report](../../validation/reports/source-13eed9b-image-cpu.json)
+separately records the platform manifest and configuration digest. All 41
+installed Python/model-manifest files match the embedded wheel and named source
+commit. Registry publication was not performed; published dev1 is unchanged.
+Local validation reports use `image_identity_kind=docker-local-id` and omit
+`image_digest`, so they cannot satisfy release registry-digest binding.
+
+The [GPU aggregate](../../validation/reports/source-13eed9b-image-gpu.json) binds
+source/package identity, exact image ID, and reference/HTTP report hashes. All
+seven author-reference, real Docker native/official SDK runs and cleanup passed:
+
+| Model | Execution / cleanup | Frozen HTTP probability failures |
+|---|---|---|
+| Open-Jev-2B | Passed / passed | 31/110 |
+| Open-Jev-9B | Passed / passed | 29/110 |
+| JPT-0.8B | Passed / passed | 5/10 |
+| JPT-4B | Passed / passed | 5/10 |
+| JPT-9B | Passed / passed | 5/10 |
+| NeoHorse-Jev-4B | Passed / passed | 0/10 |
+| Kev-4B, configured FP32 profile | Passed / passed | 0/10 |
+
+These are synthetic probability comparisons at unchanged tolerances, not model
+accuracy measurements. Labels agreeing does not repair failed probability parity.
+NeoHorse/Kev small-suite success does not establish general certification.
+
+Open-Jev-2B and NeoHorse also passed actual Compose runs with network disabled,
+read-only root/weights, all three question types and cleanup. Open-Jev completed
+16 concurrent requests; live health responded in about 0.0051 seconds during that
+work, a 1 ms request deadline returned HTTP 504, request counters drained and the
+next request returned HTTP 200. The client cancellation attempt was exercised;
+server-side disconnect propagation and encoder-stage cancellation were **not
+independently verified** by this real-container smoke.
+
+Two initial failures remain recorded. Installed smoke assumed `site-packages`,
+but the pinned Ubuntu image installs into `dist-packages`; the corrected
+bind-mounted test passed against the same image. The first Compose attempt failed
+with `PermissionError` because the prepared host source root was mode 0700. A
+separate project-scoped artifact copy was fully hash-verified, made readable to
+UID 10001 and atomically published; original cache permissions stayed unchanged.
+CPU probes then read all 34 Open-Jev files and 47 NeoHorse files before the GPU
+retry. See [initial failure and correction](../../validation/reports/source-13eed9b-compose-preflight.json).
+
+### Commands, artifacts and CPU verification
+
+Executed commands used the explicit project-local Docker socket and serialized
+GPU work. The following are the actual local invocation shapes; `.local/` helpers,
+paths and raw logs are private host artifacts, not tools shipped in the package.
+Recorded output directories already exist: choose fresh names when repeating.
+Inspect current GPU ownership before starting a repeat; remaining diagnostics may
+still be active.
+
+```bash
+VALIDATION_DOCKER_HOST="unix://$PWD/.local/docker/run/docker.sock"
+VALIDATION_LOCAL_ID=sha256:369538a76f4dd2fb7b0e00bd02b580196ceba3d9659ed0dadaeee6e948ae0193
+
+docker --host "$VALIDATION_DOCKER_HOST" build --progress plain \
+  -t jevserve:audit-13eed9b --iidfile .local/evidence/audit-13eed9b-image-id.txt .
+docker --host "$VALIDATION_DOCKER_HOST" run --rm --pull=never \
+  --runtime runc --env NVIDIA_VISIBLE_DEVICES=void --network none --read-only \
+  --tmpfs /tmp --cap-drop ALL --security-opt no-new-privileges --workdir /tmp \
+  --mount "type=bind,src=$PWD/scripts/smoke_installed.py,dst=/smoke_installed.py,readonly" \
+  --entrypoint python3 "$VALIDATION_LOCAL_ID" -I /smoke_installed.py --runtime
+
+.venv/bin/python .local/new-image-acceptance.py --image-id "$VALIDATION_LOCAL_ID" \
+  --output .local/source-13eed9b-compose-retry --stage compose --execute
+.venv/bin/python .local/new-image-acceptance.py --image-id "$VALIDATION_LOCAL_ID" \
+  --output .local/source-13eed9b-matrix-acceptance --stage matrix --execute
+.venv/bin/python .local/aggregate-image-acceptance.py \
+  --output validation/reports/source-13eed9b-image-gpu.json
+
+.venv/bin/pytest -q
+.venv/bin/ruff check .
+.venv/bin/mypy
+git diff --check
+```
+
+Each private `private-plan.json` records the exact seven public-runner invocations.
+For a directly reproducible single-model run using the shipped coordinator:
+
+```bash
+.venv/bin/python -m validation.run \
+  --model kirp/jpt-0.8b \
+  --model-dir "$(cat .local/multimodel/jpt-0.8b-path.txt)" \
+  --upstream .local/upstream/llm2jev \
+  --reference-python .local/engine-venv/bin/python \
+  --local-image-id "$VALIDATION_LOCAL_ID" \
+  --docker-host "$VALIDATION_DOCKER_HOST" \
+  --output-dir .local/jpt-0.8b-new-reproduction --port 18792 --timeout 1800
+```
+
+The fixed ID above addresses the already tested local candidate. A fresh build
+can produce a different ID (including changed README/build metadata); inspect it
+with `docker --host "$VALIDATION_DOCKER_HOST" image inspect --format '{{.Id}}' jevserve:audit-13eed9b`
+and bind new runs to that result. Do not transfer this
+candidate's acceptance to a different image.
+
+Other hosts must supply their verified local artifacts and reference environments
+as described in [validation](../validation.md). No image/model pull is implicit.
+The default model used the separate `.local/acceptance-weights/open-jev-2b` copy.
+Build/smoke/provenance logs are `.local/evidence/audit-13eed9b-*`; full matrix and
+Compose evidence is in the two output directories above. Raw plans/logs can expose
+local paths and must not be published without review.
+
+The latest full CPU suite observed **424 passed, 1 skipped**, with Ruff and mypy (34 source
+files) passing. A concurrent run first exposed 8 CPU fixture failures because
+mocked validators acquired the actual GPU lock. Tests now use a temporary checkout
+and a real independent lock inode; a real contention test still verifies refusal
+before subprocess work. Production locking was not weakened. The focused runner
+suite passes 30 tests while the real GPU lock is held.
+
+### Old soak failure and precise next action
+
+The old published-dev1 soak failed after **16,271.643625 seconds**, with **1,589
+successes in 1,590 requests**, when the project Docker instance became unavailable.
+No stop signal preceded that recorded failure; the daemon-exit cause is unresolved.
+Only the project instance was recovered; the owned stale soak workload/container
+was stopped/removed and its cache preserved. Shared Docker services, drivers and
+global packages were unchanged. The [failure report](../../validation/reports/soak-24h-failed.json)
+remains a failed duration gate, not a completed 24-hour test.
+
+1. Continue from the reviewed fixed-input attention evidence: verify actual loaded
+   projection/norm weights and isolate Q normalization versus RoPE application; use
+   [layer](../jpt-layer-diagnostic.md), [GDN](../jpt-gdn-diagnostic.md) and
+   [arithmetic](../jpt-arithmetic-diagnostic.md) reproduction instructions. Keep
+   original precision, weights, candidate semantics and frozen tolerances.
+2. Record the numerical outcome and exact remaining discrepancy. If evidence
+   warrants a production change, rebuild and rebind the image, then repeat affected
+   real reference/HTTP/Compose checks; this image's passing execution does not
+   certify changed source. Do not attribute the discrepancy to BF16 without proof.
+3. A completed 24/72-hour soak, clean-host installation, new-source rollback,
+   advisory triage, private vulnerability reporting and source-bound remote
+   promotion remain outstanding. Any new soak needs an explicit GPU schedule;
+   neither restarting a timer nor this smoke closes the failed historical gate.
+
+### Numerical controls and remaining boundary
+
+The matched JPT-0.8B arithmetic baseline reproduced the earlier hidden/logit
+captures. Original-probability failures across 13 questions were: baseline 7,
+residual 4, gated norm 7, Q/K normalization 10, beta 7, chunk recurrence 7,
+five-factor combination 9, corrected eight-factor combination 5. The corrected
+eight-factor run still failed 2 questions after common FP32 projection, with
+maximum probability error 0.008104384865228242 and hidden error 0.375. None is a
+production correction or numerical certification. Public comparisons and private
+raw-report SHA-256 bindings are in
+[numerical arithmetic evidence](../../validation/reports/numerical-arithmetic-diagnosis.json).
+
+Two diagnostic attempts are excluded: the initial gated-norm patch was bypassed
+by a packed path; the initial eight-factor full convolution returned a layout
+incompatible with the downstream Triton kernel's unit feature stride. The latter
+passed call-count validation but was semantically invalid. A separate local
+invalidation record binds that raw artifact by SHA-256. The corrected probe copies
+replacement values into the native buffer, guards strides, and was independently
+reviewed. The corrected GPU output uses a fresh filename.
+
+Matched layer captures show exact normalized boundaries across all 97 tokens from
+embedding through layer-3 input norm under the corrected eight-factor trial.
+The first remaining observed difference is layer-3 post-attention norm: 42,968
+unequal elements, maximum absolute error 0.0625. This narrows the next capture to
+the first full-attention/residual/norm interval; it does not prove every uncaptured
+intermediate tensor is equal. Raw reports remain in `.local/numerical-acceptance`.
+
+CPU verification after the convolution fix: `.venv/bin/python -m pytest -q`
+reported **418 passed, 1 skipped**; `.venv/bin/ruff check .`,
+`.venv/bin/mypy src` (34 source files) and `git diff --check` passed. The one skip
+requires Torch, intentionally absent from the lightweight CPU environment.
+The engine environment has Torch but no pytest, so direct `-m pytest` there was
+unavailable. The real CPU Torch regression was then executed without installing
+or changing either environment:
+
+```bash
+CUDA_VISIBLE_DEVICES='' .local/engine-venv/bin/python - <<'PY'
+import sys
+sys.path.append('.venv/lib/python3.12/site-packages')
+import pytest
+raise SystemExit(pytest.main(['-q', 'tests/unit/test_jpt_arithmetic_probe.py',
+                             '-k', 'full_convolution_preserves_downstream_triton_feature_stride']))
+PY
+```
+
+Observed: **1 passed, 11 deselected**, CPU-only tensors. Protocol tests still
+require no GPU imports or model downloads. Attention-boundary diagnostics are the
+next action; any added code needs its own checks before final handoff.
+
+A subsequent `hf_residual_norm` rerun wrote
+`.local/numerical-acceptance/arithmetic-residual-confirmed.json`: valid current
+coverage (13 forwards, 48 replacements each), restored methods, 4/13 original
+and 6/13 common-FP32 failures, matching the earlier aggregate-only trial. Both
+are retained with their different coverage evidence. This rerun also logged
+`EngineDeadError` during explicit teardown after all captures/restoration,
+exited zero and released the GPU; it does not establish a production shutdown pass.
+
+Actual full-attention capture then completed both HF and eight-factor runtime
+stages. HF reproduced frozen candidate logits exactly. Runtime coverage and
+restoration passed, and each side's input/logits match its earlier layer report.
+Input, Q projection and gate agree; projected K has 19,115 unequal elements
+(maximum 0.03125), V has 18,835 (maximum 0.015625). Post-RoPE Q differs despite
+identical raw Q. HF selected SDPA's interface (actual CUDA kernel not profiled);
+vLLM selected FlashAttention and fused Q/K norm/RoPE. Independent review checked
+all 11 boundary metrics against raw BF16 bytes. See
+[attention evidence](../../validation/reports/jpt-attention-diagnosis.json) and
+[reproduction](../jpt-attention-diagnostic.md). Raw files are
+`.local/numerical-acceptance/attention-hf.json` and `attention-runtime.json`.
+Runtime teardown again logged EngineDeadError after capture/restoration, while
+exit status was zero and the GPU was released. Remaining investigation is
+fixed-input projection and rotary replay; different dispatch alone is not cause.
+
+### Final fixed-input result, verification and next action
+
+The GPU projection replay used verified prepared checkpoint weights and the same
+observed attention input. Separate `[1,T,H]` projections exactly reproduced all
+HF Q/K/V/gate elements; a packed `[T,H]` projection exactly reproduced the runtime
+captures. Cross-comparisons differ in K/V. Captured BF16 cosine/sine values also
+match exactly after aligning their layouts. This supports a concrete projection
+arithmetic contribution for this fixture, not an exclusive root cause or proof
+of actual runtime weight storage equality. See
+[public replay report](../../validation/reports/jpt-attention-replay.json).
+
+After source formatting, a fresh GPU rerun bound the final implementation hash:
+
+```bash
+PYTHONPATH=src HF_HUB_OFFLINE=1 timeout --signal=TERM --kill-after=30s 300s \
+  .local/engine-venv/bin/python -m validation.jpt_attention_replay \
+  --model kirp/jpt-0.8b \
+  --model-dir "$(cat .local/multimodel/jpt-0.8b-path.txt)" \
+  --hf .local/numerical-acceptance/attention-hf.json \
+  --runtime .local/numerical-acceptance/attention-runtime.json \
+  --device cuda --output .local/numerical-acceptance/attention-replay-final.json
+```
+
+Observed exit 0; both observed projection paths reproduced exactly. Select a new
+output path for another run. The report contains hashes, shapes, dtypes and
+comparison metrics, with no raw activations, token IDs or machine identifiers.
+Independent review found no blocking hook/layout/projection interpretation issue.
+
+Final CPU verification: **424 passed, 1 skipped in 16.86s**; the optional Torch
+stride regression was separately executed on CPU as recorded above. Ruff,
+mypy (34 production files), and whitespace checks passed. Production package
+files and model manifests remain unchanged from the tested source commit.
+No new image was pushed and no model was marked certified.
+
+**Numerical certification remains blocked by failed frozen comparisons.** The
+next concrete experiment is to capture/verify loaded layer-3 projection and
+Q/K norm weight bytes, then replay Q normalization and RoPE application separately
+with the now-matched input and cosine/sine values. Only after equal attention
+operands are established should SDPA versus FlashAttention be compared. Recheck
+all affected JPT cases and the default Open-Jev model at unchanged tolerances
+before proposing a bounded production correction; any such correction requires
+a new image and renewed GPU/container acceptance. The completed source-image
+execution gate does not satisfy this outstanding numerical gate.

@@ -69,7 +69,13 @@ def test_scalar_and_neohorse_commands(args):
 
 
 @pytest.fixture
-def orchestration(args, monkeypatch):
+def orchestration(args, monkeypatch, tmp_path):
+    # Keep real flock semantics while isolating this CPU fixture from GPU validators.
+    checkout = tmp_path / "checkout"
+    checkout.mkdir()
+    for directory in ("src", "validation", "compat", "models"):
+        (checkout / directory).symlink_to(run.ROOT / directory, target_is_directory=True)
+    monkeypatch.setattr(run, "ROOT", checkout)
     # Production uses verified real artifacts; the double exists only in this CPU test.
     monkeypatch.setattr(run, "load_model_directory", lambda *a: None)
     calls = []
@@ -221,3 +227,90 @@ def test_interrupt_cleanup_ignores_second_signals(args, orchestration, monkeypat
 def test_sigterm_becomes_interrupt():
     with pytest.raises(KeyboardInterrupt):
         run.interrupted(run.signal.SIGTERM, None)
+
+
+def test_local_image_identity_is_not_registry_evidence(args, orchestration):
+    args.image = None
+    args.local_image_id = "sha256:" + "c" * 64
+    assert run.execute(args) == 1
+    summary = json.loads((args.output_dir / "summary.json").read_text())
+    assert summary["image_identity_kind"] == "docker-local-id"
+    assert summary["image_id"] == args.local_image_id
+    assert "image_digest" not in summary
+    assert (
+        args.local_image_id
+        in orchestration[0][next(i for i, c in enumerate(orchestration[0]) if "run" in c)]
+    )
+
+
+@pytest.mark.parametrize("identity", ["jevserve:latest", "sha256:abcd", "sha256:" + "A" * 64])
+def test_local_image_requires_full_immutable_id(args, identity):
+    args.image = None
+    args.local_image_id = identity
+    with pytest.raises(ValueError):
+        run.validate(args)
+
+
+def test_local_image_inspect_mismatch_stops_before_gpu(args, orchestration):
+    args.image = None
+    args.local_image_id = "sha256:" + "d" * 64
+    assert run.execute(args) == 2
+    assert not any(c[0] == "nvidia-smi" for c in orchestration[0])
+
+
+def test_image_options_are_exclusive(args):
+    args.local_image_id = "sha256:" + "c" * 64
+    with pytest.raises(ValueError):
+        run.validate(args)
+
+
+def test_local_image_cli_parse_and_mutual_exclusion():
+    required = [
+        "--model",
+        "kirp/jpt-0.8b",
+        "--model-dir",
+        "/weights",
+        "--upstream",
+        "/author",
+        "--reference-python",
+        "/python",
+        "--output-dir",
+        "/output",
+        "--docker-host",
+        "unix:///tmp/docker.sock",
+    ]
+    local = ["--local-image-id", "sha256:" + "c" * 64]
+    parsed = run.parser().parse_args(required + local)
+    run.validate(parsed)
+    with pytest.raises(SystemExit):
+        run.parser().parse_args(required + local + ["--image", "repo@sha256:" + "a" * 64])
+
+
+def test_invalid_inspected_image_id_rejected(args, orchestration, monkeypatch):
+    calls, fake = orchestration
+
+    def invalid(command, **kwargs):
+        if "inspect" in command:
+            return subprocess.CompletedProcess(command, 0, "sha256:short", "")
+        return fake(command, **kwargs)
+
+    monkeypatch.setattr(run, "call", invalid)
+    assert run.execute(args) == 2
+    assert not any(c[0] == "nvidia-smi" for c in calls)
+
+
+def test_real_lock_contention_refuses_execution(args, orchestration):
+    calls, _ = orchestration
+    local = run.ROOT / ".local"
+    local.mkdir()
+    with (local / "validation-gpu.lock").open("w") as competing:
+        run.fcntl.flock(competing, run.fcntl.LOCK_EX | run.fcntl.LOCK_NB)
+        assert run.execute(args) == 2
+    summary = json.loads((args.output_dir / "summary.json").read_text())
+    assert summary["error_code"] == "validation_locked"
+    assert summary["stage"] == "preflight"
+    assert summary["cleanup"] == "not_needed"
+    assert calls == []
+    # The contender did not keep a lock after reporting the refusal.
+    with (local / "validation-gpu.lock").open("w") as available:
+        run.fcntl.flock(available, run.fcntl.LOCK_EX | run.fcntl.LOCK_NB)

@@ -210,3 +210,28 @@ Add material changes with evidence, compatibility consequences and affected task
   unrun, not passed. Grype advisory matches against dev1's SBOM are published with
   scanner/database identity and no suppression; package matches do not establish
   exploitability. Runtime upgrades/removals require a newly validated candidate.
+
+- **D037 — Validate unpublished candidates by local identity without release claims.**
+  The offline validation runner accepts a full immutable Docker local image ID
+  as an alternative to a registry reference. It checks the inspected and running
+  image IDs, records `image_identity_kind=docker-local-id`, and omits
+  `image_digest`; such reports cannot satisfy registry release gates. Docker 29
+  on the observed project daemon returns an OCI index as its local ID, so it must
+  not be described as the configuration digest. Candidate provenance separately
+  compares installed package and embedded-wheel bytes against the source commit.
+  No image publication is needed to perform local GPU/container acceptance.
+
+- **D038 — Arithmetic counterfactuals require matched controls and actual coverage.**
+  Qwen3.5 diagnostic substitutions remain outside production. Capture normalized
+  HF/vLLM boundaries, account for split residuals and packed paths that bypass
+  ordinary module forwards, and preserve intermediate dtypes in evidence.
+  Single-factor experiments use a matched unpatched engine profile. A combined
+  experiment tests only the explicitly named joint hypothesis. Record execution
+  counts, restoration, source hashes and unchanged tolerances; reject missing
+  coverage. Improved or unchanged probabilities do not certify a checkpoint or
+  authorize a production precision change or HF fallback.
+  Coverage alone does not prove correctness: a later-discovered diagnostic
+  layout defect invalidates affected reports even when `valid_trial` was true.
+  Preserve native convolution strides as well as shapes/dtypes when a downstream
+  kernel assumes unit feature stride; retain the invalid run separately and
+  bind corrected reruns to their implementation hashes.

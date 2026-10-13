@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "report_type": "jevserve-local-image-cpu-validation",
+  "observed_date": "2026-10-13",
+  "source_commit": "13eed9bc8cb0aff0edcfd1e27f30df06570efd6d",
+  "image_identity_kind": "docker-local-id",
+  "image_id": "sha256:369538a76f4dd2fb7b0e00bd02b580196ceba3d9659ed0dadaeee6e948ae0193",
+  "candidate_tag": "jevserve:audit-13eed9b",
+  "build_outputs": {
+    "oci_index": "sha256:369538a76f4dd2fb7b0e00bd02b580196ceba3d9659ed0dadaeee6e948ae0193",
+    "platform_manifest": "sha256:ba41ac6ad1f39135282bc48ade36418205d829713c306b9b4efb8633ab9ec51e",
+    "configuration": "sha256:9888a286acee620cc5128bde2fb4b45b3418f41837c55a22dabe207394538ee7"
+  },
+  "source_binding": {
+    "installed_package_and_embedded_wheel_match_commit": true,
+    "package_file_count": 41,
+    "package_inventory_sha256": "f22ed5e169486fb08c37394a085e5f14951262e630f28cce3cb26a4b5f7a579b",
+    "model_manifest_sha256": {
+      "src/jevserve/data/jpt-0.8b.json": "a6ef1e9a46d3cfb3d4f35092eb2c47f07fea7e9166f1e48c56a66366413ec853",
+      "src/jevserve/data/jpt-4b.json": "458a4fdf3407ff11c863f6533ea7c312d4ca42998bae7428cb85cc8f94ebd294",
+      "src/jevserve/data/jpt-9b.json": "46df21ed3224772ea3b76f5802a05151f45a60ed3803f27a7c8f801f492e867b",
+      "src/jevserve/data/kev-4b.json": "3b599e5708377aec4c1ae39a926c1791bbc3be32bc0c8965c7196fa4ae92439e",
+      "src/jevserve/data/neohorse-jev-4b.json": "5730ba3d6bf4bcfefe7cfc9246f7389871c43eacd2d1de8ec75da2b9b8ee80f5",
+      "src/jevserve/data/open-jev-2b.json": "82426b15338ea1f39995242f8f15a7a0a04967ed097feb09fec08b0b7e85c2bb",
+      "src/jevserve/data/open-jev-9b.json": "c121f2a44be9e7115374fe91336ddc2ff73e0ee0e6b9905e59c59514ba26751b"
+    },
+    "embedded_wheel_sha256": "c70f7e6bf7f843b4a819a22c13a0132ebbcc67fdba4a8495dc3bfef86f8a37ed",
+    "build_inputs_match_commit": {
+      "Dockerfile": "27e90ade803b3a628e5feea541c6e1ab724bf5a34bffa8ffb7a20bb3b9df561c",
+      ".dockerignore": "d1574e4f6cfa47708bb79477991caaeb38b9b1ea814fe4a2fce66726265c5c83",
+      "pyproject.toml": "6f1102912503fed55c011ada9429c40a73a5ba146f7e972fbdc9991eab94211b",
+      "README.md": "a2ce141a13274f3a96c81f262009b2b42f9b7b8f1b64c5d4e1fc5e0ded81a651",
+      "LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "NOTICE": "6298a0eb5e5a7ea0ce5d521f4c92530752f1271f8afffed34881980ae5719111",
+      "compat/build-requirements.txt": "9688250d4a8018958e5fb78ed8f7378590d6617500c0748ff616bfdd9cf18f7f",
+      "compat/runtime-requirements.txt": "4774b6216fd63868a5c7c2e994ef7053c5d67f5593221662ec4ed844adb12417",
+      "licenses/NeoHorse-NOTICE.txt": "e364470444c86dab0b5fd82de49f5fc4a64293a44ab71a68de2d6bb1262dfe11",
+      "licenses/Open-Jev-MIT.txt": "ef2f6f6db605a2f611bc2d037c59276f615cdea76ac6e7551a28f71db890c9d2",
+      "licenses/kev-Apache-2.0.txt": "6b08bb37982c233aa12bcbdf19106da12f3f4fcf800773ea42e28ebeddd34fb8",
+      "licenses/llm2jev-MIT.txt": "ca64c7fa25098797fb01d2ade37443dd0f7e0f8527d3e7efdbeb4f75a3a7bf67",
+      "licenses/vllm-jev-Apache-2.0.txt": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    "scope": "All installed package Python and model-manifest JSON bytes equal the embedded wheel and named commit. Source build inputs match the same commit. Validator and bind-mounted smoke edits are outside the image build context."
+  },
+  "observed_python": "3.12.3",
+  "checks": {
+    "docker_build": "passed",
+    "installed_dependency_check_during_build": "passed",
+    "cli_help": "passed",
+    "installed_runtime_smoke": "passed",
+    "installed_package_provenance": "passed"
+  },
+  "cpu_container_constraints": {
+    "runtime": "runc",
+    "nvidia_visible_devices": "void",
+    "network": "none",
+    "read_only_root": true,
+    "capabilities_dropped": "ALL",
+    "no_new_privileges": true
+  },
+  "installed_smoke": {
+    "initial_result": "failed",
+    "initial_reason": "Test assumed site-packages, but the pinned Ubuntu image uses dist-packages.",
+    "correction": "Accept either installed-package directory component; rerun the bind-mounted smoke against the same immutable image.",
+    "final_result": "passed",
+    "script_sha256": "4a83b486c8e12b8e8995d2869b1544131bbd02ac508c314839fcdce20dffd7b8",
+    "covered": [
+      "installed isolated Python imports",
+      "native request contract",
+      "CLI help and catalog",
+      "explicit uncertified opt-in required",
+      "offline preparation does not create missing cache",
+      "server import available",
+      "CPU paths do not import GPU packages"
+    ]
+  },
+  "real_gpu": false,
+  "published": false,
+  "release_eligible": false,
+  "limitations": [
+    "Build reused cached base and dependency layers; not a clean-host installation.",
+    "No real inference, GPU numerical parity, Docker GPU, Compose GPU, lifecycle or soak checks are included in this report.",
+    "Docker local ID equals the local OCI index on this daemon; it is not a claimed published registry identity. No image_digest field is supplied.",
+    "Passing CPU checks does not certify a model or promote a release."
+  ],
+  "reproduction": {
+    "assumptions": "Use an explicit local Docker socket and this source commit; use the corrected installed-smoke script identified by its hash. Rebuilding need not reproduce the same OCI index because build attestations may differ.",
+    "build": [
+      "docker",
+      "--host",
+      "${VALIDATION_DOCKER_HOST}",
+      "build",
+      "--progress",
+      "plain",
+      "-t",
+      "jevserve:audit-13eed9b",
+      "."
+    ],
+    "installed_smoke": [
+      "docker",
+      "--host",
+      "${VALIDATION_DOCKER_HOST}",
+      "run",
+      "--rm",
+      "--pull=never",
+      "--runtime",
+      "runc",
+      "--env",
+      "NVIDIA_VISIBLE_DEVICES=void",
+      "--network",
+      "none",
+      "--read-only",
+      "--tmpfs",
+      "/tmp",
+      "--cap-drop",
+      "ALL",
+      "--security-opt",
+      "no-new-privileges",
+      "--workdir",
+      "/tmp",
+      "--mount",
+      "type=bind,src=${CHECKOUT}/scripts/smoke_installed.py,dst=/smoke_installed.py,readonly",
+      "--entrypoint",
+      "python3",
+      "sha256:369538a76f4dd2fb7b0e00bd02b580196ceba3d9659ed0dadaeee6e948ae0193",
+      "-I",
+      "/smoke_installed.py",
+      "--runtime"
+    ]
+  }
+}

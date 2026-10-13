@@ -1,0 +1,340 @@
+{
+  "schema_version": 1,
+  "report_type": "jevserve-attention-diagnostic",
+  "model_id": "kirp/jpt-0.8b",
+  "revision": "1431c0509bbc10772cd59964cc7af5835c8720d6",
+  "source_identity": "d93caa82e824899cff2a780cac5ccb33f23a3e0463be36f8a35f2d9665e26c59",
+  "upstream_revision": "2b252d504972764211ef172c1155ac0fedc9c3de",
+  "temperature": 1.14,
+  "packages": {
+    "torch": "2.13.0",
+    "transformers": "5.10.4",
+    "vllm": "0.29.0"
+  },
+  "selection": {
+    "case_index": 0,
+    "row_index": 0,
+    "case": 0,
+    "layer_index": 3
+  },
+  "probe_sha256": "89d9d88ef99f9499f24b7df866532f38a0d345f3f61f9a71c529545dc67e9b15",
+  "original_reference_sha256": "e97c70a8e870afa9025112b8fe2a331ac6821e419725d0832c46b2473d4a81d2",
+  "hf_report_sha256": "ee4e3880de5008544ad41b1198256471020accc3c3711cceea4eac28a1002a1e",
+  "runtime_report_sha256": "ef1b3f027a0eaf72c65a8e6e960ef0ca14ad44162b984151eb71e57c7b7108d3",
+  "scope": "One 97-token synthetic case at first full-attention layer; original HF versus eight-factor diagnostic runtime.",
+  "tokens": 97,
+  "production_changed": false,
+  "certified": false,
+  "arithmetic_mode": "hf_torch_decay_combined",
+  "runtime_profile": {
+    "dtype": "bfloat16",
+    "max_model_len": 4096,
+    "mamba_ssm_cache_dtype": "float32",
+    "enforce_eager": true,
+    "max_num_seqs": 1,
+    "max_num_batched_tokens": 4096,
+    "enable_chunked_prefill": false,
+    "enable_prefix_caching": false
+  },
+  "valid_trial": true,
+  "arithmetic_source_sha256": {
+    "probe": "801d47758126ee997bec07dd4ae18da7378f1f12fa4b01e6de2f681a010c4c75",
+    "hf_qwen3_5": "fd9963c32aa3d50c753a990a2670cfdbea055b6316b40027e0de976019e42551",
+    "vllm_gdn": "cb819264c1e791177d866f484ca0579a7d57141926705a1f75dd4a79de4d0125",
+    "vllm_layernorm": "ef94ccd617c284e0fcd01b92a741b9262d343a02110cefc71dbf3e4c22356c44",
+    "vllm_prefill_prep": "590717b2107abc90d72548de06b5d315229eb2775c94614f3f545df11cc2b5df",
+    "vllm_fla_chunk": "c105ead259e86aedc248c53e7c4cef07034d0ff12da608d80265d1dd0990803f",
+    "vllm_gated_norm": "0ca5e46aab408b80d673561b91cf7bff7987c71d798d3bdacac75b7e29416f49",
+    "vllm_causal_conv": "044d005cfe59fd0818ed421274e04f3e8dd679b8cdb64fca9f4422f2643484b2"
+  },
+  "coverage": {
+    "factors": [
+      "hf_beta",
+      "hf_chunk_core",
+      "hf_conv_core",
+      "hf_decay_g",
+      "hf_gated_norm",
+      "hf_qk_l2norm",
+      "hf_residual_norm",
+      "hf_z_projection"
+    ],
+    "removed": true,
+    "calls": 174,
+    "forwards": 1,
+    "calls_per_forward": [
+      174
+    ],
+    "factor_calls_per_forward": [
+      {
+        "hf_z_projection": 18,
+        "hf_conv_core": 18,
+        "hf_qk_l2norm": 18,
+        "hf_beta": 18,
+        "hf_decay_g": 18,
+        "hf_chunk_core": 18,
+        "hf_gated_norm": 18,
+        "hf_residual_norm": 48
+      }
+    ]
+  },
+  "hf_frozen_logit_comparison": {
+    "exact_match": true,
+    "difference": {
+      "elements": 2,
+      "unequal_elements": 0,
+      "max_abs_error": 0.0,
+      "l2_error": 0.0,
+      "relative_l2_error": 0.0
+    }
+  },
+  "hf_backend": {
+    "layer_index": 3,
+    "hf_attention_implementation": "sdpa",
+    "source_sha256": "fd9963c32aa3d50c753a990a2670cfdbea055b6316b40027e0de976019e42551",
+    "interface_module": "transformers.integrations.sdpa_attention",
+    "interface_name": "sdpa_attention_forward",
+    "interface_source_sha256": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+    "attention_mask": null,
+    "scaling": 0.0625,
+    "is_causal": true,
+    "backend_scope": "selected HF interface; CUDA kernel dispatch not profiled"
+  },
+  "runtime_backend": {
+    "layer_index": 3,
+    "source_sha256": "4a27cf7b065c2097688421e6ea849704cef946f347978fb426abbc72b77f00b2",
+    "fused_qk_norm_rope_gate": true,
+    "attention_impl_module": "vllm.v1.attention.backends.flash_attn",
+    "attention_impl_class": "FlashAttentionImpl",
+    "attention_backend": "FLASH_ATTN",
+    "scaling": 0.0625
+  },
+  "independent_checks": {
+    "all_boundary_metrics_recomputed": true,
+    "text_position_streams_match": true,
+    "value_projection_unchanged_through_rope_each_backend": true,
+    "attention_input_matches_corresponding_layer_capture": true,
+    "captured_logits_match_corresponding_layer_capture": true
+  },
+  "comparison": {
+    "first_unequal_boundary": "projected_k",
+    "boundaries": [
+      {
+        "boundary": "attention_input",
+        "actual_dtype": "torch.bfloat16",
+        "expected_dtype": "torch.bfloat16",
+        "all_tokens": {
+          "elements": 99328,
+          "unequal_elements": 0,
+          "max_abs_error": 0.0,
+          "l2_error": 0.0,
+          "relative_l2_error": 0.0
+        },
+        "last_token": {
+          "elements": 1024,
+          "unequal_elements": 0,
+          "max_abs_error": 0.0,
+          "l2_error": 0.0,
+          "relative_l2_error": 0.0
+        }
+      },
+      {
+        "boundary": "projected_q",
+        "actual_dtype": "torch.bfloat16",
+        "expected_dtype": "torch.bfloat16",
+        "all_tokens": {
+          "elements": 198656,
+          "unequal_elements": 0,
+          "max_abs_error": 0.0,
+          "l2_error": 0.0,
+          "relative_l2_error": 0.0
+        },
+        "last_token": {
+          "elements": 2048,
+          "unequal_elements": 0,
+          "max_abs_error": 0.0,
+          "l2_error": 0.0,
+          "relative_l2_error": 0.0
+        }
+      },
+      {
+        "boundary": "projected_k",
+        "actual_dtype": "torch.bfloat16",
+        "expected_dtype": "torch.bfloat16",
+        "all_tokens": {
+          "elements": 49664,
+          "unequal_elements": 19115,
+          "max_abs_error": 0.03125,
+          "l2_error": 0.394685091872479,
+          "relative_l2_error": 0.002432460628494263
+        },
+        "last_token": {
+          "elements": 512,
+          "unequal_elements": 204,
+          "max_abs_error": 0.0078125,
+          "l2_error": 0.031219706215247448,
+          "relative_l2_error": 0.0018861512283210393
+        }
+      },
+      {
+        "boundary": "projected_v",
+        "actual_dtype": "torch.bfloat16",
+        "expected_dtype": "torch.bfloat16",
+        "all_tokens": {
+          "elements": 49664,
+          "unequal_elements": 18835,
+          "max_abs_error": 0.015625,
+          "l2_error": 0.35035207918245204,
+          "relative_l2_error": 0.0024415428285205947
+        },
+        "last_token": {
+          "elements": 512,
+          "unequal_elements": 218,
+          "max_abs_error": 0.0078125,
+          "l2_error": 0.04079737669151601,
+          "relative_l2_error": 0.0028654275839822413
+        }
+      },
+      {
+        "boundary": "gate",
+        "actual_dtype": "torch.bfloat16",
+        "expected_dtype": "torch.bfloat16",
+        "all_tokens": {
+          "elements": 198656,
+          "unequal_elements": 0,
+          "max_abs_error": 0.0,
+          "l2_error": 0.0,
+          "relative_l2_error": 0.0
+        },
+        "last_token": {
+          "elements": 2048,
+          "unequal_elements": 0,
+          "max_abs_error": 0.0,
+          "l2_error": 0.0,
+          "relative_l2_error": 0.0
+        }
+      },
+      {
+        "boundary": "postrope_q",
+        "actual_dtype": "torch.bfloat16",
+        "expected_dtype": "torch.bfloat16",
+        "all_tokens": {
+          "elements": 198656,
+          "unequal_elements": 6982,
+          "max_abs_error": 0.03125,
+          "l2_error": 0.5713871134905897,
+          "relative_l2_error": 0.0009541856715900357
+        },
+        "last_token": {
+          "elements": 2048,
+          "unequal_elements": 77,
+          "max_abs_error": 0.015625,
+          "l2_error": 0.05144042642876044,
+          "relative_l2_error": 0.0008426521752800326
+        }
+      },
+      {
+        "boundary": "postrope_k",
+        "actual_dtype": "torch.bfloat16",
+        "expected_dtype": "torch.bfloat16",
+        "all_tokens": {
+          "elements": 49664,
+          "unequal_elements": 20001,
+          "max_abs_error": 0.0625,
+          "l2_error": 0.9213582212144019,
+          "relative_l2_error": 0.002911443354877919
+        },
+        "last_token": {
+          "elements": 512,
+          "unequal_elements": 208,
+          "max_abs_error": 0.03125,
+          "l2_error": 0.07069160207154894,
+          "relative_l2_error": 0.0021947538829147463
+        }
+      },
+      {
+        "boundary": "postrope_v",
+        "actual_dtype": "torch.bfloat16",
+        "expected_dtype": "torch.bfloat16",
+        "all_tokens": {
+          "elements": 49664,
+          "unequal_elements": 18835,
+          "max_abs_error": 0.015625,
+          "l2_error": 0.35035207918245204,
+          "relative_l2_error": 0.0024415428285205947
+        },
+        "last_token": {
+          "elements": 512,
+          "unequal_elements": 218,
+          "max_abs_error": 0.0078125,
+          "l2_error": 0.04079737669151601,
+          "relative_l2_error": 0.0028654275839822413
+        }
+      },
+      {
+        "boundary": "attention_output",
+        "actual_dtype": "torch.bfloat16",
+        "expected_dtype": "torch.bfloat16",
+        "all_tokens": {
+          "elements": 198656,
+          "unequal_elements": 93728,
+          "max_abs_error": 0.015625,
+          "l2_error": 0.6692419935740802,
+          "relative_l2_error": 0.002911018763124246
+        },
+        "last_token": {
+          "elements": 2048,
+          "unequal_elements": 956,
+          "max_abs_error": 0.0078125,
+          "l2_error": 0.06644942155380991,
+          "relative_l2_error": 0.0029494978815158292
+        }
+      },
+      {
+        "boundary": "gated",
+        "actual_dtype": "torch.bfloat16",
+        "expected_dtype": "torch.bfloat16",
+        "all_tokens": {
+          "elements": 198656,
+          "unequal_elements": 87748,
+          "max_abs_error": 0.015625,
+          "l2_error": 0.0969366605434617,
+          "relative_l2_error": 0.003124651978674921
+        },
+        "last_token": {
+          "elements": 2048,
+          "unequal_elements": 901,
+          "max_abs_error": 0.0078125,
+          "l2_error": 0.013647904857819183,
+          "relative_l2_error": 0.004102719833050795
+        }
+      },
+      {
+        "boundary": "out_projection",
+        "actual_dtype": "torch.bfloat16",
+        "expected_dtype": "torch.bfloat16",
+        "all_tokens": {
+          "elements": 99328,
+          "unequal_elements": 68588,
+          "max_abs_error": 0.001953125,
+          "l2_error": 0.04207380391393138,
+          "relative_l2_error": 0.005595581240602958
+        },
+        "last_token": {
+          "elements": 1024,
+          "unequal_elements": 684,
+          "max_abs_error": 0.001953125,
+          "l2_error": 0.0050269648894490015,
+          "relative_l2_error": 0.005549970267527388
+        }
+      }
+    ]
+  },
+  "limitations": [
+    "Runtime uses eight diagnostic arithmetic substitutions, not production serving arithmetic.",
+    "HF sdpa names the selected interface; the actual CUDA SDPA kernel was not profiled.",
+    "First unequal listed boundary is projected K; independent projected V and post-RoPE Q also differ.",
+    "Normalized Q/K intermediates inside the fused runtime operation were not captured separately.",
+    "No projection weight or rotary-kernel causal attribution is established by these boundaries alone.",
+    "One fixture cannot establish probability parity or model certification."
+  ]
+}

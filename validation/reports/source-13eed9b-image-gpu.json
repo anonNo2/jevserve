@@ -1,0 +1,289 @@
+{
+  "schema_version": 1,
+  "report_type": "jevserve-local-source-image-acceptance",
+  "source_commit": "13eed9bc8cb0aff0edcfd1e27f30df06570efd6d",
+  "image_identity_kind": "docker-local-id",
+  "image_id": "sha256:369538a76f4dd2fb7b0e00bd02b580196ceba3d9659ed0dadaeee6e948ae0193",
+  "cpu_evidence": {
+    "path": "validation/reports/source-13eed9b-image-cpu.json",
+    "sha256": "8db00a2bed4b1a3ef77d18e88a81f4178d054d5bec2712e7e2edc37943d8b42e"
+  },
+  "matrix": [
+    {
+      "model_id": "ZefanCai/Open-Jev-2B",
+      "execution": "passed",
+      "parity": "failed",
+      "cleanup": "passed",
+      "summary_sha256": "03c2c48134176a6b8089dccbf0ce6c04cb033b29a301ecf9ba783d5c932d0a33",
+      "source_image_binding": "passed",
+      "host_source_dirty": true,
+      "observed_execution": "passed",
+      "real_gpu": true,
+      "model_revision": "0c7aa498b1627be8da4acf34c863ff0ee0a92785",
+      "parity_failed_cases": 31,
+      "raw_reports": {
+        "reference.json": {
+          "sha256": "938ba97b4acf916d228036f8f21bfc75a74aaddeadaa089cb8abda40beb4a6b4",
+          "summary_hash_binding": true,
+          "case_count": 113,
+          "failures": 0
+        },
+        "http.json": {
+          "sha256": "fa069f4516b9ae19f200e3260b48b4e19baf628c5eabc34ec5ec7d736611096e",
+          "summary_hash_binding": true,
+          "case_count": 110,
+          "failures": 31,
+          "max_probability_error": 0.02178033668786783,
+          "label_flip_count": 0,
+          "official_sdk_observed": true
+        }
+      }
+    },
+    {
+      "model_id": "ZefanCai/Open-Jev-9B",
+      "execution": "passed",
+      "parity": "failed",
+      "cleanup": "passed",
+      "summary_sha256": "37f4369b88615e8089255c479985e04a5a587c5bc91705f44f0c8f2fe12de590",
+      "source_image_binding": "passed",
+      "host_source_dirty": true,
+      "observed_execution": "passed",
+      "real_gpu": true,
+      "model_revision": "47e966881e489511c0c7f5633a9e1960a676a551",
+      "parity_failed_cases": 29,
+      "raw_reports": {
+        "reference.json": {
+          "sha256": "468458a2c25d859b4fae0059fd6c085dd598ed3453534c619ef5c696de430dfc",
+          "summary_hash_binding": true,
+          "case_count": 113,
+          "failures": 0
+        },
+        "http.json": {
+          "sha256": "ebbb723bae5535bbc39e55be2567ec5389aac7c27b2e1e06d45bf9ef60b3af32",
+          "summary_hash_binding": true,
+          "case_count": 110,
+          "failures": 29,
+          "max_probability_error": 0.019531584454720696,
+          "label_flip_count": 0,
+          "official_sdk_observed": true
+        }
+      }
+    },
+    {
+      "model_id": "kirp/jpt-0.8b",
+      "execution": "passed",
+      "parity": "failed",
+      "cleanup": "passed",
+      "summary_sha256": "911f4ad83537b05cab2c56965137a74bdfc6bb94e9f0df38765ba4f70ebf6c9e",
+      "source_image_binding": "passed",
+      "host_source_dirty": true,
+      "observed_execution": "passed",
+      "real_gpu": true,
+      "model_revision": "1431c0509bbc10772cd59964cc7af5835c8720d6",
+      "parity_failed_cases": 5,
+      "raw_reports": {
+        "reference.json": {
+          "sha256": "ea67fc28098cbcf80f7fb6fb8db4dac3611320c45ea087c71a23711219ccb74c",
+          "summary_hash_binding": true,
+          "case_count": 10
+        },
+        "http.json": {
+          "sha256": "d9c65be1b2bc3c6dacf176a230db5f2b9cb16aecfb44c0582c562cd1bd71c12c",
+          "summary_hash_binding": true,
+          "case_count": 10,
+          "parity_failed_cases": 5,
+          "choice_label_flips": 0,
+          "max_probability_error": 0.027319473900426883,
+          "official_sdk_observed": true
+        }
+      }
+    },
+    {
+      "model_id": "kirp/jpt-4b",
+      "execution": "passed",
+      "parity": "failed",
+      "cleanup": "passed",
+      "summary_sha256": "821b6027b207bdd4f02279d7f55486315e401286d72a08652528840791d1d1bc",
+      "source_image_binding": "passed",
+      "host_source_dirty": true,
+      "observed_execution": "passed",
+      "real_gpu": true,
+      "model_revision": "78312f855b8bebf83ae7e9e8f05b5a0f73f519a9",
+      "parity_failed_cases": 5,
+      "raw_reports": {
+        "reference.json": {
+          "sha256": "609393e67f517168a508387585946ee856ea20b0f6e23ac25482a204e60d769a",
+          "summary_hash_binding": true,
+          "case_count": 10
+        },
+        "http.json": {
+          "sha256": "a748f8c57e82c5793e24c891738d90d8eca4015f35685750c02d77ad8fb30c09",
+          "summary_hash_binding": true,
+          "case_count": 10,
+          "parity_failed_cases": 5,
+          "choice_label_flips": 0,
+          "max_probability_error": 0.029479888502045526,
+          "official_sdk_observed": true
+        }
+      }
+    },
+    {
+      "model_id": "kirp/jpt-9b",
+      "execution": "passed",
+      "parity": "failed",
+      "cleanup": "passed",
+      "summary_sha256": "d9193f15be93978d707b96ca9167f99a75643413635976df2c86aecb26b97586",
+      "source_image_binding": "passed",
+      "host_source_dirty": true,
+      "observed_execution": "passed",
+      "real_gpu": true,
+      "model_revision": "9fda2c7f123d36c4789c46c93737e80fc3a6c9fe",
+      "parity_failed_cases": 5,
+      "raw_reports": {
+        "reference.json": {
+          "sha256": "71cd5d07bb7c78b7ae046d5a1bca1fd389b95e8077088ad5332d0fa0b0f96175",
+          "summary_hash_binding": true,
+          "case_count": 10
+        },
+        "http.json": {
+          "sha256": "a8fd212bfc8748a6f56dd38146a4d223a1dbd15d1b5f53c3796065f3312b96bf",
+          "summary_hash_binding": true,
+          "case_count": 10,
+          "parity_failed_cases": 5,
+          "choice_label_flips": 0,
+          "max_probability_error": 0.025075344554780332,
+          "official_sdk_observed": true
+        }
+      }
+    },
+    {
+      "model_id": "TokenRhythm/NeoHorse-Jev-4B",
+      "execution": "passed",
+      "parity": "passed",
+      "cleanup": "passed",
+      "summary_sha256": "cde3aa1457171608c3f0808bf13b04c0b963e176ebecc4d9e25d272d9108990b",
+      "source_image_binding": "passed",
+      "host_source_dirty": true,
+      "observed_execution": "passed",
+      "real_gpu": true,
+      "model_revision": "434cb21d3a994a953d3ae5788405fcb2c4970554",
+      "parity_failed_cases": 0,
+      "raw_reports": {
+        "reference.json": {
+          "sha256": "769d2e9e153392de728aa6ef92c84b2f896a8637ea876645952e36695016c26d",
+          "summary_hash_binding": true,
+          "case_count": 10
+        },
+        "http.json": {
+          "sha256": "a860e67540b9b06bdb883d78c10e9731c5f9732365b9c3016539c0e72f72a799",
+          "summary_hash_binding": true,
+          "case_count": 10,
+          "parity_failed_cases": 0,
+          "choice_label_flips": 0,
+          "max_probability_error": 6.326030721481857e-08,
+          "official_sdk_observed": true
+        }
+      }
+    },
+    {
+      "model_id": "jaredpalmer/kev-4b",
+      "execution": "passed",
+      "parity": "passed",
+      "cleanup": "passed",
+      "summary_sha256": "9dda1575e99beb62284fb48fa68f0c2598023b3b008a72bfe190cdd6fc719214",
+      "source_image_binding": "passed",
+      "host_source_dirty": true,
+      "observed_execution": "passed",
+      "real_gpu": true,
+      "model_revision": "6cfce5c2fa4b4bd64026336ab649c5ca78857d52",
+      "parity_failed_cases": 0,
+      "raw_reports": {
+        "reference.json": {
+          "sha256": "b9d5160d989b54bfdbb2491a026c5620d4567cfed434c5ef03489975f6565c50",
+          "summary_hash_binding": true,
+          "case_count": 10
+        },
+        "http.json": {
+          "sha256": "ee6478faa404953a74789ba87e733da81655535cb3b65a1aa0ecd5c22d7f639e",
+          "summary_hash_binding": true,
+          "case_count": 10,
+          "parity_failed_cases": 0,
+          "choice_label_flips": 0,
+          "max_probability_error": 4.988098048631234e-05,
+          "official_sdk_observed": true
+        }
+      }
+    }
+  ],
+  "compose": [
+    {
+      "model_id": "TokenRhythm/NeoHorse-Jev-4B",
+      "execution": "passed",
+      "cleanup": "passed",
+      "observed_execution": "passed",
+      "network_disabled": true,
+      "read_only_root": true,
+      "read_only_weights": true,
+      "container_http_observations": [
+        {
+          "sha256": "3301936e494f8f9f264824c1c834bd7b55a0127b1cfef72619f287bfbb07ee85",
+          "model_revision": "434cb21d3a994a953d3ae5788405fcb2c4970554",
+          "cancellation_verification": "not_verified",
+          "encoder_stage_cancellation_verified": false,
+          "answer_types": [
+            "choice",
+            "noul",
+            "score"
+          ]
+        }
+      ]
+    },
+    {
+      "model_id": "ZefanCai/Open-Jev-2B",
+      "execution": "passed",
+      "cleanup": "passed",
+      "observed_execution": "passed",
+      "network_disabled": true,
+      "read_only_root": true,
+      "read_only_weights": true,
+      "container_http_observations": [
+        {
+          "sha256": "2efeeb1228b0c8fea3efc2cb8db753d303aa7260fdd59900ccc34a4e6183a669",
+          "model_revision": "0c7aa498b1627be8da4acf34c863ff0ee0a92785",
+          "health_during_concurrent_seconds": 0.005137735977768898,
+          "concurrent_successes": 16,
+          "deadline_status": 504,
+          "recovery_status": 200,
+          "cancellation_exercised": true,
+          "accounting_drained": true,
+          "cancellation_verification": "client_attempt_only_server_propagation_not_verified",
+          "encoder_stage_cancellation_verified": false,
+          "answer_types": [
+            "choice",
+            "noul",
+            "score"
+          ]
+        }
+      ]
+    }
+  ],
+  "published": false,
+  "release_eligible": false,
+  "scope": "Same-host synthetic text execution and frozen probability comparison; no release, vision, clean-host or soak certification.",
+  "matrix_run_finalized": true,
+  "matrix_run_binding": "passed",
+  "compose_run_finalized": true,
+  "compose_run_binding": "passed",
+  "prior_attempts": [
+    {
+      "path": "validation/reports/source-13eed9b-compose-preflight.json",
+      "sha256": "ebc4fb5ffd09dbb080beaa421887ac96275b6c055b36c78e6b0de7765b44e11c",
+      "execution": "failed",
+      "cleanup": "passed",
+      "cause": "artifact_bind_mount_permissions"
+    }
+  ],
+  "all_execution_checks_passed": true,
+  "all_numerical_checks_passed": false,
+  "certified": false
+}
