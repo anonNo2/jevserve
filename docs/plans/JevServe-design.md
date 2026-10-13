@@ -1,6 +1,10 @@
 # JevServe：单机 NVIDIA 决策模型服务设计
 
-日期：2026-10-12。状态：供实施使用的设计基线，尚未实现或进行 GPU 验证。项目品牌名为 JevServe；仓库、Python 包、CLI 与镜像基础名称统一为 jevserve。
+日期：2026-10-12。**历史设计基线，保留供追溯，不是当前状态或部署指南。** 项目品牌名为 JevServe；仓库、Python 包、CLI 与镜像基础名称统一为 jevserve。
+
+截至 2026-10-13，源码与 dev1 通用镜像已公开，7 个固定模型配置完成真实 GPU/容器执行，但尚无 alpha 或模型认证。当前能力、失败门禁与部署方式分别见 [模型矩阵](../models.md)、[STATUS](../development/STATUS.md) 和 [Quick Start](../quickstart.md)；后续工作见 [开源完善计划](open-source-hardening.md)。
+
+下文保留原始目标与候选方案。后续决定以 [DECISIONS](../development/DECISIONS.md) 为准：已扩展到多模型及 VL 家族调查；当前 API 仍只支持文本；NeoHorse/Kev 有显式 Torch pointer profile；Laya 未实现。原文的 namespace 待确认、仅 vLLM、第二模型选择及未实施表述均属于当时基线，不应覆盖现有实现。
 
 ## 项目命名与独立身份
 

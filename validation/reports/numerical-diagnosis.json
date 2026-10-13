@@ -1,0 +1,1351 @@
+{
+  "scope": "CPU reanalysis of historical real-GPU evidence; no new inference",
+  "tolerance": {
+    "status": "predeclared_unmeasured",
+    "dtype": "bfloat16",
+    "head_dtype": "float32",
+    "probability_atol": 0.001,
+    "probability_rtol": 0.01,
+    "near_tie_margin": 0.01,
+    "report_all_label_flips": true,
+    "prefix_cache": false,
+    "calibration_id": null,
+    "notes": "Preserve checkpoint temperature; thresholds frozen before first reference/parity run. No accuracy or calibration claim."
+  },
+  "open_jev_2b": {
+    "case_count": 113,
+    "question_count": 113,
+    "failed_cases": 38,
+    "max_reference_reconstruction_error": 0.0,
+    "max_runtime_reconstruction_error": 0.0,
+    "max_centered_logit_error": 0.1360604166984558,
+    "questions": [
+      {
+        "case": "00-choice",
+        "question": "q",
+        "kind": "choice",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.04799962043762207,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0015147358707048864,
+        "within_tolerance": false
+      },
+      {
+        "case": "00-noul",
+        "question": "q",
+        "kind": "noul",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.08567500114440918,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.008589739932090723,
+        "within_tolerance": false
+      },
+      {
+        "case": "00-score",
+        "question": "q",
+        "kind": "score",
+        "candidate_count": 3,
+        "centered_logit_max_error": 0.09834456443786621,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.005033275820057748,
+        "within_tolerance": false
+      },
+      {
+        "case": "01-choice",
+        "question": "q",
+        "kind": "choice",
+        "candidate_count": 3,
+        "centered_logit_max_error": 0.027054965496063232,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.001944060255785196,
+        "within_tolerance": true
+      },
+      {
+        "case": "01-noul",
+        "question": "q",
+        "kind": "noul",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.008919239044189453,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0001268438940604799,
+        "within_tolerance": true
+      },
+      {
+        "case": "01-score",
+        "question": "q",
+        "kind": "score",
+        "candidate_count": 3,
+        "centered_logit_max_error": 0.06154286861419678,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.002543399083676956,
+        "within_tolerance": false
+      },
+      {
+        "case": "02-choice",
+        "question": "q",
+        "kind": "choice",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.03629744052886963,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.004266029643739899,
+        "within_tolerance": false
+      },
+      {
+        "case": "02-noul",
+        "question": "q",
+        "kind": "noul",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.08086299896240234,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.00584094963793598,
+        "within_tolerance": false
+      },
+      {
+        "case": "02-score",
+        "question": "q",
+        "kind": "score",
+        "candidate_count": 3,
+        "centered_logit_max_error": 0.039096951484680176,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.00025357449497405427,
+        "within_tolerance": true
+      },
+      {
+        "case": "03-choice",
+        "question": "q",
+        "kind": "choice",
+        "candidate_count": 3,
+        "centered_logit_max_error": 0.05370593070983887,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0006895720619476825,
+        "within_tolerance": true
+      },
+      {
+        "case": "03-noul",
+        "question": "q",
+        "kind": "noul",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.049195289611816406,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 6.187323142084261e-05,
+        "within_tolerance": true
+      },
+      {
+        "case": "03-score",
+        "question": "q",
+        "kind": "score",
+        "candidate_count": 3,
+        "centered_logit_max_error": 0.03824448585510254,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0008255856213045254,
+        "within_tolerance": true
+      },
+      {
+        "case": "04-choice",
+        "question": "q",
+        "kind": "choice",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.0409473180770874,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0012939155811174663,
+        "within_tolerance": true
+      },
+      {
+        "case": "04-noul",
+        "question": "q",
+        "kind": "noul",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.022773265838623047,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0006441366047291799,
+        "within_tolerance": true
+      },
+      {
+        "case": "04-score",
+        "question": "q",
+        "kind": "score",
+        "candidate_count": 3,
+        "centered_logit_max_error": 0.02216804027557373,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0009720445285660295,
+        "within_tolerance": true
+      },
+      {
+        "case": "05-choice",
+        "question": "q",
+        "kind": "choice",
+        "candidate_count": 3,
+        "centered_logit_max_error": 0.030541598796844482,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.00026655395369145664,
+        "within_tolerance": true
+      },
+      {
+        "case": "05-noul",
+        "question": "q",
+        "kind": "noul",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.025896549224853516,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0002659286659255772,
+        "within_tolerance": true
+      },
+      {
+        "case": "05-score",
+        "question": "q",
+        "kind": "score",
+        "candidate_count": 3,
+        "centered_logit_max_error": 0.014251470565795898,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.00030658679845331493,
+        "within_tolerance": true
+      },
+      {
+        "case": "06-choice",
+        "question": "q",
+        "kind": "choice",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.014644622802734375,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.002340306507866763,
+        "within_tolerance": true
+      },
+      {
+        "case": "06-noul",
+        "question": "q",
+        "kind": "noul",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.02228832244873047,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0005907437088537026,
+        "within_tolerance": true
+      },
+      {
+        "case": "06-score",
+        "question": "q",
+        "kind": "score",
+        "candidate_count": 3,
+        "centered_logit_max_error": 0.03752630949020386,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0002694495118450435,
+        "within_tolerance": true
+      },
+      {
+        "case": "07-choice",
+        "question": "q",
+        "kind": "choice",
+        "candidate_count": 3,
+        "centered_logit_max_error": 0.04114580154418945,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.003593279003891392,
+        "within_tolerance": false
+      },
+      {
+        "case": "07-noul",
+        "question": "q",
+        "kind": "noul",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.060092926025390625,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0006205865225263896,
+        "within_tolerance": true
+      },
+      {
+        "case": "07-score",
+        "question": "q",
+        "kind": "score",
+        "candidate_count": 3,
+        "centered_logit_max_error": 0.022252559661865234,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 6.30652091947459e-05,
+        "within_tolerance": true
+      },
+      {
+        "case": "08-choice",
+        "question": "q",
+        "kind": "choice",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.026424884796142578,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.004316807325835281,
+        "within_tolerance": true
+      },
+      {
+        "case": "08-noul",
+        "question": "q",
+        "kind": "noul",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.006153106689453125,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.00020379953679198343,
+        "within_tolerance": true
+      },
+      {
+        "case": "08-score",
+        "question": "q",
+        "kind": "score",
+        "candidate_count": 3,
+        "centered_logit_max_error": 0.1253085732460022,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.014770643651923154,
+        "within_tolerance": false
+      },
+      {
+        "case": "09-choice",
+        "question": "q",
+        "kind": "choice",
+        "candidate_count": 3,
+        "centered_logit_max_error": 0.05687516927719116,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.006977687470756,
+        "within_tolerance": false
+      },
+      {
+        "case": "09-noul",
+        "question": "q",
+        "kind": "noul",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.0017044544219970703,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.00013208949305676398,
+        "within_tolerance": true
+      },
+      {
+        "case": "09-score",
+        "question": "q",
+        "kind": "score",
+        "candidate_count": 3,
+        "centered_logit_max_error": 0.040578246116638184,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.001722639367926923,
+        "within_tolerance": false
+      },
+      {
+        "case": "10-choice",
+        "question": "q",
+        "kind": "choice",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.08396077156066895,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.006068395291431772,
+        "within_tolerance": false
+      },
+      {
+        "case": "10-noul",
+        "question": "q",
+        "kind": "noul",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.041994571685791016,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0005471721230233539,
+        "within_tolerance": true
+      },
+      {
+        "case": "10-score",
+        "question": "q",
+        "kind": "score",
+        "candidate_count": 3,
+        "centered_logit_max_error": 0.06798219680786133,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.00022940436588481106,
+        "within_tolerance": true
+      },
+      {
+        "case": "11-choice",
+        "question": "q",
+        "kind": "choice",
+        "candidate_count": 3,
+        "centered_logit_max_error": 0.03807854652404785,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.004465106632348115,
+        "within_tolerance": false
+      },
+      {
+        "case": "11-noul",
+        "question": "q",
+        "kind": "noul",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.02980804443359375,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0002587565056690472,
+        "within_tolerance": true
+      },
+      {
+        "case": "11-score",
+        "question": "q",
+        "kind": "score",
+        "candidate_count": 3,
+        "centered_logit_max_error": 0.04446291923522949,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.00020008867189780233,
+        "within_tolerance": true
+      },
+      {
+        "case": "12-choice",
+        "question": "q",
+        "kind": "choice",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.030135929584503174,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0007423137484066089,
+        "within_tolerance": true
+      },
+      {
+        "case": "12-noul",
+        "question": "q",
+        "kind": "noul",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.01495051383972168,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0017127691146884283,
+        "within_tolerance": true
+      },
+      {
+        "case": "12-score",
+        "question": "q",
+        "kind": "score",
+        "candidate_count": 3,
+        "centered_logit_max_error": 0.01791369915008545,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.002279855289411853,
+        "within_tolerance": true
+      },
+      {
+        "case": "13-choice",
+        "question": "q",
+        "kind": "choice",
+        "candidate_count": 3,
+        "centered_logit_max_error": 0.03168129920959473,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0006690491205102456,
+        "within_tolerance": true
+      },
+      {
+        "case": "13-noul",
+        "question": "q",
+        "kind": "noul",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.03458452224731445,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0023528856786119157,
+        "within_tolerance": false
+      },
+      {
+        "case": "13-score",
+        "question": "q",
+        "kind": "score",
+        "candidate_count": 3,
+        "centered_logit_max_error": 0.026200950145721436,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.006251563753963518,
+        "within_tolerance": false
+      },
+      {
+        "case": "14-choice",
+        "question": "q",
+        "kind": "choice",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.003944277763366699,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0004452017225984317,
+        "within_tolerance": true
+      },
+      {
+        "case": "14-noul",
+        "question": "q",
+        "kind": "noul",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.12111496925354004,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.011683879840984401,
+        "within_tolerance": false
+      },
+      {
+        "case": "14-score",
+        "question": "q",
+        "kind": "score",
+        "candidate_count": 3,
+        "centered_logit_max_error": 0.06947684288024902,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0054289535973903735,
+        "within_tolerance": false
+      },
+      {
+        "case": "15-choice",
+        "question": "q",
+        "kind": "choice",
+        "candidate_count": 3,
+        "centered_logit_max_error": 0.05293130874633789,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0026617308653241745,
+        "within_tolerance": false
+      },
+      {
+        "case": "15-noul",
+        "question": "q",
+        "kind": "noul",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.02995014190673828,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0018431955935999805,
+        "within_tolerance": true
+      },
+      {
+        "case": "15-score",
+        "question": "q",
+        "kind": "score",
+        "candidate_count": 3,
+        "centered_logit_max_error": 0.01710069179534912,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.002266144593821906,
+        "within_tolerance": true
+      },
+      {
+        "case": "16-choice",
+        "question": "q",
+        "kind": "choice",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.04241842031478882,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0014360744002535827,
+        "within_tolerance": true
+      },
+      {
+        "case": "16-noul",
+        "question": "q",
+        "kind": "noul",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.12197351455688477,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.017652496819363872,
+        "within_tolerance": false
+      },
+      {
+        "case": "16-score",
+        "question": "q",
+        "kind": "score",
+        "candidate_count": 3,
+        "centered_logit_max_error": 0.05051708221435547,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.005125241219476412,
+        "within_tolerance": false
+      },
+      {
+        "case": "17-choice",
+        "question": "q",
+        "kind": "choice",
+        "candidate_count": 3,
+        "centered_logit_max_error": 0.003561258316040039,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.00011798017734943045,
+        "within_tolerance": true
+      },
+      {
+        "case": "17-noul",
+        "question": "q",
+        "kind": "noul",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.03679800033569336,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0008135451401469762,
+        "within_tolerance": true
+      },
+      {
+        "case": "17-score",
+        "question": "q",
+        "kind": "score",
+        "candidate_count": 3,
+        "centered_logit_max_error": 0.023234248161315918,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.003539212249835777,
+        "within_tolerance": false
+      },
+      {
+        "case": "18-choice",
+        "question": "q",
+        "kind": "choice",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.04673182964324951,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.007256876250085975,
+        "within_tolerance": false
+      },
+      {
+        "case": "18-noul",
+        "question": "q",
+        "kind": "noul",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.03958547115325928,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0054505061079656025,
+        "within_tolerance": false
+      },
+      {
+        "case": "18-score",
+        "question": "q",
+        "kind": "score",
+        "candidate_count": 3,
+        "centered_logit_max_error": 0.0389975905418396,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.005799884415068124,
+        "within_tolerance": true
+      },
+      {
+        "case": "19-choice",
+        "question": "q",
+        "kind": "choice",
+        "candidate_count": 3,
+        "centered_logit_max_error": 0.042456626892089844,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.00112476209759578,
+        "within_tolerance": true
+      },
+      {
+        "case": "19-noul",
+        "question": "q",
+        "kind": "noul",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.006323814392089844,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 1.0815768377265417e-05,
+        "within_tolerance": true
+      },
+      {
+        "case": "19-score",
+        "question": "q",
+        "kind": "score",
+        "candidate_count": 3,
+        "centered_logit_max_error": 0.03531855344772339,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0021783694299429834,
+        "within_tolerance": true
+      },
+      {
+        "case": "20-choice",
+        "question": "q",
+        "kind": "choice",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.010774374008178711,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.001597789353765533,
+        "within_tolerance": true
+      },
+      {
+        "case": "20-noul",
+        "question": "q",
+        "kind": "noul",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.007058858871459961,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0003232886658941503,
+        "within_tolerance": true
+      },
+      {
+        "case": "20-score",
+        "question": "q",
+        "kind": "score",
+        "candidate_count": 3,
+        "centered_logit_max_error": 0.062357425689697266,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.000825816524384404,
+        "within_tolerance": true
+      },
+      {
+        "case": "21-choice",
+        "question": "q",
+        "kind": "choice",
+        "candidate_count": 3,
+        "centered_logit_max_error": 0.024480581283569336,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.004919530132281136,
+        "within_tolerance": false
+      },
+      {
+        "case": "21-noul",
+        "question": "q",
+        "kind": "noul",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.0009495019912719727,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.00015499658995687948,
+        "within_tolerance": true
+      },
+      {
+        "case": "21-score",
+        "question": "q",
+        "kind": "score",
+        "candidate_count": 3,
+        "centered_logit_max_error": 0.029345393180847168,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.005500301144162112,
+        "within_tolerance": false
+      },
+      {
+        "case": "22-choice",
+        "question": "q",
+        "kind": "choice",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.07068836688995361,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.005780177894391558,
+        "within_tolerance": false
+      },
+      {
+        "case": "22-noul",
+        "question": "q",
+        "kind": "noul",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.1360604166984558,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.02178033668786805,
+        "within_tolerance": false
+      },
+      {
+        "case": "22-score",
+        "question": "q",
+        "kind": "score",
+        "candidate_count": 3,
+        "centered_logit_max_error": 0.040034472942352295,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.004243242332899633,
+        "within_tolerance": false
+      },
+      {
+        "case": "23-choice",
+        "question": "q",
+        "kind": "choice",
+        "candidate_count": 3,
+        "centered_logit_max_error": 0.03114628791809082,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.005305437923289635,
+        "within_tolerance": false
+      },
+      {
+        "case": "23-noul",
+        "question": "q",
+        "kind": "noul",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.019899964332580566,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.003257810312555176,
+        "within_tolerance": true
+      },
+      {
+        "case": "23-score",
+        "question": "q",
+        "kind": "score",
+        "candidate_count": 3,
+        "centered_logit_max_error": 0.05858254432678223,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0020490756200979288,
+        "within_tolerance": true
+      },
+      {
+        "case": "24-choice",
+        "question": "q",
+        "kind": "choice",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.012990355491638184,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0009376045907584646,
+        "within_tolerance": true
+      },
+      {
+        "case": "24-noul",
+        "question": "q",
+        "kind": "noul",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.02978980541229248,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.004565951696827275,
+        "within_tolerance": true
+      },
+      {
+        "case": "24-score",
+        "question": "q",
+        "kind": "score",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.08267676830291748,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.001385042545990145,
+        "within_tolerance": false
+      },
+      {
+        "case": "25-choice",
+        "question": "q",
+        "kind": "choice",
+        "candidate_count": 3,
+        "centered_logit_max_error": 0.017758339643478394,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0014018340235009141,
+        "within_tolerance": true
+      },
+      {
+        "case": "25-noul",
+        "question": "q",
+        "kind": "noul",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.06238603591918945,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.002435270196973434,
+        "within_tolerance": false
+      },
+      {
+        "case": "25-score",
+        "question": "q",
+        "kind": "score",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.012041926383972168,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0001388607657186909,
+        "within_tolerance": true
+      },
+      {
+        "case": "26-choice",
+        "question": "q",
+        "kind": "choice",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.01212930679321289,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0015449132348814842,
+        "within_tolerance": true
+      },
+      {
+        "case": "26-noul",
+        "question": "q",
+        "kind": "noul",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.0036258697509765625,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0005070523627700441,
+        "within_tolerance": true
+      },
+      {
+        "case": "26-score",
+        "question": "q",
+        "kind": "score",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.03951573371887207,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0007293261491674308,
+        "within_tolerance": true
+      },
+      {
+        "case": "27-choice",
+        "question": "q",
+        "kind": "choice",
+        "candidate_count": 3,
+        "centered_logit_max_error": 0.03945738077163696,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.004476724440459989,
+        "within_tolerance": false
+      },
+      {
+        "case": "27-noul",
+        "question": "q",
+        "kind": "noul",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.028217315673828125,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 7.786338462892253e-05,
+        "within_tolerance": true
+      },
+      {
+        "case": "27-score",
+        "question": "q",
+        "kind": "score",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.07108759880065918,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.000522580061218603,
+        "within_tolerance": true
+      },
+      {
+        "case": "28-choice",
+        "question": "q",
+        "kind": "choice",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.0010613203048706055,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 9.07804798774281e-05,
+        "within_tolerance": true
+      },
+      {
+        "case": "28-noul",
+        "question": "q",
+        "kind": "noul",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.001148223876953125,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0001054170201070237,
+        "within_tolerance": true
+      },
+      {
+        "case": "28-score",
+        "question": "q",
+        "kind": "score",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.023914217948913574,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.00029875982156847905,
+        "within_tolerance": true
+      },
+      {
+        "case": "29-choice",
+        "question": "q",
+        "kind": "choice",
+        "candidate_count": 3,
+        "centered_logit_max_error": 0.06140398979187012,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0008622023303769405,
+        "within_tolerance": true
+      },
+      {
+        "case": "29-noul",
+        "question": "q",
+        "kind": "noul",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.013278484344482422,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0002923751594172616,
+        "within_tolerance": true
+      },
+      {
+        "case": "29-score",
+        "question": "q",
+        "kind": "score",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.007456064224243164,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 3.7068772042125886e-05,
+        "within_tolerance": true
+      },
+      {
+        "case": "30-choice",
+        "question": "q",
+        "kind": "choice",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.060257554054260254,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.007473333215288425,
+        "within_tolerance": false
+      },
+      {
+        "case": "30-noul",
+        "question": "q",
+        "kind": "noul",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.036920785903930664,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.004389152343813207,
+        "within_tolerance": false
+      },
+      {
+        "case": "30-score",
+        "question": "q",
+        "kind": "score",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.047023236751556396,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.001315564865130292,
+        "within_tolerance": true
+      },
+      {
+        "case": "31-choice",
+        "question": "q",
+        "kind": "choice",
+        "candidate_count": 3,
+        "centered_logit_max_error": 0.009496688842773438,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0003850040651489778,
+        "within_tolerance": true
+      },
+      {
+        "case": "31-noul",
+        "question": "q",
+        "kind": "noul",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.029788970947265625,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.00042457935180839623,
+        "within_tolerance": true
+      },
+      {
+        "case": "31-score",
+        "question": "q",
+        "kind": "score",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.030636906623840332,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.00012611301763592805,
+        "within_tolerance": true
+      },
+      {
+        "case": "32-choice",
+        "question": "q",
+        "kind": "choice",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.024050474166870117,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.003820010282911679,
+        "within_tolerance": true
+      },
+      {
+        "case": "32-noul",
+        "question": "q",
+        "kind": "noul",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.0011737346649169922,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 8.735929547323829e-05,
+        "within_tolerance": true
+      },
+      {
+        "case": "32-score",
+        "question": "q",
+        "kind": "score",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.012316703796386719,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 4.104187437314888e-05,
+        "within_tolerance": true
+      },
+      {
+        "case": "33-choice",
+        "question": "q",
+        "kind": "choice",
+        "candidate_count": 3,
+        "centered_logit_max_error": 0.02564072608947754,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.003126706201688839,
+        "within_tolerance": true
+      },
+      {
+        "case": "33-noul",
+        "question": "q",
+        "kind": "noul",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.003000497817993164,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.00027164015761793614,
+        "within_tolerance": true
+      },
+      {
+        "case": "33-score",
+        "question": "q",
+        "kind": "score",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.04896250367164612,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0015814451360403048,
+        "within_tolerance": false
+      },
+      {
+        "case": "34-choice",
+        "question": "q",
+        "kind": "choice",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.0672297477722168,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.010959474705370287,
+        "within_tolerance": false
+      },
+      {
+        "case": "34-noul",
+        "question": "q",
+        "kind": "noul",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.06474018096923828,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.004776302554270112,
+        "within_tolerance": false
+      },
+      {
+        "case": "34-score",
+        "question": "q",
+        "kind": "score",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.011191964149475098,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 4.118278494935623e-05,
+        "within_tolerance": true
+      },
+      {
+        "case": "35-choice",
+        "question": "q",
+        "kind": "choice",
+        "candidate_count": 3,
+        "centered_logit_max_error": 0.03305315971374512,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.006654399414707912,
+        "within_tolerance": false
+      },
+      {
+        "case": "35-noul",
+        "question": "q",
+        "kind": "noul",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.024471282958984375,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0007568318487617964,
+        "within_tolerance": true
+      },
+      {
+        "case": "35-score",
+        "question": "q",
+        "kind": "score",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.02593064308166504,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 6.927833455849797e-05,
+        "within_tolerance": true
+      },
+      {
+        "case": "empty-0",
+        "question": "q",
+        "kind": "noul",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.008620500564575195,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0013761821514990946,
+        "within_tolerance": true
+      },
+      {
+        "case": "empty-1",
+        "question": "q",
+        "kind": "noul",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.04258841276168823,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.006724599125644715,
+        "within_tolerance": false
+      },
+      {
+        "case": "empty-2",
+        "question": "q",
+        "kind": "noul",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.013307929039001465,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0018559238325119853,
+        "within_tolerance": true
+      },
+      {
+        "case": "exact-tie",
+        "question": "q",
+        "kind": "score",
+        "candidate_count": 2,
+        "centered_logit_max_error": 0.0,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0,
+        "within_tolerance": true
+      },
+      {
+        "case": "single-candidate",
+        "question": "q",
+        "kind": "choice",
+        "candidate_count": 1,
+        "centered_logit_max_error": 0.0,
+        "reference_reconstruction_error": 0.0,
+        "runtime_reconstruction_error": 0.0,
+        "max_probability_error": 0.0,
+        "within_tolerance": true
+      }
+    ]
+  },
+  "jpt": {
+    "jpt-0.8b": {
+      "case_count": 10,
+      "failed_cases": 6,
+      "choice_label_flips": 0,
+      "by_question_type": {
+        "choice": {
+          "questions": 5,
+          "failed_questions": 2,
+          "max_probability_error": 0.007394037653320432
+        },
+        "noul": {
+          "questions": 4,
+          "failed_questions": 1,
+          "max_probability_error": 0.006549524197585969
+        },
+        "score": {
+          "questions": 4,
+          "failed_questions": 3,
+          "max_probability_error": 0.027319473900426883
+        }
+      },
+      "raw_logits_available": false
+    },
+    "jpt-4b": {
+      "case_count": 10,
+      "failed_cases": 6,
+      "choice_label_flips": 0,
+      "by_question_type": {
+        "choice": {
+          "questions": 5,
+          "failed_questions": 3,
+          "max_probability_error": 0.029479888502045526
+        },
+        "noul": {
+          "questions": 4,
+          "failed_questions": 0,
+          "max_probability_error": 0.0003060420310670702
+        },
+        "score": {
+          "questions": 4,
+          "failed_questions": 3,
+          "max_probability_error": 0.02885063547572808
+        }
+      },
+      "raw_logits_available": false
+    },
+    "jpt-9b": {
+      "case_count": 10,
+      "failed_cases": 5,
+      "choice_label_flips": 0,
+      "by_question_type": {
+        "choice": {
+          "questions": 5,
+          "failed_questions": 2,
+          "max_probability_error": 0.013042322221390443
+        },
+        "noul": {
+          "questions": 4,
+          "failed_questions": 0,
+          "max_probability_error": 0.0005207172471712873
+        },
+        "score": {
+          "questions": 4,
+          "failed_questions": 3,
+          "max_probability_error": 0.025075344554780332
+        }
+      },
+      "raw_logits_available": false
+    }
+  },
+  "input_sha256": {
+    "parity-profile.json": "46106b2e36169105ab4dd459edad066d63e9d144a87b25109224951659946ffc",
+    "open-jev-reference.json": "938ba97b4acf916d228036f8f21bfc75a74aaddeadaa089cb8abda40beb4a6b4",
+    "vllm-pooling-parity.json": "17279426b356d1e7c480ed4ea2164f2ad335b67cb8eadd1ab064d52a9ac3fdac",
+    "jpt-0.8b-reference.json": "3272029d2c9e465f369cc8d966ef03447de4f0ae1a912c20679c58b2cd2dc7eb",
+    "jpt-0.8b-container.json": "720dbb1f8a938012e2b2a52797cb59b11ccc402ee1c43ce46ee317fd71f266e0",
+    "jpt-4b-reference.json": "521ba6b292f1e8c861f45e39889ad994afbec847dadfe911a3d588106e33f0b4",
+    "jpt-4b-container.json": "5755eff513442fd2c7de570b2d84ff236daa6593e8a9a4aa01f564e3653f64a1",
+    "jpt-9b-reference.json": "e94d6a9896cedeb83fb24f3143d2e4ec00ef98e833009cd87cc7cb6e7126a43f",
+    "jpt-9b-container.json": "3d37b6805c8638a97c4f4e296ea51e7551e316a8e654b0faf675fc070c3f0776"
+  },
+  "root_cause_resolved": false
+}

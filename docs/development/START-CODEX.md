@@ -1,13 +1,15 @@
 # Start the next Codex session
 
-在仓库根目录启动 Codex 后，将下面的提示发送给它。此提示供用户手动发送，不代表初始化阶段已开始实现。
+在仓库根目录启动 Codex 后，可发送以下提示继续当前工作。实际进度以 [STATUS.md](STATUS.md) 为准；本提示不授权发布或重跑全部 GPU 验证。
 
 ```text
-请开始实现 JevServe。先阅读 AGENTS.md、docs/development/HANDOFF.md、docs/development/STATUS.md、.local/SERVER.md（若存在）以及 docs/plans/ 中的设计和任务规划。
+请继续完善 JevServe。先阅读 AGENTS.md、docs/development/HANDOFF.md、docs/development/STATUS.md、.local/SERVER.md（若存在），以及 docs/plans/JevServe-design.md、docs/plans/JevServe-task-plan.md、docs/plans/open-source-hardening.md 和 docs/development/DECISIONS.md。
 
-目标是完成可公开发布的开源 repo 雏形，至少一个真实 Jev 类模型能够用单条 docker run 或 docker compose up -d 拉起。部署范围是单机 Linux + NVIDIA。首版用 vLLM，不做 Kubernetes 或空壳 Triton 后端。
+已有公开源码和通用 dev1 镜像，7 个固定模型配置有真实 GPU/容器执行证据；当前仍是未认证开发预览。Open-Jev/JPT 数值对照失败，NeoHorse/Kev 仅通过小型合成对照。当前 API 只支持文本，不能宣称已支持图片或所有 VL 模型。
 
-先核查现有 Git 变更和机器状态，从 T00 的真实上游/许可证/版本/GPU 容器验证开始，然后按依赖顺序实施。顺序执行即可，不重复征询已确定的命名和架构；根据证据修正规划中的不一致并记录理由。不要因为本机没有计划中提到的技能而停止。
+先检查 git status，保留现有变更，按 STATUS 最新记录和开源完善计划选择未完成工作。不要从初始化/T00 重做，不重复询问已确定的命名和单机单 GPU 架构。默认顺序执行；只有本会话明确授权时再委派。GPU/容器重工作前检查共享资源，并串行调度。
 
-不要用 mock 推理、仅构建成功或上游宣称代替真实 GPU 验收。README 要如实反映已实现能力。每完成任务更新 STATUS、保存验证证据并提交；不改动共享服务器的全局驱动、Docker 配置或他人资源，不做未授权的公开发布。遇到真实阻塞时说明证据并继续可独立完成的工作。
+公开可复现的验证、数值偏差诊断和可追溯发布流程是近期重点。保持模型精度和冻结容差，不能用标签一致、CPU 测试或 Docker build 成功代替 GPU 认证。回滚、干净主机安装和 24/72 小时长稳需要各自实际证据，未执行就如实标记。
+
+使用 Python 3.12 项目环境和固定依赖。每项工作完成后记录命令、结果、证据和下一步，更新 STATUS，必要时更新 DECISIONS，并同步中英文 README。审查变更后按当前授权提交，不改共享 Docker/驱动或他人资源，不做未授权的 push 或发布。遇到真实阻塞时记录证据并继续独立工作。
 ```

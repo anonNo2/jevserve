@@ -15,12 +15,17 @@ manifest access and digest pull passed. All seven catalog models completed real
 GPU/container checks; NeoHorse/Kev passed the small parity suite, while Open-Jev
 and JPT still have numerical differences. No Python package is published.
 
+The first hardening wave adds public validation and reviewed preview-promotion tools;
+see the [hardening plan](../plans/open-source-hardening.md) and latest session below.
+The new orchestration has CPU coverage and a real busy-GPU preflight refusal; full
+end-to-end execution and remote promotion remain unrun.
+
 ## Task tracking
 
 | Task | Status | Remaining evidence |
 |---|---|---|
 | T00 Baseline | Author reference complete; engine measured | GPU parity failed; isolated Docker CPU/GPU baseline passed |
-| T01 Contracts | CPU complete | 168 CPU tests across current implementation |
+| T01 Contracts | CPU complete | See latest session for current CPU test count |
 | T02 Artifacts | Cold online preparation and real container offline inference passed | Broader release/fault matrix remains |
 | T03 Adapter | Encoding/readout and fixed FP32 LoRA implemented | Numerical alignment still fails; not certified |
 | T04 Runtime | Real GPU/HTTP inference works | Resolve 38/113 latest pretokenized and 36/110 HTTP parity failures |
@@ -175,7 +180,7 @@ fallback. Author GPU inference has now passed; replaying all 113 recorded GPU lo
 through the adapter also matches author probabilities, choices and ordinal
 scores (CPU regression tolerance 1e-12). This is not a vLLM engine comparison.
 
-## Unrun gates
+## Unrun gates at the historical checkpoint above
 
 vLLM parity, container GPU passthrough, Docker build,
 docker-run/Compose inference, service offline inference, cancellation under GPU
@@ -681,3 +686,71 @@ misalignment without changing the frozen tolerance; then run rollback, clean-hos
 installation and 24/72-hour soak gates before any certified release. Larger
 JEV-27B-VL/Xor profiles need explicit adapter and precision/offload engineering
 with their own evidence; they remain unsupported, not substituted or certified.
+
+## 2026-10-13 — Open-source hardening, first wave O01–O04
+
+User authorized parallel agents with only task-specific context. Three independent
+agents owned documentation, validation orchestration and release automation; the
+root agent owned numerical reanalysis and integration. File ownership stayed
+separate. No agent launched parallel GPU work or published artifacts.
+
+- **O01 delivered:** current contribution/continuation guides, historical-plan
+  labels, corrected implementation guide, and bilingual README links to validation,
+  numerical diagnosis, release process and `docs/plans/open-source-hardening.md`.
+- **O02 partial end-to-end:** `validation.run` exposes author-reference then one
+  pinned-image container, readiness, HTTP/native/official SDK comparison, explicit
+  parity/execution status, hash-bound reports and project-scoped cleanup. CPU
+  tests cover failures, timeout, GPU selection, signal cleanup and separate parity.
+  Independent review found inherited GPU selection, SIGTERM and excessive readiness
+  timeout bugs; those were fixed before final checks.
+- Real host preflight with the verified JPT-0.8B directory, pinned upstream,
+  dedicated reference environment and public dev1 digest returned **exit 2,
+  `error_code=gpu_busy`, `stage=preflight`, `real_gpu=false`**. Manifest hashes,
+  upstream pin/cleanliness and local image inspection completed; no reference or
+  container was launched. Evidence: `validation/reports/hardening-preflight.json`.
+  The source tree was dirty during development, as the report explicitly records;
+  this report cannot pass release eligibility. Foreign GPU work was untouched.
+- **O03 partial:** `validation.numerics` reanalyses historical real-GPU evidence
+  without GPU imports. All 113 Open-Jev reference/runtime probability vectors
+  reconstruct exactly from their respective logits and checkpoint temperature;
+  38 failed cases remain, maximum centered-logit error 0.1360604166984558. JPT
+  retains 6/10, 6/10 and 5/10 failures with no Choice flips; raw logits are absent.
+  Root cause is unresolved. See `docs/numerical-diagnosis.md` and its hash-bound
+  report; no production changes, new inference or certification claimed.
+- **O04 local implementation delivered:** reviewed manual promotion workflow,
+  standard-library evidence validator, exact registry-manifest-byte promotion,
+  CHANGELOG and release guide. Every shipped model revision needs new commit-bound
+  evidence; historical dev1 is not silently grandfathered. Alpha/RC/stable fail
+  closed. Remote dispatch, environment protection/secrets configuration and registry
+  promotion remain unexecuted; existing dev1 stays unchanged.
+
+Reproduction (source checkout, Python 3.12 CPU environment):
+
+```bash
+.venv/bin/pytest -q
+.venv/bin/ruff check .
+.venv/bin/mypy
+.venv/bin/python -m build
+.venv/bin/python -m validation.numerics --output numerical-diagnosis.json
+.venv/bin/python -m validation.run --help
+.venv/bin/python -m validation.release --help
+```
+
+For the full model-run command with explicit model directory, upstream checkout,
+reference interpreter, Docker socket and immutable image, see `docs/validation.md`.
+Private paths/logs and shared-host process details remain in `.local/`.
+
+Next action: on an idle GPU, use a clean committed checkout to execute the public
+runner for JPT-0.8B and review reference/HTTP/cleanup outputs; then capture matched
+raw and centered logits as described in the numerical diagnosis. O05–O08,
+clean-host installation, rollback and real 24/72-hour soak remain unrun.
+
+Final local verification: **253 CPU tests passed**, Ruff passed, mypy passed
+(33 production source files), sdist/wheel build passed, `git diff --check` passed.
+111 checked relative documentation links resolved. CLI help for both new runners
+executed successfully. Independent cross-review verified the GPU/signal fixes,
+checked numerical report reproduction, and found a release raw-report/summary
+consistency gap; that gap was fixed and independently re-reviewed. The 61 release
+contract tests include real historical report-format checks, missing SDK refusal
+and content contradictions even after hashes are recomputed. No historical
+report acquired release eligibility from those format checks.

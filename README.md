@@ -132,6 +132,8 @@ uv run mypy
 
 CPU tests need no GPU or model downloads. Bug reports and contributions are welcome; please include your runtime version and a minimal reproducible example.
 
+[Reproduce validation](docs/validation.md) · [Numerical diagnosis](docs/numerical-diagnosis.md) · [Release process](docs/releasing.md) · [Open-source hardening plan](docs/plans/open-source-hardening.md)
+
 ## License
 
 Apache-2.0. Upstream code and model licenses are documented in [NOTICE](NOTICE) and [model details](docs/models.md).

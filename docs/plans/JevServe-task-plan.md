@@ -1,6 +1,8 @@
 # JevServe Implementation Plan
 
-> **For agentic workers:** Execute task-by-task; checkbox items are the tracking unit. Read the repository root AGENTS.md and docs/development/HANDOFF.md first. If available, use superpowers:executing-plans for sequential work; delegation requires the active session to allow it. Missing optional skills do not block the concrete plan. This document plans work; no inference implementation has been performed.
+> **Historical implementation plan (2026-10-12).** This document preserves the original T00–T12 scope, illustrative fixtures and partial checkbox snapshot; it is not a live task tracker or a runnable deployment guide. Implementation and real GPU/container execution now exist, and the generic dev1 image is public. Numerical certification remains incomplete. Read [AGENTS.md](../../AGENTS.md), [HANDOFF](../development/HANDOFF.md) and [STATUS](../development/STATUS.md) before continuing with the [open-source hardening plan](open-source-hardening.md).
+>
+> Follow [DECISIONS](../development/DECISIONS.md) for subsequent scope/interface changes and [Quick Start](../quickstart.md) for current commands. Historical examples may reference unimplemented files, earlier flags, proposed defaults, optional skills or obsolete model choices. Do not execute them as an acceptance suite or restart completed tasks from T00. Current model/backend and text/vision status is in the [model matrix](../models.md).
 
 **Goal:** 交付完善的开源 repo 雏形，让用户通过一个 Docker 镜像或 Docker Compose 极简启动经过验证的开源 Jev 类决策模型。
 

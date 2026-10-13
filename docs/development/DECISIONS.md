@@ -140,3 +140,20 @@ Add material changes with evidence, compatibility consequences and affected task
   runs against a documented local configuration view setting both outer and
   nested dtype to FP32; weight bytes remain the pinned originals. This is a
   corrected loader profile, not an unmodified author benchmark environment.
+
+- **D029 — Separate reviewed preview promotion from certification.** Release
+  automation accepts only development-preview manifests binding an exact source
+  commit, immutable registry digest, all shipped model revisions and hashed raw
+  evidence. It promotes the same manifest bytes without a rebuild. Alpha/RC/stable
+  remain disabled until their evidence policies exist. Historical dev0/dev1 reports
+  are not retroactively assigned guessed commit bindings. New gate wrappers are
+  reviewed attestations, not proof that hardware execution occurred.
+
+- **D030 — Diagnose scores without redefining parity.** The CPU numerical report
+  reanalyses existing real-GPU records with frozen tolerances and checkpoint
+  temperature. Open-Jev probabilities reconstruct exactly from recorded scores;
+  score differences remain unexplained. JPT reports lack raw logits. No causal
+  attribution to BF16, precision change or tolerance relaxation follows from this
+  analysis. Public validation defaults to an idle physical GPU 0, uses its UUID
+  for the author reference, and refuses occupied hardware rather than evicting
+  another workload.

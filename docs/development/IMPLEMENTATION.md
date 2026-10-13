@@ -14,8 +14,8 @@ uv run python -m build
 ## Real development service
 
 The CLI, HTTP service, native SDK and pinned vLLM bridge are implemented. The
-runtime is explicitly **uncertified**: see STATUS for failed numerical parity
-and container gates. To install a separate source runtime on another host:
+runtime is explicitly **uncertified**: see [STATUS](STATUS.md) for failed numerical parity
+and the separate, completed container execution checks. To install a separate source runtime on another host:
 
 ```bash
 uv venv --python 3.12 .venv-runtime
@@ -73,7 +73,7 @@ Image build, cold online startup, real offline container inference and Compose
 inference have passed on the development host; see STATUS for exact scope and
 image ID. Keep prepared caches when changing images and pin an image ID/digest
 for rollback. The verified development preview is public as
-`anonwx/jevserve:0.1.0-dev0`; [deployment instructions](../quickstart.md) include
+`anonwx/jevserve:0.1.0-dev1`; [deployment instructions](../quickstart.md) include
 the immutable registry digest. There is no certified release image or completed
 rollback drill.
 
@@ -112,3 +112,7 @@ CPU checks, package build, Docker execution and GPU model certification are
 separate. The initial lock checker rejects the current candidate baseline for
 release. It is a fail-closed baseline guard, not the complete T11 image-promotion
 pipeline. Use STATUS for actual evidence and unrun checks.
+
+Public serial validation is documented in [validation.md](../validation.md).
+The reviewed development-image promotion process is in [releasing.md](../releasing.md);
+certified channels remain blocked pending their evidence gates.

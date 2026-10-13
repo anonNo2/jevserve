@@ -132,6 +132,8 @@ uv run mypy
 
 CPU 测试无需 GPU 或模型下载。欢迎提交问题和改进；报告问题时请附上运行版本和最小复现示例。
 
+[复现验证](docs/validation.md) · [数值偏差诊断](docs/numerical-diagnosis.md) · [发布流程](docs/releasing.md) · [开源完善计划](docs/plans/open-source-hardening.md)
+
 ## 许可证
 
 Apache-2.0。上游代码与模型的许可证见 [NOTICE](NOTICE) 和[模型详情](docs/models.md)。

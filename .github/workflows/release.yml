@@ -1,0 +1,72 @@
+name: Reviewed development image promotion
+on:
+  workflow_dispatch:
+    inputs:
+      manifest:
+        description: Reviewed release manifest path (releases/*.json)
+        required: true
+        type: string
+      source_commit:
+        description: Full tested source commit SHA
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: jevserve-release
+  cancel-in-progress: false
+jobs:
+  validate:
+    if: github.repository == 'anonNo2/jevserve' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      version: ${{ steps.evidence.outputs.version }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Validate reviewed evidence without credentials
+        id: evidence
+        env:
+          MANIFEST: ${{ inputs.manifest }}
+          SOURCE_COMMIT: ${{ inputs.source_commit }}
+        run: |
+          [[ "$MANIFEST" =~ ^releases/[a-zA-Z0-9._-]+\.json$ ]]
+          python3.12 -m validation.release "$MANIFEST" --expected-commit "$SOURCE_COMMIT" --github-output "$GITHUB_OUTPUT"
+  promote:
+    needs: validate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: release
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Revalidate exact checkout and prepare immutable promotion
+        id: evidence
+        env:
+          MANIFEST: ${{ inputs.manifest }}
+          SOURCE_COMMIT: ${{ inputs.source_commit }}
+        run: |
+          [[ "$MANIFEST" =~ ^releases/[a-zA-Z0-9._-]+\.json$ ]]
+          python3.12 -m validation.release "$MANIFEST" --expected-commit "$SOURCE_COMMIT" --github-output "$GITHUB_OUTPUT"
+      - name: Copy the tested registry manifest bytes to the new tag
+        env:
+          MANIFEST: ${{ inputs.manifest }}
+          SOURCE_COMMIT: ${{ inputs.source_commit }}
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        run: |
+          python3.12 -m validation.release "$MANIFEST" --expected-commit "$SOURCE_COMMIT" --promote
+      - name: Record promotion identity
+        env:
+          VERSION: ${{ steps.evidence.outputs.version }}
+          SOURCE_COMMIT: ${{ steps.evidence.outputs.source_commit }}
+          DIGEST: ${{ steps.evidence.outputs.image_digest }}
+        run: |
+          printf 'Development preview %s\nSource: %s\nImage: anonwx/jevserve@%s\n' "$VERSION" "$SOURCE_COMMIT" "$DIGEST" >> "$GITHUB_STEP_SUMMARY"

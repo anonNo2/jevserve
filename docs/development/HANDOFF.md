@@ -1,58 +1,30 @@
 # Codex 开发交接
 
-实施已于 2026-10-12 开始。已交付一个通用镜像、独立挂载权重的开发预览：Open-Jev-2B/9B、JPT-0.8B/4B/9B、NeoHorse-Jev-4B、Kev-4B 共 7 个固定模型配置，均已完成真实 GPU 与容器推理。NeoHorse 与修正加载配置后的 Kev FP32 通过小型合成数值对照；Open-Jev 和 JPT 仍有概率偏差，尚非 alpha 或生产认证。
+更新：2026-10-13。JevServe 已实现 CLI、HTTP/SDK、模型准备、真实推理和 Docker/Compose 部署，当前交付为开发预览。Open-Jev-2B/9B、JPT-0.8B/4B/9B、NeoHorse-Jev-4B、Kev-4B 共 7 个固定模型配置均有真实 GPU/容器执行证据。Open-Jev/JPT 概率对照仍失败；NeoHorse 与修正加载配置后的 Kev FP32 仅通过小型合成对照。尚无 alpha、稳定版或模型认证。
 
-通用镜像 `anonwx/jevserve:0.1.0-dev1` 已公开发布，匿名 digest 拉取通过；固定 digest 见 [Quick Start](../quickstart.md)。源码持续推送至 https://github.com/anonNo2/jevserve，远程 CPU CI 已通过。模型、许可证、显存观察和测试证据见 [models.md](../models.md)。当前状态及下一步以 [STATUS.md](STATUS.md) 为准，CPU 开发命令见 [IMPLEMENTATION.md](IMPLEMENTATION.md)。下方初始化说明属于历史基线。
+源码已公开于 [GitHub](https://github.com/anonNo2/jevserve)。通用镜像 `anonwx/jevserve:0.1.0-dev1` 已发布，其固定 digest 为 `sha256:4b758ad1000f4d38501fd83f0a9c2b32f0cb91968d427b170a2c2b0d9a613aff`；匿名拉取已通过，但复用了缓存层，不能视为干净主机安装。部署步骤见 [Quick Start](../quickstart.md)，模型许可证、能力与逐项证据见 [models.md](../models.md)。尚未发布 Python 包。
 
-## 用户目标
+## 接续工作
 
-交付一个完善的开源推理 repo 雏形，能像 vLLM 一样以一个容器极简拉起 Jev 类模型。主打真实可运行、模型结果可验证、离线/运维完整，而不是只有目录和 API 外壳。
+1. 阅读根目录 [AGENTS.md](../../AGENTS.md)、本文件和 [STATUS.md](STATUS.md)。STATUS 顶部汇总及最新会话记录反映当前进展；较早会话保留当时的失败和未执行状态。
+2. 如存在，读取 `.local/SERVER.md`，并在重工作前重新检查资源占用。该文件仅用于本机观察，不提交到 Git。
+3. 阅读历史 [设计](../plans/JevServe-design.md)、[T00–T12 计划](../plans/JevServe-task-plan.md) 和 [DECISIONS.md](DECISIONS.md) 理解约束与变更；不要重新从初始化或 T00 开始。
+4. 按 [开源完善计划 O01–O08](../plans/open-source-hardening.md) 和 STATUS 最新未完成项接续。当前优先项是公开验证编排、Open-Jev/JPT 数值偏差诊断及可追溯发布流程；以实际完成证据更新任务状态。
 
-用户已选择 Linux + NVIDIA、单机 Docker Compose，认可名称 `jevserve` 并接受与 JevServe-Bench 近名。默认是单容器，而非强制 gateway + worker 两套部署。架构和详细计划见 `docs/plans/`；它们来自先前需求讨论，不需要重新询问产品定位。
+开始时运行 `git status --short --branch`，保留已有工作。CPU 安装、CLI 和检查命令见 [CONTRIBUTING.md](../../CONTRIBUTING.md)；源码运行时开发见 [IMPLEMENTATION.md](IMPLEMENTATION.md)。不要把已有缓存或某次宿主观察当成新环境验证。部署命令以 Quick Start 为准。
 
-## 此次初始化完成了什么
+## 已确定的边界
 
-- 上传架构设计与 13 项任务规划（T00–T12）。
-- 编写中英文 README、AGENTS.md、交接/状态/决策文档、贡献指南和 Apache-2.0 许可证。
-- 初始化 Git 主分支并提交文档基线；不配置虚构远端，不推送。
-- 将服务器环境快照写入 `.local/SERVER.md`，避免把私人服务器地址提交到公开仓库。
+- 一个通用运行时镜像、外部挂载权重，一个容器拥有一个模型/引擎，单 Linux NVIDIA 主机、单 GPU；Docker 与 Compose 都是正式部署路径。
+- vLLM 为主；NeoHorse/Kev 使用明确选择的 Torch pointer profile，不是在 vLLM 失败后自动回退。
+- 当前 API 仅支持文本 Choice/Noul/Score。用户已扩展模型调查范围到 VL 家族，但图片输入未实现；JEV-27B-VL、Xor 1.2 和 Laya 尚未接入或完成 GPU 验证。
+- JevServe 独立于 TypeSafe AI 和 JevServe-Bench。命名已确定；不重新讨论，也不引入 Kubernetes、训练平台、Web UI、多机或空壳 Triton 后端。
+- 开发模型必须显式使用 `--allow-uncertified`。保持冻结容差及原始语义，不用标签一致、mock 推理或构建成功替代数值认证。
 
-没有实现推理服务、Python 包、Dockerfile、Compose、SDK 或 CI。没有下载权重、安装依赖、启动模型或完成 GPU 认证。README 命令属于目标体验，不能报告为现在可用。
+## 验证与交付
 
-## 阅读顺序
+CPU 通过、容器执行通过和真实 GPU 数值认证分别记录。回滚演练、独立干净主机安装、24/72 小时长稳仍需实际完成；现有小型对照不构成完整发布验收。数值偏差应按编码、读出、温度、精度和批处理逐层调查，没有证据不归因于 BF16，也不放宽容差。
 
-1. 根目录 `AGENTS.md`。
-2. `docs/development/STATUS.md` 和本文件。
-3. 本机 `.local/SERVER.md`（如果存在）。
-4. `docs/plans/JevServe-design.md`。
-5. `docs/plans/JevServe-task-plan.md`，从 T00 开始。
+按当前会话授权执行；默认顺序工作，只有明确允许时委派，GPU 重工作保持串行。不得重启共享 Docker daemon、改驱动或清理他人资源。离线模式不访问网络，下载到 staging、校验后原子发布；不得提交权重、凭据或 `.local/`。
 
-## 第一段实际工作
-
-用户发出“开始开发”后，先执行 T00 的只读环境和上游核验：
-
-1. `git status --short --branch`；检查已有变更，保留用户工作。
-2. 检查 GPU 空闲情况、Docker daemon 权限、NVIDIA runtime 和 GPU 容器透传。不能根据宿主 nvidia-smi 成功就宣布容器 GPU 可用。
-3. 核验目标权重和 vllm-jev 上游是否真实可访问，读取许可证和模型实现，固定 commit。历史版本号及搜索所得模型名称必须重新核实。
-4. 选择实际存在且能在本机运行的 vLLM/CUDA/PyTorch 组合，建立本地 Python 3.12 环境或容器；不修改系统 Python。
-5. 运行作者参考实现并保存对照 fixture、模型清单及证据，随后进入 T01。
-
-上游资源不存在、网络失败或模型许可证不允许时，如实记录，完成其余独立工作；需要改变目标模型时向用户说明证据和替代选择，不能编造 lock 文件或 benchmark。
-
-## 历史计划需要注意的地方
-
-- “vLLM latest 文档有某接口”不能替代固定发行版验证。
-- 计划中的测试片段需要补齐 fixture/import/helper；它们是行为约定，并非已运行代码。
-- `FakeRuntime` 只能用于 CPU 测试，不能用于演示上线。
-- `calibration_id=null` 是首版正常状态，不开展未经要求的校准平台建设。
-- T09 第二模型可选；Triton 不属于本轮交付。
-- 计划中的工程日是估算，不能据此跳过验收。
-- 若本机没有 superpowers 等技能，直接按任务和验收工作，不为安装技能中断开发。
-
-## 验收与后续会话
-
-每完成一个任务更新 STATUS，记录真实命令和结果，并以本机既有 Git 身份提交。标明未执行的 GPU/长稳检查。不要生成虚构徽章、镜像 registry、PyPI 链接、星标数量或性能数字。
-
-用户本次只要求初始化与交接，并未要求本会话启动 T00–T12。后续用户要求开发时再执行；不需要重新做命名/架构讨论。开源远端创建、push、镜像/软件包公开发布需用户给出目的地及授权。
-
-供用户在服务器 Codex 会话中使用的启动提示见 [START-CODEX.md](START-CODEX.md)。
+结束前更新 STATUS：实际命令、结果、证据路径、未运行检查、阻塞和精确下一步。重大设计变化记录到 DECISIONS，能力或状态变化同步中英文 README。按会话安排审查并提交完整变更；沿用会话中已有的 push/发布授权及目的地；未授权的新目的地或发布范围需要另行明确。用户可使用 [START-CODEX.md](START-CODEX.md) 中的提示接续。
