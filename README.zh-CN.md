@@ -16,7 +16,7 @@ JevServe 将开放权重的 Jev 类决策模型封装成 HTTP 服务。发送文
 
 **一个通用镜像，模型权重独立挂载。** 已接入 Open-Jev、JPT、NeoHorse、Kev 模型家族，使用 vLLM 或指定的 Torch 后端。提供 Python 客户端、有界请求队列、取消、健康检查和离线模式。各模型的实测状态和许可见[支持模型与测试结果](docs/models.md)。
 
-> **开发预览版。** 默认 Open-Jev 模型目前**未通过与作者实现的严格概率对照**。`--allow-uncertified` 表示显式接受开发运行，不代表结果已认证。依赖概率或决策阈值前，请先阅读[当前限制](#当前状态与限制)。
+> **开发预览版。** 对已有 GPU 证据的重新评估表明，实测用例通过初始 `bounded-drift-v1` 策略；Open-Jev/JPT 的历史严格对照仍失败。仍需 `--allow-uncertified`，这不是完整模型认证或准确率评测。详见[数值范围与限制](#当前状态与限制)。
 
 ## 快速开始
 
@@ -116,7 +116,7 @@ with Client("http://127.0.0.1:8000") as client:
 ## 当前状态与限制
 
 - **模型：** 7 个固定版本模型已在 RTX A6000 完成真实 GPU 与容器测试；当前 API 仅支持文本，一个容器对应一个模型和一张 GPU。[逐模型测试结果](docs/models.md)。
-- **数值：** Open-Jev 和 JPT 未通过严格概率对照；NeoHorse 与 Kev 通过了小型合成对照用例。推理成功不代表数值认证或准确率保证。[逐模型报告](docs/models.md)。
+- **数值：** 7 个配置在已记录的 270 次请求、285 个问题上通过初始 `bounded-drift-v1`：每项概率绝对误差 ≤0.03（3 个百分点），所有分布的 argmax 不变。这是重评已有 GPU 结果，没有新增 GPU 运行或算术修复；历史严格失败记录保留，有限用例通过不认证未测输入。[重新评估报告](validation/reports/source-13eed9b-bounded-drift.json) · [逐模型范围](docs/models.md)。
 - **源码镜像：** 未发布的 `13eed9b` 候选镜像已通过全部 7 个配置的真实推理/SDK 检查，以及 Open-Jev-2B、NeoHorse 的离线、只读 Compose 检查。其不可变 Docker 本地 ID 不是已发布的 registry digest；已发布 dev1 不变。[CPU/源码绑定](validation/reports/source-13eed9b-image-cpu.json) · [GPU/Compose 证据](validation/reports/source-13eed9b-image-gpu.json)。
 - **生命周期与长稳：** 新镜像通过并发请求、健康、截止时间与恢复检查；已执行客户端取消，但未独立验证服务端断连传播。旧 dev1 的 24 小时长稳在 16,271.64 秒后失败，1,590 次请求中 1,589 次成功；尚无完成的 24/72 小时门禁或干净主机验收。[长稳失败记录](validation/reports/soak-24h-failed.json)。
 - **输入：** 最多 16 个问题；Choice 上限 255。Score 等级数、最少候选数和 token/计算量限制因模型而异，见 `/v1/models`。不静默截断、改变精度、切换模型或重试。

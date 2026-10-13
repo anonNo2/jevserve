@@ -16,7 +16,7 @@ JevServe runs open-weight Jev-style decision models on your NVIDIA GPU. Send tex
 
 **One reusable image, separately mounted weights.** Adapters cover Open-Jev, JPT, NeoHorse and Kev, using vLLM or a named Torch backend. Includes a Python client, bounded request queues, cancellation, health checks and offline mode. See [model-specific test status and licenses](docs/models.md).
 
-> **Developer preview.** The default Open-Jev model currently **fails strict probability parity** with the author implementation. `--allow-uncertified` explicitly accepts development execution; it does not certify results. See [known limitations](#status-and-limitations) before relying on probabilities or decision thresholds.
+> **Developer preview.** Reassessment of existing GPU evidence passes the initial `bounded-drift-v1` policy on the tested corpus; historical strict parity still fails for Open-Jev/JPT. `--allow-uncertified` remains required. This is not full model certification or measured accuracy. See [numerical scope and limitations](#status-and-limitations).
 
 ## Quick Start
 
@@ -116,7 +116,7 @@ Install the client from this checkout with `pip install .` in a Python 3.12 virt
 ## Status and limitations
 
 - **Models:** 7 pinned profiles tested with real GPU inference and containers on RTX A6000; text only, one model and one GPU per container. [Individual test results](docs/models.md).
-- **Numerics:** Open-Jev and JPT have failed strict probability comparisons. NeoHorse and Kev pass the small synthetic comparison suite. Execution success does not imply numerical certification or measured accuracy. [Per-model reports](docs/models.md).
+- **Numerics:** all 7 profiles pass the initial `bounded-drift-v1` policy on 270 recorded requests / 285 questions: absolute probability error ≤0.03 (3 percentage points) and unchanged argmax for every distribution. This reanalyses existing GPU results; it adds no GPU run or arithmetic fix. Historical strict failures remain unchanged, and passing this finite corpus does not certify unseen inputs. [Reassessment](validation/reports/source-13eed9b-bounded-drift.json) · [Per-model scope](docs/models.md).
 - **Source image:** the unpublished `13eed9b` candidate passed real inference/SDK checks for all 7 profiles and offline, read-only Compose checks for Open-Jev-2B and NeoHorse. Its immutable local Docker ID is not a published registry digest; published dev1 is unchanged. [CPU/source binding](validation/reports/source-13eed9b-image-cpu.json) · [GPU/Compose evidence](validation/reports/source-13eed9b-image-gpu.json).
 - **Lifecycle and soak:** the new image passed concurrent requests, health, deadline and recovery checks. Client cancellation was exercised; server disconnect propagation was not independently verified. The old dev1 24-hour soak failed after 16,271.64 seconds; 1,589 of 1,590 requests succeeded. No completed 24/72-hour gate or clean-host acceptance. [Soak failure](validation/reports/soak-24h-failed.json).
 - **Inputs:** up to 16 questions and 255 Choice candidates. Score limits, minimum candidates and token/work budgets vary by model; inspect `/v1/models`. No silent truncation, precision change, model fallback or retry.

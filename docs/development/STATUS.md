@@ -5,7 +5,8 @@
 A usable **development prototype** now loads pinned Jev-style models and
 serves Choice/Noul/Score over HTTP. CLI, native SDK, bounded lifecycle, artifact
 preparation, Dockerfile and Compose framework are implemented. This is **not an
-alpha release or certified model**: frozen numerical parity still fails. A real
+alpha release or certified model**. The current finite corpus passes the versioned
+bounded-drift acceptance policy; historical strict parity failures remain recorded. A real
 development image now builds and serves all three question types with no network
 and a read-only root filesystem. Cold startup and Compose real inference also
 pass. The shared daemon is unchanged. Source is now public on
@@ -26,14 +27,18 @@ See `validation/reports/soak-24h-failed.json`. Remote promotion remains unrun.
 
 The latest source audit adds bounded off-loop encoding, sanitized diagnostics,
 lightweight client/server extras, static API contracts and installation/Compose CI.
-The latest full CPU run has **424 passing tests and 1 optional-Torch skip**; Ruff and mypy passed. A new,
+The latest full CPU run has **453 passing tests and 1 optional-Torch skip**; Ruff and mypy passed. A new,
 unpublished image built from production source `13eed9b` passed real reference,
 Docker HTTP/SDK and cleanup checks for all seven profiles, plus network-disabled,
 read-only Compose checks for Open-Jev-2B and NeoHorse. Its local Docker identity
 is not a published registry digest. Strict probability parity still fails:
 Open-Jev-2B 31/110, Open-Jev-9B 29/110, each JPT profile 5/10; NeoHorse/Kev pass
-only the 10-case synthetic comparison. Published dev1 is unchanged. Numerical
-diagnostics continue without changing production arithmetic or frozen tolerances.
+only the 10-case synthetic comparison under the historical strict profile.
+The new bounded-drift-v1 policy accepts all seven models on the saved 270 requests
+and 285 questions (absolute probability error ≤ 0.03 and unchanged argmax).
+This CPU reassessment changes acceptance policy, not production arithmetic or the
+historical strict profile. Published dev1 is unchanged. See the
+[bounded-drift report](../../validation/reports/source-13eed9b-bounded-drift.json).
 See the latest image-acceptance session and
 [bound evidence](../../validation/reports/source-13eed9b-image-gpu.json).
 The dev1 SPDX advisory scan still has unresolved matches; see
@@ -43,19 +48,19 @@ The dev1 SPDX advisory scan still has unresolved matches; see
 
 | Task | Status | Remaining evidence |
 |---|---|---|
-| T00 Baseline | Author reference complete; engine measured | GPU parity failed; isolated Docker CPU/GPU baseline passed |
+| T00 Baseline | Author reference complete; engine measured | Current corpus accepted under bounded-drift-v1; broader coverage remains |
 | T01 Contracts | CPU complete | See latest session for current CPU test count |
 | T02 Artifacts | Cold online preparation and real container offline inference passed | Broader release/fault matrix remains |
-| T03 Adapter | Encoding/readout and fixed FP32 LoRA implemented | Numerical alignment still fails; not certified |
-| T04 Runtime | Real GPU/HTTP inference works | Resolve new-image HTTP parity failures: Open-Jev 31/110 and 29/110; JPT 5/10 each |
+| T03 Adapter | Encoding/readout and fixed FP32 LoRA implemented | Bounded-drift corpus accepted; full certification remains |
+| T04 Runtime | Real GPU/HTTP inference works | Current image corpus accepted under bounded-drift-v1; broader workloads remain |
 | T05 API/lifecycle | Native and SDK subset implemented | Broader release/fault/soak coverage remains |
 | T06 CLI/SDK | CLI/SDK and one-command cold container quickstart passed | Separate clean-host installation not run |
-| T07 Docker | Published dev1 plus source13eed9b local image execution verified | New candidate remains unpublished; numerical certification failed |
+| T07 Docker | Published dev1 plus source13eed9b local image execution verified | New candidate remains unpublished; bounded numerical acceptance passed on current corpus |
 | T08 Compose/offline/rollback | New-image Open-Jev/NeoHorse offline read-only Compose passed | Historical dev0 → dev1 → dev0 rollback passed; new-source rollback unrun |
-| T09 Multi-model extension | Seven pinned profiles completed real GPU/container checks | NeoHorse/Kev small-suite parity passed; Open-Jev/JPT probability parity fails |
+| T09 Multi-model extension | Seven pinned profiles completed real GPU/container checks | All seven pass bounded-drift-v1 on current text corpus; vision/generalization unverified |
 | T10 Observability/benchmark | Metrics and short sequential benchmark measured | 24-hour attempt failed before duration gate; capacity study and 72-hour soak unrun |
 | T11 CI/release | CPU workflow written; local checks pass | Remote CPU CI passed; certified image promotion/release absent |
-| T12 Open-source acceptance | Incomplete | Parity, clean-host and completed soak acceptance |
+| T12 Open-source acceptance | Incomplete | Broader certification, clean-host and completed soak acceptance |
 
 ## Session evidence — 2026-10-12
 
@@ -1351,3 +1356,66 @@ operator substitutions; JPT findings do not establish Open-Jev's cause. Any full
 engine experiment must set the mode in each worker before warmup and bind it to
 the cache/report identity. Repository changes here are evidence/docs only; no
 CPU software tests were rerun for this research-only update.
+
+
+## Session evidence — 2026-10-13: bounded numerical acceptance
+
+The user explicitly allows bounded drift. D039 adopts an initial project threshold
+of 0.03 absolute probability error, zero relative tolerance and unchanged argmax
+for every Choice/Noul/Score distribution. The exact threshold is a project default,
+not a separately confirmed user value. Historical strict reports remain unchanged.
+
+Added `validation.acceptance`, the CPU-only `validation.reassess` CLI, the versioned
+policy and 29 unit tests. The new report binds its policy/evaluator hashes to the
+existing source13eed9b aggregate, raw reference/HTTP reports and summaries, model
+revisions, source commit and local image identity. Independent review reproduced
+all question metrics and verified all 14 raw-report and seven summary hashes.
+
+Observed: **7/7 models, 270 requests, 285 questions accepted; zero argmax changes**.
+Maximum probability errors: Open-Jev-2B 0.02178034, Open-Jev-9B 0.01953158,
+JPT-0.8B 0.02731947, JPT-4B 0.02947989, JPT-9B 0.02507534,
+NeoHorse 6.32603072e-8, Kev 0.00004988098. The largest is close to the threshold;
+this finite synthetic text corpus does not establish broader numerical stability.
+Original strict failed-case counts remain 31/110, 29/110, 5/10 for each JPT,
+and 0/10 for NeoHorse/Kev. Three invalid Open-Jev requests remain explicitly
+excluded after native contract verification.
+
+Pinned Kev reference probabilities have four decimal places. Reference-only
+internal-consistency checks account for this serialization; no probabilities are
+renormalized and the 0.03 gate is unchanged. Its maximum distribution-derived
+Score difference is about 0.038629714, while the actual returned Score difference
+is about 0.000035421. Both are reported separately. Production source, checkpoint
+weights, temperature and runtime precision remain unchanged.
+
+Commands and observed results:
+
+```bash
+PYTHONPATH=src .venv/bin/python -m validation.reassess \
+  --aggregate validation/reports/source-13eed9b-image-gpu.json \
+  --evidence-dir .local/source-13eed9b-matrix-acceptance \
+  --output validation/reports/source-13eed9b-bounded-drift.json
+# exit 0; all_models_within_policy=true; models=7; new_gpu_run=false
+.venv/bin/python -m pytest -q
+# 453 passed, 1 optional-Torch skip in 17.28s
+.venv/bin/ruff check .
+# All checks passed
+.venv/bin/mypy
+# Success: no issues found in 34 source files
+git diff --check
+# passed
+```
+
+For reproduction, select a fresh output path; existing reports are never overwritten.
+Public artifact: `validation/reports/source-13eed9b-bounded-drift.json`.
+Private inputs remain under `.local/source-13eed9b-matrix-acceptance/`.
+This session ran **no new GPU inference, image build, publication or soak**.
+The prior new-source image execution and offline Compose evidence remains valid;
+its local identity is not a registry digest. Model registry certification remains
+unchanged. Numerical acceptance for this corpus is complete under bounded-drift-v1;
+strict arithmetic research is optional.
+
+Exact next action: investigate the recorded project-daemon loss from the failed
+24-hour soak, then run a new project-scoped operational acceptance/soak with a
+free GPU and retained failure evidence. Clean-host installation and broader
+workload/vision coverage are still unrun; RC requires a completed 24-hour soak,
+and stable requires 72 hours plus clean-host installation. No release is claimed.

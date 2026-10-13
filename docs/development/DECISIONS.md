@@ -235,3 +235,20 @@ Add material changes with evidence, compatibility consequences and affected task
   Preserve native convolution strides as well as shapes/dtypes when a downstream
   kernel assumes unit feature stride; retain the invalid run separately and
   bind corrected reruns to their implementation hashes.
+
+- **D039 — Accept explicitly bounded drift with a separate versioned policy.**
+  The user permits numerical drift. Adopt bounded-drift-v1 as the initial project
+  threshold: per-candidate absolute probability error ≤ 0.03, zero relative
+  tolerance, and unchanged first-in-order argmax for Choice/Noul/Score. The exact
+  0.03 value is a project default, not a verbatim user requirement. Preserve old
+  strict reports and thresholds; re-evaluate hash-bound saved GPU evidence with
+  a CPU-only tool and record policy/evaluator hashes. This supersedes strict
+  parity as the acceptance blocker for the current finite corpus, not historical
+  observations. Do not change weights, temperature, production precision or
+  reference values. Pinned Kev four-decimal serialization requires a reference-only
+  internal-consistency budget, not wider acceptance tolerances or normalization.
+  Report total variation and distribution-derived/returned Score errors separately.
+  All seven current models pass this policy; that does not establish accuracy,
+  calibration, vision support, new GPU execution or full release certification.
+  Strict kernel alignment becomes optional research. Broader workload, lifecycle,
+  soak and clean-host evidence remain separate operational/release work.

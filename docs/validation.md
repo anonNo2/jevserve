@@ -13,6 +13,42 @@ Open-Jev/JPT reports fail probability parity. NeoHorse/Kev small-suite passes do
 not establish general model accuracy. Frozen tolerances in
 `compat/parity-profile.json` are used without adjustment.
 
+## Bounded-drift acceptance of saved evidence
+
+The initial project policy in
+[`numerical-acceptance-v1.json`](../compat/numerical-acceptance-v1.json) accepts
+per-candidate absolute probability error ≤ 0.03 (three percentage points, not
+three percent relative error), with unchanged argmax for Choice, Noul and Score.
+Ties select the first candidate in original order; Noul uses `[false, true]`.
+The user authorized bounded drift; 0.03 is the initial project threshold.
+Weights, precision, temperature and candidate semantics are unchanged.
+Total variation and both distribution-derived and returned Score errors are
+reported separately, without additional thresholds. This does not measure accuracy
+or calibration, and does not certify vision or release readiness.
+
+Reassess the locally retained raw reference/HTTP/summary reports on CPU:
+
+```bash
+PYTHONPATH=src .venv/bin/python -m validation.reassess \
+  --aggregate validation/reports/source-13eed9b-image-gpu.json \
+  --evidence-dir .local/source-13eed9b-matrix-acceptance \
+  --output .local/bounded-drift-reassessment.json
+```
+
+Choose a fresh output path. Exit 0 means every included case passes this policy;
+exit 1 means a numerical acceptance failure. Invalid or hash-mismatched evidence
+raises an error. Raw evidence is required; the public aggregate alone is insufficient.
+The evaluator verifies hashes, model revisions, source commit and image identity.
+Pinned Kev reference probabilities are serialized to four decimal places, so only
+reference internal-consistency checks include a rounding budget; the probability
+acceptance threshold is unchanged. Actual responses retain full consistency checks.
+
+The [saved result](../validation/reports/source-13eed9b-bounded-drift.json) passes
+all seven models, 270 requests and 285 questions, with zero argmax changes.
+This is a reassessment of existing GPU evidence, not a new GPU run or arithmetic
+fix. The original strict reports and `validation.run` strict exit behavior remain
+unchanged. Model registry certification and release gates are separate.
+
 ## Inputs and preparation
 
 Use a Linux NVIDIA host, Docker with NVIDIA support, and GPU 0 free of compute

@@ -10,7 +10,40 @@ JevServe 使用一个通用镜像，模型权重独立挂载。每个容器运�
 下表区分“已接入”“真实推理测试”和“数值对照”，当前 API 仅支持文本，未实现图片输入。
 所有模型均为开发预览；合成用例通过不代表准确率评测或生产认证。
 
-## Integration and test matrix
+## Current bounded-drift assessment
+
+Following the decision to allow limited numerical drift, the initial project
+policy `bounded-drift-v1` requires **absolute probability error ≤0.03** (3 percentage
+points, not relative error) and **unchanged argmax for every distribution**.
+Reassessment of the existing source-`13eed9b` GPU evidence passes both checks for
+all seven profiles: **270 requests, 285 questions, zero argmax changes**. This is
+CPU analysis of saved GPU results, not new GPU execution, an arithmetic fix or
+certification for untested inputs. See the separately versioned
+[bounded-drift report](../validation/reports/source-13eed9b-bounded-drift.json).
+
+| Model | Recorded requests / questions | Maximum absolute probability error | Bounded policy |
+|---|---:|---:|---|
+| Open-Jev-2B | 110 / 110 | 0.02178034 | Passed |
+| Open-Jev-9B | 110 / 110 | 0.01953158 | Passed |
+| JPT-0.8B | 10 / 13 | 0.02731947 | Passed |
+| JPT-4B | 10 / 13 | 0.02947989 | Passed |
+| JPT-9B | 10 / 13 | 0.02507534 | Passed |
+| NeoHorse-Jev-4B | 10 / 13 | 0.00000006326 | Passed |
+| Kev-4B, configured FP32 | 10 / 13 | 0.00004988098 | Passed |
+
+Historical strict tolerances and their failed results below are preserved.
+Operator-level strict-parity research remains available, but it is no longer a
+blocker for this corpus under the bounded policy. No serving arithmetic, model
+precision, weights, candidate order or temperature changed. The certified registry
+remains empty; `--allow-uncertified`, model licenses and all operational/release
+gates still apply. The local image remains unpublished.
+
+当前初始策略允许每项概率最多 0.03 的绝对误差，并要求所有分布的 argmax 不变；
+7 个配置的既有 270 次请求、285 个问题均通过。这是对已保存 GPU 证据的重新评估，
+不是新增 GPU 推理、算术修复或完整模型认证。历史严格失败保留；逐算子严格根因研究
+转为可选，不再阻塞这批用例的新数值门禁。长稳、干净主机和发布门禁仍独立存在。
+
+## Historical integration and strict comparison matrix
 
 The table retains the original integration results. A new unpublished source
 image (`13eed9b`) subsequently passed real inference/HTTP/SDK execution for all
@@ -21,7 +54,7 @@ their 10-case synthetic suite. These are separately bound runs, not evidence tha
 changed failure counts establish a numerical improvement. See the
 [source-image report](../validation/reports/source-13eed9b-image-gpu.json).
 
-| Model | Backend / precision | Real GPU / container test | Probability comparison | Weight license |
+| Model | Backend / precision | Real GPU / container test | Historical strict comparison | Weight license |
 |---|---|---|---|---|
 | [Open-Jev-2B](https://huggingface.co/ZefanCai/Open-Jev-2B) | vLLM pooling, BF16 backbone + FP32 scalar head | Passed Docker, Compose, cold download and offline; common-image regression passed | **Failed:** 36/110 HTTP cases in the original suite | Apache-2.0 |
 | [JPT-0.8B](https://huggingface.co/kirp/jpt-0.8b) | vLLM token readout, BF16 | 10 HTTP cases including 255 options; mounted offline Compose passed | **Failed:** 6/10; see [container report](../validation/reports/jpt-0.8b-container.json); no Choice label flips | CC-BY-NC-4.0 |

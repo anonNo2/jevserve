@@ -1,0 +1,10 @@
+{
+  "policy_id": "bounded-drift-v1",
+  "probability_atol": 0.03,
+  "probability_rtol": 0.0,
+  "require_argmax_match": true,
+  "tie_rule": "first candidate in original order",
+  "scope": "Per-question synthetic text probability and decision acceptance; not accuracy, calibration, or release certification.",
+  "provenance": "The user accepted bounded numerical drift on 2026-10-13. The initial proposed project threshold is three percentage points with unchanged argmax; historical strict results remain preserved.",
+  "notes": "Keep reference outputs, checkpoint temperature, candidate order, weights and runtime precision unchanged. Report total variation and Score expectation drift separately."
+}

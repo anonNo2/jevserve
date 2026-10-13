@@ -1,6 +1,12 @@
 # Numerical parity investigation
 
-Status: **unresolved; no tolerance, production precision or backend changed**.
+Status: **strict arithmetic alignment remains unresolved; production precision and backend unchanged**.
+The user now allows bounded drift. All seven models in the saved source-image
+corpus pass the initial bounded-drift-v1 acceptance policy (absolute probability
+error ≤ 0.03 and unchanged argmax); see the
+[reassessment](../validation/reports/source-13eed9b-bounded-drift.json).
+Strict root-cause research below is optional follow-up, not a blocker for this
+finite corpus under the new policy. Historical strict thresholds remain intact.
 The initial analysis below reuses historical real-GPU evidence; subsequent
 sections record new diagnostic GPU runs, none of which certify a model.
 Historical inputs are SHA-256 bound in
