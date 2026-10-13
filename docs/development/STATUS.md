@@ -1295,3 +1295,59 @@ all affected JPT cases and the default Open-Jev model at unchanged tolerances
 before proposing a bounded production correction; any such correction requires
 a new image and renewed GPU/container acceptance. The completed source-image
 execution gate does not satisfy this outstanding numerical gate.
+
+## Session evidence — 2026-10-13: learning from upstream implementations
+
+Read-only source review pinned current `mode-io/vllm-jev` to
+`57226d4e5b8e164f07288acd4f6b7ccca3340218` (package 0.3.7, vLLM 0.29.0),
+and `tic-top/llm2jev` to `2b252d504972764211ef172c1155ac0fedc9c3de`.
+The earlier vllm-jev checkout remains untouched; the fresh research checkout is
+`.local/research/vllm-jev-20261013`. Independent agents reviewed Open-Jev
+adaptation and llm2jev's parity rules. No dependency or production source changed.
+
+- Upstream [precision control](https://github.com/mode-io/vllm-jev/blob/57226d4e5b8e164f07288acd4f6b7ccca3340218/vllm_jev/precision.py)
+  selects cuBLASLt and disables both BF16 reduced-precision reduction and split-K.
+  It applies before worker compilation, separates cache identities and requires
+  a restart for mode changes. Its [documented limits](https://github.com/mode-io/vllm-jev/blob/57226d4e5b8e164f07288acd4f6b7ccca3340218/docs/guide.md#L471-L485)
+  retain batching/attention/GDN differences; this is not strict HF certification.
+- Open-Jev export still merges LoRA into the BF16 base. Our D015 already rejected
+  that representation for the initial strict profile. The native backbone, LAST
+  pooling and FP32 scalar head offer no newly identified missing parity fix.
+- llm2jev's [parity script](https://github.com/tic-top/llm2jev/blob/2b252d504972764211ef172c1155ac0fedc9c3de/scripts/parity.py#L100-L139)
+  defaults to absolute probability error 0.03 plus argmax agreement, using T=1.
+  This does not establish our JPT temperature-specific frozen tolerance gate.
+  Its FP32 logprob postprocessing is not FP32 head matrix multiplication.
+
+A bounded GPU experiment reused the existing layer-3 JPT fixed-input projection
+replay. GPU was idle and the project GPU lock acquired before starting. Command:
+
+```bash
+PYTHONPATH=src:. HF_HUB_OFFLINE=1 timeout --signal=TERM --kill-after=30s 300s \
+  .local/engine-venv/bin/python .local/research/replay-no-splitk.py
+```
+
+Observed exit 0. The coordinator runs the existing
+`validation.jpt_attention_replay.run` first with default Torch settings, then
+with `preferred_blas_library('cublaslt')` and
+`allow_bf16_reduced_precision_reduction=(False, False)` in the same isolated
+process. It records actual flags and compares the four returned projection
+captures; it runs no model engine. Use a fresh output for reproduction. Hashes
+bind coordinator, upstream settings source, replay implementation and original
+HF/runtime reports in the [public result](../../validation/reports/upstream-no-splitk-projection.json).
+
+Packed-versus-separate K/V unequal elements fell from **19,115 / 18,835** to
+**19 / 14**. However, the candidate packed projection still exactly matches the
+original runtime; the separate projection changes and no longer matches frozen
+HF. Thus this experiment improves agreement between two projection shapes but
+**does not improve runtime agreement with the original HF reference**. The three
+controls changed together, so this does not isolate split-K alone. It is one
+fixture, not an Open-Jev or end-to-end result. Independent review confirmed the
+interpretation and absence of private/raw activation content in the public JSON.
+No production setting, reference, tolerance or certification state changed.
+
+Next action: retain no-splitk as a controlled diagnostic option, not a silent fix.
+Prioritize Open-Jev-2B's own loaded base/FP32-LoRA boundaries before extending JPT
+operator substitutions; JPT findings do not establish Open-Jev's cause. Any full
+engine experiment must set the mode in each worker before warmup and bind it to
+the cache/report identity. Repository changes here are evidence/docs only; no
+CPU software tests were rerun for this research-only update.

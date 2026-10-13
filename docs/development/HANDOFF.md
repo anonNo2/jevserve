@@ -21,7 +21,7 @@ Grype 已扫描 dev1 SPDX，包与公告匹配尚未完成分诊，见 [安全�
 1. 阅读根目录 [AGENTS.md](../../AGENTS.md)、本文件和 [STATUS.md](STATUS.md)。STATUS 顶部汇总及最新会话记录反映当前进展；较早会话保留当时的失败和未执行状态。
 2. 如存在，读取 `.local/SERVER.md`，并在重工作前重新检查资源占用。该文件仅用于本机观察，不提交到 Git。
 3. 阅读历史 [设计](../plans/JevServe-design.md)、[T00–T12 计划](../plans/JevServe-task-plan.md) 和 [DECISIONS.md](DECISIONS.md) 理解约束与变更；不要重新从初始化或 T00 开始。
-4. 按 [开源完善计划 O01–O08](../plans/open-source-hardening.md) 和 STATUS 最新未完成项接续。公开编排和三层 JPT 诊断已实测；24 小时 NeoHorse 长稳已提前失败，新源码镜像执行验收已完成，下一步核验真实加载的注意力权重并隔离融合 Q 归一化/RoPE 算术；不要重跑已完成矩阵或把执行成功写成数值认证。
+4. 按 [开源完善计划 O01–O08](../plans/open-source-hardening.md) 和 STATUS 最新未完成项接续。公开编排和三层 JPT 诊断已实测；24 小时 NeoHorse 长稳已提前失败，新源码镜像执行验收已完成，下一步优先定位 Open-Jev-2B 自身的 base/FP32-LoRA 首差；JPT 的融合 Q 归一化/RoPE 差异仍待解决；不要重跑已完成矩阵或把执行成功写成数值认证。
 
 开始时运行 `git status --short --branch`，保留已有工作。CPU 安装、CLI 和检查命令见 [CONTRIBUTING.md](../../CONTRIBUTING.md)；源码运行时开发见 [IMPLEMENTATION.md](IMPLEMENTATION.md)。不要把已有缓存或某次宿主观察当成新环境验证。部署命令以 Quick Start 为准。
 
@@ -42,3 +42,5 @@ CPU 通过、容器执行通过和真实 GPU 数值认证分别记录。dev0 →
 按当前会话授权执行；默认顺序工作，只有明确允许时委派，GPU 重工作保持串行。不得重启共享 Docker daemon、改驱动或清理他人资源。离线模式不访问网络，下载到 staging、校验后原子发布；不得提交权重、凭据或 `.local/`。
 
 结束前更新 STATUS：实际命令、结果、证据路径、未运行检查、阻塞和精确下一步。重大设计变化记录到 DECISIONS，能力或状态变化同步中英文 README。按会话安排审查并提交完整变更；沿用会话中已有的 push/发布授权及目的地；未授权的新目的地或发布范围需要另行明确。用户可使用 [START-CODEX.md](START-CODEX.md) 中的提示接续。
+
+最新上游对照：vllm-jev 0.3.7 的 no_splitk 思路已做本机固定投影实验，显著减少 packed/separate 差异，但改变的是 separate 输出，未改善 runtime 对冻结 HF 基准的匹配。不得将其直接设为生产修复；详见 STATUS 最新研究会话及 [实验报告](../../validation/reports/upstream-no-splitk-projection.json)。
